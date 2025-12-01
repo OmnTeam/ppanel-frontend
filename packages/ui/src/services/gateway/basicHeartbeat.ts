@@ -2,14 +2,14 @@
 /* eslint-disable */
 import request from "@workspace/ui/lib/request";
 
-/** Query announcement GET /v1/public/announcement/list */
-export async function queryAnnouncement(
+/** Send heartbeat to the service GET /basic/heartbeat */
+export async function basicHeartbeat(
   // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.QueryAnnouncementParams,
+  params: API.basicHeartbeatParams,
   options?: { [key: string]: any }
 ) {
-  return request<API.Response & { data?: API.QueryAnnouncementResponse }>(
-    "/api/v1/public/announcement/list",
+  return request<{ code?: number; data?: API.HeartbeatResponse; msg?: string }>(
+    "/basic/heartbeat",
     {
       method: "GET",
       params: {

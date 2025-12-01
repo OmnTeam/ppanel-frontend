@@ -1,7 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { Link } from "@tanstack/react-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -21,123 +20,109 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card";
 import { Icon } from "@workspace/ui/composed/icon";
-import { getVersion, restartSystem } from "@workspace/ui/services/admin/tool";
+import { getModuleConfig } from "@workspace/ui/services/admin/system";
+import { restartSystem } from "@workspace/ui/services/admin/tool";
+import { basicCheckServiceVersion } from "@workspace/ui/services/gateway/basicCheckServiceVersion";
+import { basicUpdateService } from "@workspace/ui/services/gateway/basicUpdateService";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { formatDate } from "@/utils/common";
+import { toast } from "sonner";
 import packageJson from "../../../../../../package.json";
 import SystemLogsDialog from "./system-logs-dialog";
 
 export default function SystemVersionCard() {
   const { t } = useTranslation("tool");
+  const queryClient = useQueryClient();
   const [openRestart, setOpenRestart] = useState(false);
   const [isRestarting, setIsRestarting] = useState(false);
+  const [openUpdateWeb, setOpenUpdateWeb] = useState(false);
+  const [openUpdateServer, setOpenUpdateServer] = useState(false);
+  const [isUpdatingWeb, setIsUpdatingWeb] = useState(false);
 
-  const { data: versionInfo } = useQuery({
-    queryKey: ["getVersionInfo"],
+  const { data: moduleConfig } = useQuery({
+    queryKey: ["getModuleConfig"],
     queryFn: async () => {
-      try {
-        const [webResponse, serverResponse, systemResponse] = await Promise.all(
-          [
-            fetch(
-              "https://data.jsdelivr.com/v1/packages/gh/perfect-panel/frontend/resolved?specifier=latest"
-            ),
-            fetch(
-              "https://data.jsdelivr.com/v1/packages/gh/perfect-panel/server/resolved?specifier=latest"
-            ),
-            getVersion(),
-          ]
-        );
-
-        const webData = webResponse.ok ? await webResponse.json() : null;
-        const serverData = serverResponse.ok
-          ? await serverResponse.json()
-          : null;
-        const systemData = systemResponse.data.data;
-
-        const rawVersion = (systemData?.version || "")
-          .replace(" Develop", "")
-          .trim();
-        const timeMatch = rawVersion.match(/\(([^)]+)\)/);
-        const timestamp = timeMatch ? timeMatch[1] : "";
-        const versionWithoutTime = rawVersion.replace(/\([^)]*\)/, "").trim();
-
-        const isDevelopment = !/^[Vv]?\d+\.\d+\.\d+(-[a-zA-Z]+(\.\d+)?)?$/.test(
-          versionWithoutTime
-        );
-
-        let displayVersion = versionWithoutTime;
-        if (
-          !(
-            isDevelopment ||
-            versionWithoutTime.startsWith("V") ||
-            versionWithoutTime.startsWith("v")
-          )
-        ) {
-          displayVersion = `V${versionWithoutTime}`;
-        }
-        const lastUpdated = formatDate(new Date(timestamp || Date.now())) || "";
-
-        const systemInfo = {
-          isRelease: !isDevelopment,
-          version: displayVersion,
-          lastUpdated,
-        };
-
-        const latestReleases = {
-          web: webData
-            ? {
-                version: webData.version,
-                url: `https://github.com/perfect-panel/frontend/releases/tag/v${webData.version}`,
-              }
-            : null,
-          server: serverData
-            ? {
-                version: serverData.version,
-                url: `https://github.com/perfect-panel/server/releases/tag/v${serverData.version}`,
-              }
-            : null,
-        };
-
-        const hasNewVersion =
-          latestReleases.web &&
-          packageJson.version !== latestReleases.web.version.replace(/^v/, "");
-
-        const hasServerNewVersion =
-          latestReleases.server &&
-          systemInfo.version &&
-          systemInfo.version.replace(/^V/, "") !==
-            latestReleases.server.version.replace(/^v/, "");
-
-        return {
-          systemInfo,
-          latestReleases,
-          hasNewVersion,
-          hasServerNewVersion,
-        };
-      } catch (error) {
-        console.error("Failed to fetch version info:", error);
-        return {
-          systemInfo: { isRelease: true, version: "V1.0.0", lastUpdated: "" },
-          latestReleases: { web: null, server: null },
-          hasNewVersion: false,
-          hasServerNewVersion: false,
-        };
-      }
+      const { data } = await getModuleConfig();
+      return data.data;
     },
     staleTime: 0,
+  });
+
+  const { data: serverVersionInfo } = useQuery({
+    queryKey: ["checkServerVersion", moduleConfig?.secret],
+    queryFn: async () => {
+      const { data } = await basicCheckServiceVersion({
+        service_name: moduleConfig!.service_name,
+        secret: moduleConfig!.secret,
+      });
+      return data.data;
+    },
+    enabled: !!moduleConfig?.secret,
+    staleTime: 0,
     retry: 1,
-    retryDelay: 10_000,
-    initialData: {
-      systemInfo: { isRelease: true, version: "V1.0.0", lastUpdated: "" },
-      latestReleases: { web: null, server: null },
-      hasNewVersion: false,
-      hasServerNewVersion: false,
+  });
+
+  const { data: webVersionInfo } = useQuery({
+    queryKey: ["checkWebVersion", moduleConfig?.secret],
+    queryFn: async () => {
+      const { data } = await basicCheckServiceVersion({
+        service_name: "admin",
+        secret: moduleConfig!.secret,
+      });
+      return data.data;
+    },
+    enabled: !!moduleConfig?.secret,
+    staleTime: 0,
+    retry: 1,
+  });
+
+  const updateServerMutation = useMutation({
+    mutationFn: async (serviceName: string) => {
+      await basicUpdateService({
+        service_name: serviceName,
+        secret: moduleConfig!.secret,
+      });
+    },
+    onSuccess: () => {
+      toast.success(t("updateSuccess", "Update completed successfully"));
+      queryClient.invalidateQueries({ queryKey: ["checkServerVersion"] });
+      queryClient.invalidateQueries({ queryKey: ["getModuleConfig"] });
+      setOpenUpdateServer(false);
+    },
+    onError: () => {
+      toast.error(t("updateFailed", "Update failed"));
     },
   });
 
-  const { systemInfo, latestReleases, hasNewVersion, hasServerNewVersion } =
-    versionInfo;
+  const handleUpdateWeb = async () => {
+    if (!moduleConfig?.secret) return;
+
+    setIsUpdatingWeb(true);
+    try {
+      await basicUpdateService({
+        service_name: "admin",
+        secret: moduleConfig.secret,
+      });
+      toast.success(t("adminUpdateSuccess", "Admin updated successfully"));
+
+      await basicUpdateService({
+        service_name: "user",
+        secret: moduleConfig.secret,
+      });
+      toast.success(t("userUpdateSuccess", "User updated successfully"));
+
+      setOpenUpdateWeb(false);
+      window.location.reload();
+    } catch {
+      toast.error(t("updateFailed", "Update failed"));
+    } finally {
+      setIsUpdatingWeb(false);
+    }
+  };
+
+  const hasServerNewVersion = serverVersionInfo?.has_update ?? false;
+  const hasWebNewVersion = webVersionInfo?.has_update ?? false;
+  const isUpdatingServer = updateServerMutation.isPending;
 
   return (
     <Card className="gap-0 p-3">
@@ -199,27 +184,55 @@ export default function SystemVersionCard() {
           </div>
           <div className="flex items-center space-x-2">
             <Badge>V{packageJson.version}</Badge>
-            {hasNewVersion && (
-              <Link
-                className="flex items-center space-x-1"
-                rel="noopener noreferrer"
-                target="_blank"
-                to={
-                  latestReleases?.web?.url ||
-                  "https://github.com/perfect-panel/frontend/releases"
-                }
-              >
-                <Badge
-                  className="animate-pulse px-2 py-0.5 text-xs"
-                  variant="destructive"
-                >
-                  {t("newVersionAvailable", "New Version Available")}
-                  <Icon icon="mdi:open-in-new" />
-                </Badge>
-              </Link>
+            {hasWebNewVersion && webVersionInfo && (
+              <AlertDialog onOpenChange={setOpenUpdateWeb} open={openUpdateWeb}>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    className="h-6 px-2 text-xs"
+                    disabled={isUpdatingWeb}
+                    size="sm"
+                    variant="outline"
+                  >
+                    <Icon className="mr-1 h-3 w-3" icon="mdi:download" />
+                    {t("update", "Update")} V{webVersionInfo.latest_version}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      {t("confirmUpdate", "Confirm Update")}
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {t(
+                        "updateWebDescription",
+                        "Are you sure you want to update the web version from V{{current}} to V{{latest}}?",
+                        {
+                          current: packageJson.version,
+                          latest: webVersionInfo.latest_version,
+                        }
+                      )}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>
+                      {t("cancel", "Cancel")}
+                    </AlertDialogCancel>
+                    <Button disabled={isUpdatingWeb} onClick={handleUpdateWeb}>
+                      {isUpdatingWeb && (
+                        <Icon
+                          className="mr-2 animate-spin"
+                          icon="mdi:loading"
+                        />
+                      )}
+                      {t("confirmUpdate", "Confirm Update")}
+                    </Button>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             )}
           </div>
         </div>
+
         <div className="flex flex-1 items-center justify-between">
           <div className="flex items-center">
             <Icon className="mr-2 h-4 w-4 text-blue-600" icon="mdi:server" />
@@ -228,27 +241,67 @@ export default function SystemVersionCard() {
             </span>
           </div>
           <div className="flex items-center space-x-2">
-            <Badge variant={systemInfo?.isRelease ? "default" : "destructive"}>
-              {systemInfo?.version || "V1.0.0"}
+            <Badge>
+              V
+              {moduleConfig?.service_version ||
+                serverVersionInfo?.current_version ||
+                "1.0.0"}
             </Badge>
-            {hasServerNewVersion && (
-              <Link
-                className="flex items-center space-x-1"
-                rel="noopener noreferrer"
-                target="_blank"
-                to={
-                  latestReleases?.server?.url ||
-                  "https://github.com/perfect-panel/server/releases"
-                }
+            {hasServerNewVersion && serverVersionInfo && moduleConfig && (
+              <AlertDialog
+                onOpenChange={setOpenUpdateServer}
+                open={openUpdateServer}
               >
-                <Badge
-                  className="animate-pulse px-2 py-0.5 text-xs"
-                  variant="destructive"
-                >
-                  {t("newVersionAvailable", "New Version Available")}
-                  <Icon icon="mdi:open-in-new" />
-                </Badge>
-              </Link>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    className="h-6 px-2 text-xs"
+                    disabled={isUpdatingServer}
+                    size="sm"
+                    variant="outline"
+                  >
+                    <Icon className="mr-1 h-3 w-3" icon="mdi:download" />
+                    {t("update", "Update")} V{serverVersionInfo.latest_version}
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      {t("confirmUpdate", "Confirm Update")}
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      {t(
+                        "updateServerDescription",
+                        "Are you sure you want to update the server version from V{{current}} to V{{latest}}?",
+                        {
+                          current:
+                            moduleConfig.service_version ||
+                            serverVersionInfo.current_version,
+                          latest: serverVersionInfo.latest_version,
+                        }
+                      )}
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>
+                      {t("cancel", "Cancel")}
+                    </AlertDialogCancel>
+                    <Button
+                      disabled={isUpdatingServer}
+                      onClick={() =>
+                        updateServerMutation.mutate(moduleConfig.service_name)
+                      }
+                    >
+                      {isUpdatingServer && (
+                        <Icon
+                          className="mr-2 animate-spin"
+                          icon="mdi:loading"
+                        />
+                      )}
+                      {t("confirmUpdate", "Confirm Update")}
+                    </Button>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             )}
           </div>
         </div>

@@ -1,8 +1,9 @@
 {
+  "adminUpdateSuccess": "Admin updated successfully",
   "cancel": "Cancel",
   "confirmReboot": "Confirm Reboot",
   "confirmSystemReboot": "Confirm System Reboot",
-  "newVersionAvailable": "New Version Available",
+  "confirmUpdate": "Confirm Update",
   "rebootDescription": "Are you sure you want to reboot the system? This action cannot be undone.",
   "rebooting": "Rebooting...",
   "refreshLogs": "Refresh Logs",
@@ -10,5 +11,11 @@
   "systemLogs": "System Logs",
   "systemReboot": "System Reboot",
   "systemServices": "System Services",
+  "update": "Update",
+  "updateFailed": "Update failed",
+  "updateServerDescription": "Are you sure you want to update the server version from V{{current}} to V{{latest}}?",
+  "updateSuccess": "Update completed successfully",
+  "updateWebDescription": "Are you sure you want to update the web version from V{{current}} to V{{latest}}?",
+  "userUpdateSuccess": "User updated successfully",
   "webVersion": "Web Version"
 }

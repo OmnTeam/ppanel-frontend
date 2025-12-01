@@ -18,6 +18,6 @@ export default defineConfig({
       "src/**/*.{js,jsx,ts,tsx}",
       "../../packages/ui/src/**/*.{js,jsx,ts,tsx}",
     ], // Source files to scan
-    output: "public/locales/{{language}}/{{namespace}}.json", // Output path template
+    output: "public/assets/locales/{{language}}/{{namespace}}.json", // Output path template
   },
 });

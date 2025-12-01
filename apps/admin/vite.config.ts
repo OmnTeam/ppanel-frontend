@@ -47,6 +47,7 @@ export default defineConfig({
         target: "https://api.ppanel.dev",
         changeOrigin: true,
         secure: false,
+        rewrite: (path) => path.replace(/^\/api/, ""),
       },
     },
   },

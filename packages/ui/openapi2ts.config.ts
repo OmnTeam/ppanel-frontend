@@ -23,6 +23,13 @@ const config = [
       "https://raw.githubusercontent.com/perfect-panel/ppanel-docs/refs/heads/main/public/swagger/admin.json",
     projectName: "admin",
   },
+  {
+    ...baseConfig,
+    schemaPath:
+      "https://raw.githubusercontent.com/perfect-panel/ppanel-docs/refs/heads/main/public/swagger/gateway.json",
+    apiPrefix: "",
+    projectName: "gateway",
+  },
 ];
 
 export default config;
