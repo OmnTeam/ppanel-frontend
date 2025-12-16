@@ -116,6 +116,9 @@ VITE_CDN_URL=https://cdn.jsdmirror.com
 # 启用教程文档（可选）
 VITE_TUTORIAL_DOCUMENT=true
 
+# 显示落地页（可选，设为 false 则直接跳转登录页）
+VITE_SHOW_LANDING_PAGE=true
+
 # 开发环境默认登录凭证（生产环境请留空）
 VITE_USER_EMAIL=
 VITE_USER_PASSWORD=
@@ -461,6 +464,7 @@ sudo systemctl enable caddy
 | `VITE_API_BASE_URL` | 后端 API 地址 | ✅ | - | `https://api.your-domain.com` |
 | `VITE_CDN_URL` | CDN 地址 | ❌ | `https://cdn.jsdmirror.com` | `https://cdn.your-domain.com` |
 | `VITE_TUTORIAL_DOCUMENT` | 启用教程文档 | ❌ | `true` | `true` / `false` |
+| `VITE_SHOW_LANDING_PAGE` | 显示落地页 | ❌ | `true` | `true` / `false` |
 | `VITE_USER_EMAIL` | 默认登录邮箱（仅开发） | ❌ | - | - |
 | `VITE_USER_PASSWORD` | 默认登录密码（仅开发） | ❌ | - | - |
 

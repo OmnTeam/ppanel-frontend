@@ -10,11 +10,20 @@ export default function Main() {
   const { user } = useGlobalStore();
   const navigate = useNavigate();
 
+  const showLanding = import.meta.env.VITE_SHOW_LANDING_PAGE !== "false";
+
   useEffect(() => {
     if (user) {
       navigate({ to: "/dashboard" });
+      return;
     }
-  }, [user, navigate]);
+
+    if (!showLanding) {
+      navigate({ to: "/auth" });
+    }
+  }, [user, navigate, showLanding]);
+
+  if (!showLanding) return null;
 
   return (
     <main className="container space-y-16">

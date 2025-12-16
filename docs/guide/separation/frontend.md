@@ -99,6 +99,9 @@ VITE_CDN_URL=https://cdn.jsdmirror.com
 # Enable tutorial documentation (optional)
 VITE_TUTORIAL_DOCUMENT=true
 
+# Show landing page (optional, set to false to redirect to login directly)
+VITE_SHOW_LANDING_PAGE=true
+
 # Development default credentials (leave empty in production)
 VITE_USER_EMAIL=
 VITE_USER_PASSWORD=
@@ -461,6 +464,7 @@ sudo systemctl enable caddy
 | `VITE_API_BASE_URL` | Backend API address | ✅ | - | `https://api.your-domain.com` |
 | `VITE_CDN_URL` | CDN address | ❌ | `https://cdn.jsdmirror.com` | `https://cdn.your-domain.com` |
 | `VITE_TUTORIAL_DOCUMENT` | Enable tutorial docs | ❌ | `true` | `true` / `false` |
+| `VITE_SHOW_LANDING_PAGE` | Show landing page | ❌ | `true` | `true` / `false` |
 | `VITE_USER_EMAIL` | Default login email (dev only) | ❌ | - | - |
 | `VITE_USER_PASSWORD` | Default login password (dev only) | ❌ | - | - |
 
