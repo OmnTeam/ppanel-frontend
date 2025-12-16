@@ -13,6 +13,7 @@
   "deviceLimit": "IP Limit",
   "edit": "Edit",
   "editSubscribe": "Edit Subscription",
+  "sortSuccess": "Sort completed successfully",
   "form": {
     "annualReset": "Annual Reset",
     "basic": "Basic",

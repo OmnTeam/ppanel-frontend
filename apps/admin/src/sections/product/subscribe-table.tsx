@@ -298,12 +298,13 @@ export default function SubscribeTable() {
         );
 
         if (changedItems.length > 0) {
-          subscribeSort({
+          await subscribeSort({
             sort: changedItems.map((item) => ({
               id: item.id,
               sort: item.sort,
             })) as API.SortItem[],
           });
+          toast.success(t("sortSuccess", "Sort completed successfully"));
         }
 
         return updatedItems;

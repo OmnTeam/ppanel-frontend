@@ -13,6 +13,7 @@
   "deviceLimit": "IP限制",
   "edit": "编辑",
   "editSubscribe": "编辑订阅",
+  "sortSuccess": "排序成功",
   "form": {
     "annualReset": "年度重置",
     "basic": "基本",

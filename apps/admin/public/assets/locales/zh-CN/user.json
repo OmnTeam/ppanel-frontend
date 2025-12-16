@@ -28,7 +28,7 @@
   "deleteDescription": "此操作无法撤销。",
   "deleteSubscriptionDescription": "此操作无法撤销。",
   "deleteSuccess": "删除成功",
-  "deviceLimit": "设备限制",
+  "deviceLimit": "IP限制",
   "download": "下载",
   "downloadTraffic": "下载流量",
   "edit": "编辑",
