@@ -21,11 +21,13 @@ import { useGlobalStore } from "@/stores/global";
 interface UnsubscribeProps {
   id: number;
   allowDeduction?: boolean;
+  onSuccess?: () => void;
 }
 
 export default function Unsubscribe({
   id,
   allowDeduction,
+  onSuccess,
 }: Readonly<UnsubscribeProps>) {
   const { t } = useTranslation("subscribe");
   const { common, getUserInfo } = useGlobalStore();
@@ -52,6 +54,7 @@ export default function Unsubscribe({
       );
       toast.success(t("unsubscribe.success", "Unsubscribed successfully"));
       await getUserInfo();
+      onSuccess?.();
       setOpen(false);
     } catch (_error) {
       toast.error(t("unsubscribe.failed", "Unsubscribe failed"));

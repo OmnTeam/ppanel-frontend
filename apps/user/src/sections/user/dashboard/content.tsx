@@ -313,11 +313,13 @@ export default function Content() {
                       id={item.id}
                       replacement={item.subscribe.replacement}
                     />
-                    <Renewal id={item.id} subscribe={item.subscribe} />
-
+                    {item.expire_time !== 0 && (
+                      <Renewal id={item.id} subscribe={item.subscribe} />
+                    )}
                     <Unsubscribe
                       allowDeduction={item.subscribe.allow_deduction}
                       id={item.id}
+                      onSuccess={refetch}
                     />
                   </div>
                 )}
