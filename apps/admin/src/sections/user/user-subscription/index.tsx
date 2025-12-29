@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import {
   DropdownMenu,
@@ -15,6 +16,8 @@ import {
   createUserSubscribe,
   deleteUserSubscribe,
   getUserSubscribe,
+  resetUserSubscribeToken,
+  stopUserSubscribe,
   updateUserSubscribe,
 } from "@workspace/ui/services/admin/user";
 import { useRef, useState } from "react";
@@ -72,6 +75,53 @@ export default function UserSubscription({ userId }: { userId: number }) {
             cancelText={t("cancel", "Cancel")}
             confirmText={t("confirm", "Confirm")}
             description={t(
+              "resetTokenDescription",
+              "This will reset the subscription address and regenerate a new token."
+            )}
+            key="resetToken"
+            onConfirm={async () => {
+              await resetUserSubscribeToken({ user_subscribe_id: row.id });
+              toast.success(
+                t(
+                  "resetTokenSuccess",
+                  "Subscription address reset successfully"
+                )
+              );
+              ref.current?.refresh();
+            }}
+            title={t("confirmResetToken", "Confirm Reset Subscription Address")}
+            trigger={
+              <Button variant="outline">
+                {t("resetToken", "Reset Subscription Address")}
+              </Button>
+            }
+          />,
+          <ConfirmButton
+            cancelText={t("cancel", "Cancel")}
+            confirmText={t("confirm", "Confirm")}
+            description={t(
+              "stopSubscribeDescription",
+              "This will stop the subscription temporarily. User will not be able to use it."
+            )}
+            key="stop"
+            onConfirm={async () => {
+              await stopUserSubscribe({ user_subscribe_id: row.id });
+              toast.success(
+                t("stopSubscribeSuccess", "Subscription stopped successfully")
+              );
+              ref.current?.refresh();
+            }}
+            title={t("confirmStopSubscribe", "Confirm Stop Subscription")}
+            trigger={
+              <Button variant="secondary">
+                {t("stopSubscribe", "Stop Subscription")}
+              </Button>
+            }
+          />,
+          <ConfirmButton
+            cancelText={t("cancel", "Cancel")}
+            confirmText={t("confirm", "Confirm")}
+            description={t(
               "deleteSubscriptionDescription",
               "This action cannot be undone."
             )}
@@ -98,6 +148,46 @@ export default function UserSubscription({ userId }: { userId: number }) {
           accessorKey: "name",
           header: t("subscriptionName", "Subscription Name"),
           cell: ({ row }) => row.original.subscribe.name,
+        },
+        {
+          accessorKey: "status",
+          header: t("status", "Status"),
+          cell: ({ row }) => {
+            const status = row.getValue("status") as number;
+            const statusMap: Record<
+              number,
+              {
+                label: string;
+                variant: "default" | "secondary" | "destructive" | "outline";
+              }
+            > = {
+              0: { label: t("statusPending", "Pending"), variant: "outline" },
+              1: { label: t("statusActive", "Active"), variant: "default" },
+              2: {
+                label: t("statusFinished", "Finished"),
+                variant: "secondary",
+              },
+              3: {
+                label: t("statusExpired", "Expired"),
+                variant: "destructive",
+              },
+              4: {
+                label: t("statusDeducted", "Deducted"),
+                variant: "secondary",
+              },
+              5: {
+                label: t("statusStopped", "Stopped"),
+                variant: "destructive",
+              },
+            };
+            const statusInfo = statusMap[status] || {
+              label: "Unknown",
+              variant: "outline",
+            };
+            return (
+              <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>
+            );
+          },
         },
         {
           accessorKey: "upload",
