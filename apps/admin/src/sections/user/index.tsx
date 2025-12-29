@@ -88,7 +88,7 @@ export default function User() {
               <Button variant="destructive">{t("delete", "Delete")}</Button>
             }
           />,
-          <DropdownMenu key="more">
+          <DropdownMenu key="more" modal={false}>
             <DropdownMenuTrigger asChild>
               <Button variant="outline">{t("more", "More")}</Button>
             </DropdownMenuTrigger>

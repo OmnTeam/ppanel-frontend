@@ -242,7 +242,7 @@ function RowMoreActions({
 
   return (
     <div className="inline-flex">
-      <DropdownMenu>
+      <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <Button variant="outline">{t("more", "More")}</Button>
         </DropdownMenuTrigger>
