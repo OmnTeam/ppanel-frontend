@@ -251,7 +251,7 @@ function RowMoreActions({
             onSelect={async (e) => {
               e.preventDefault();
               await navigator.clipboard.writeText(
-                getUserSubscribeUrls(token)[0] || ""
+                getUserSubscribeUrls(row.short, token)[0] || ""
               );
               toast.success(t("copySuccess", "Copied successfully"));
             }}

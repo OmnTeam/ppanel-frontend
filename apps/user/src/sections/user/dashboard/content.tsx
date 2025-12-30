@@ -394,7 +394,7 @@ export default function Content() {
                     defaultValue="0"
                     type="single"
                   >
-                    {getUserSubscribe(item.token, protocol)?.map(
+                    {getUserSubscribe(item.short, item.token, protocol)?.map(
                       (url, index) => (
                         <AccordionItem key={url} value={String(index)}>
                           <AccordionTrigger className="hover:no-underline">
