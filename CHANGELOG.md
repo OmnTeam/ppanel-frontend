@@ -19,6 +19,12 @@ This document records all notable changes to ShadCN Admin.
 ---
 
 
+## [1.3.5](https://github.com/perfect-panel/frontend/compare/v1.3.4...v1.3.5) (2025-12-30)
+
+### 🐛 Bug Fixes / 问题修复
+
+* Update getUserSubscribe function to accept short and token parameters for improved URL generation ([39ebd09](https://github.com/perfect-panel/frontend/commit/39ebd09f0989b37308c1c803d8e380f967ab0db5))
+
 ## [1.3.4](https://github.com/perfect-panel/frontend/compare/v1.3.3...v1.3.4) (2025-12-29)
 
 ### 🐛 Bug Fixes / 问题修复
