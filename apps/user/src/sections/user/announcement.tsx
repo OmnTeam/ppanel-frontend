@@ -32,7 +32,7 @@ export default function Announcement({ type }: { type: "popup" | "pinned" }) {
           skipErrorHandler: true,
         }
       );
-      return result.data.data?.announcements.find((item) => item[type]) || null;
+      return result.data.data?.announcements?.[0] || null;
     },
     enabled: !!user,
   });
@@ -44,13 +44,16 @@ export default function Announcement({ type }: { type: "popup" | "pinned" }) {
       <Dialog defaultOpen={!!data}>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>{data?.title}</DialogTitle>
+            <DialogTitle>{data.title}</DialogTitle>
           </DialogHeader>
-          <Markdown>{data?.content}</Markdown>
+          <div className="prose prose-sm max-w-none dark:prose-invert">
+            <Markdown>{data.content}</Markdown>
+          </div>
         </DialogContent>
       </Dialog>
     );
   }
+
   if (type === "pinned") {
     return (
       <>
@@ -59,9 +62,17 @@ export default function Announcement({ type }: { type: "popup" | "pinned" }) {
           {t("latestAnnouncement", "Latest Announcement")}
         </h2>
         <Card className="p-6">
-          {data?.content ? <Markdown>{data?.content}</Markdown> : <Empty />}
+          {data.content ? (
+            <div className="prose prose-sm max-w-none dark:prose-invert">
+              <Markdown>{data.content}</Markdown>
+            </div>
+          ) : (
+            <Empty />
+          )}
         </Card>
       </>
     );
   }
+
+  return null;
 }
