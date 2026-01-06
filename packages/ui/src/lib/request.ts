@@ -59,6 +59,10 @@ function handleError(response: {
       "components:error.20008",
       "User information is incorrect, please check and try again."
     ),
+    20011: t(
+      "components:error.20011",
+      "Registration is too frequent, please try again later."
+    ),
     30001: t(
       "components:error.30001",
       "The node already exists, please do not add it again."
