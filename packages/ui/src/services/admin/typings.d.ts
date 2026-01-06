@@ -250,6 +250,85 @@ declare namespace API {
     enable?: boolean;
   };
 
+  type CreateRedemptionCodeRequest = {
+    total_count: number;
+    subscribe_plan: number;
+    unit_time: string;
+    quantity: number;
+    batch_count: number;
+  };
+
+  type UpdateRedemptionCodeRequest = {
+    id: number;
+    total_count?: number;
+    subscribe_plan?: number;
+    unit_time?: string;
+    quantity?: number;
+    status?: number;
+  };
+
+  type ToggleRedemptionCodeStatusRequest = {
+    id: number;
+    status: number;
+  };
+
+  type DeleteRedemptionCodeRequest = {
+    id: number;
+  };
+
+  type BatchDeleteRedemptionCodeRequest = {
+    ids: number[];
+  };
+
+  type GetRedemptionCodeListRequest = {
+    page: number;
+    size: number;
+    subscribe_plan?: number;
+    unit_time?: string;
+    code?: string;
+  };
+
+  type GetRedemptionCodeListResponse = {
+    total: number;
+    list: RedemptionCode[];
+  };
+
+  type GetRedemptionRecordListRequest = {
+    page: number;
+    size: number;
+    user_id?: number;
+    code_id?: number;
+  };
+
+  type GetRedemptionRecordListResponse = {
+    total: number;
+    list: RedemptionRecord[];
+  };
+
+  type RedemptionCode = {
+    id: number;
+    code: string;
+    total_count: number;
+    used_count: number;
+    subscribe_plan: number;
+    unit_time: string;
+    quantity: number;
+    status: number;
+    created_at: number;
+    updated_at: number;
+  };
+
+  type RedemptionRecord = {
+    id: number;
+    redemption_code_id: number;
+    user_id: number;
+    subscribe_id: number;
+    unit_time: string;
+    quantity: number;
+    redeemed_at: number;
+    created_at: number;
+  };
+
   type CreateDocumentRequest = {
     title: string;
     content: string;
@@ -1785,6 +1864,7 @@ declare namespace API {
     enable_ip_register_limit: boolean;
     ip_register_limit: number;
     ip_register_limit_duration: number;
+    device_limit: number;
   };
 
   type RegisterLog = {
