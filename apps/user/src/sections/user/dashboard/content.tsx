@@ -433,7 +433,7 @@ export default function Content() {
                                 ?.filter(
                                   (application) =>
                                     !!(
-                                      application.download_link?.[platform] &&
+                                      application.download_link?.[platform] ||
                                       application.scheme
                                     )
                                 )
