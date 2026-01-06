@@ -28,6 +28,7 @@
     "20005": "Insufficient balance, please recharge and try again.",
     "20006": "The registration function is temporarily unavailable, please try again later.",
     "20008": "User information is incorrect, please check and try again.",
+    "20011": "Registration is too frequent, please try again later.",
     "30001": "The node already exists, please do not add it again.",
     "30002": "Related node not found, please check and try again.",
     "30003": "Group already exists, please try using a different name.",

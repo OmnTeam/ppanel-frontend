@@ -49,6 +49,8 @@
   "register": {
     "day": "Day(s)",
     "description": "Configure user registration related settings",
+    "deviceLimit": "Device Limit",
+    "deviceLimitDescription": "Maximum number of devices allowed per user",
     "enableTrial": "Enable Trial",
     "enableTrialDescription": "When enabled, new users will receive a trial subscription upon registration",
     "hour": "Hour(s)",

@@ -62,6 +62,11 @@ export function useNavs() {
             icon: "flat-color-icons:bookmark",
           },
           {
+            title: t("Redemption Management", "Redemption Management"),
+            url: "/dashboard/redemption",
+            icon: "flat-color-icons:key",
+          },
+          {
             title: t("Marketing Management", "Marketing Management"),
             url: "/dashboard/marketing",
             icon: "flat-color-icons:bullish",
