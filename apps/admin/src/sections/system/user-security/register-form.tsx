@@ -43,6 +43,7 @@ const registerSchema = z.object({
   enable_ip_register_limit: z.boolean().optional(),
   ip_register_limit: z.number().optional(),
   ip_register_limit_duration: z.number().optional(),
+  device_limit: z.number().optional(),
 });
 
 type RegisterFormData = z.infer<typeof registerSchema>;
@@ -74,6 +75,7 @@ export default function RegisterConfig() {
       enable_ip_register_limit: false,
       ip_register_limit: 1,
       ip_register_limit_duration: 1,
+      device_limit: 5,
     },
   });
 
@@ -270,6 +272,37 @@ export default function RegisterConfig() {
                   />
                 </div>
               )}
+
+              <FormField
+                control={form.control}
+                name="device_limit"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {t("register.deviceLimit", "Device Limit")}
+                    </FormLabel>
+                    <FormControl>
+                      <EnhancedInput
+                        min={1}
+                        onValueBlur={(value) => field.onChange(Number(value))}
+                        placeholder={t(
+                          "register.inputPlaceholder",
+                          "Please enter"
+                        )}
+                        type="number"
+                        value={field.value}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t(
+                        "register.deviceLimitDescription",
+                        "Maximum number of devices allowed per user"
+                      )}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}

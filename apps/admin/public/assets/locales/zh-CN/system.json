@@ -49,6 +49,8 @@
   "register": {
     "day": "天",
     "description": "配置用户注册相关设置",
+    "deviceLimit": "设备数量限制",
+    "deviceLimitDescription": "每个用户允许的最大设备数量",
     "enableTrial": "启用试用",
     "enableTrialDescription": "启用后，新用户注册时将获得试用订阅",
     "hour": "小时",
