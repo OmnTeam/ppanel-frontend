@@ -34,10 +34,12 @@ export default function Page() {
   const { getUserInfo } = useGlobalStore();
   const { order_no } = routeApi.useSearch() as { order_no?: string };
   const [enabled, setEnabled] = useState<boolean>(!!order_no);
+  const [paymentOpened, setPaymentOpened] = useState<boolean>(false);
 
   useEffect(() => {
     if (order_no) {
       setEnabled(true);
+      setPaymentOpened(false);
     }
   }, [order_no]);
 
@@ -63,8 +65,9 @@ export default function Page() {
         orderNo: order_no!,
         returnUrl: window.location.href,
       });
-      if (data.data?.type === "url" && data.data.checkout_url) {
+      if (data.data?.type === "url" && data.data.checkout_url && !paymentOpened) {
         window.open(data.data.checkout_url, "_blank");
+        setPaymentOpened(true);
       }
       return data?.data;
     },
