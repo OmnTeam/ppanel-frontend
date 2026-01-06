@@ -45,6 +45,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     server: {
+      host: "0.0.0.0",
       proxy: {
         "/api": {
           target: env.VITE_API_BASE_URL || "https://api.ppanel.dev",
