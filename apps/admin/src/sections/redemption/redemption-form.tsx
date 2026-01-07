@@ -26,14 +26,14 @@ import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import { useSubscribe } from "@/stores/subscribe";
 
-const formSchema = z.object({
+const getFormSchema = (t: (key: string, defaultValue: string) => string) => z.object({
   id: z.number().optional(),
   code: z.string().optional(),
   batch_count: z.number().optional(),
-  total_count: z.number().min(1, "Total count is required"),
-  subscribe_plan: z.number().min(1, "Subscribe plan is required"),
-  unit_time: z.string().min(1, "Unit time is required"),
-  quantity: z.number().min(1, "Quantity is required"),
+  total_count: z.number().min(1, t("form.totalCountRequired", "Total count is required")),
+  subscribe_plan: z.number().min(1, t("form.subscribePlanRequired", "Subscribe plan is required")),
+  unit_time: z.string().min(1, t("form.unitTimeRequired", "Unit time is required")),
+  quantity: z.number().min(1, t("form.quantityRequired", "Quantity is required")),
 });
 
 interface RedemptionFormProps<T> {
@@ -52,6 +52,7 @@ export default function RedemptionForm<T extends Record<string, any>>({
   title,
 }: RedemptionFormProps<T>) {
   const { t } = useTranslation("redemption");
+  const formSchema = getFormSchema(t);
 
   const [open, setOpen] = useState(false);
   const form = useForm({

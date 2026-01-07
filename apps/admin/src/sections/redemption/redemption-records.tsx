@@ -1,4 +1,3 @@
-import { Badge } from "@workspace/ui/components/badge";
 import {
   Dialog,
   DialogContent,
@@ -81,7 +80,7 @@ export default function RedemptionRecords({
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>ID</TableHead>
+                    <TableHead>{t("id", "ID")}</TableHead>
                     <TableHead>{t("userId", "User ID")}</TableHead>
                     <TableHead>{t("subscribeId", "Subscribe ID")}</TableHead>
                     <TableHead>{t("unitTime", "Unit Time")}</TableHead>
@@ -90,20 +89,29 @@ export default function RedemptionRecords({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {records.map((record) => (
-                    <TableRow key={record.id}>
-                      <TableCell>{record.id}</TableCell>
-                      <TableCell>{record.user_id}</TableCell>
-                      <TableCell>{record.subscribe_id}</TableCell>
-                      <TableCell>{record.unit_time}</TableCell>
-                      <TableCell>{record.quantity}</TableCell>
-                      <TableCell>
-                        {record.redeemed_at
-                          ? formatDate(record.redeemed_at)
-                          : "--"}
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  {records.map((record) => {
+                    const unitTimeMap: Record<string, string> = {
+                      day: t("form.day", "Day"),
+                      month: t("form.month", "Month"),
+                      quarter: t("form.quarter", "Quarter"),
+                      half_year: t("form.halfYear", "Half Year"),
+                      year: t("form.year", "Year"),
+                    };
+                    return (
+                      <TableRow key={record.id}>
+                        <TableCell>{record.id}</TableCell>
+                        <TableCell>{record.user_id}</TableCell>
+                        <TableCell>{record.subscribe_id}</TableCell>
+                        <TableCell>{unitTimeMap[record.unit_time] || record.unit_time}</TableCell>
+                        <TableCell>{record.quantity}</TableCell>
+                        <TableCell>
+                          {record.redeemed_at
+                            ? formatDate(record.redeemed_at)
+                            : "--"}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
               {total > pagination.size && (
