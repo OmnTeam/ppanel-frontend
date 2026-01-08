@@ -1,6 +1,5 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
 import {
   Card,
   CardContent,
@@ -27,7 +26,7 @@ import { useTranslation } from "react-i18next";
 
 export default function Announcement() {
   const { t } = useTranslation("dashboard");
-  const [activeTab, setActiveTab] = useState("all");
+  const [, setActiveTab] = useState("all");
   const pinnedRef = useRef<ProListActions>(null);
   const normalRef = useRef<ProListActions>(null);
 
@@ -36,8 +35,10 @@ export default function Announcement() {
     filter: { pinned?: boolean; popup?: boolean }
   ) => {
     const response = await queryAnnouncement({
-      ...pagination,
-      ...filter,
+      page: pagination.page,
+      size: pagination.size,
+      pinned: filter.pinned ?? false,
+      popup: filter.popup ?? false,
     });
     return {
       list: response.data.data?.announcements || [],
