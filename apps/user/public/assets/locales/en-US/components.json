@@ -41,6 +41,7 @@
     "50001": "Corresponding coupon information not found, please check and try again.",
     "50002": "The coupon has been used, cannot be used again.",
     "50003": "This coupon code is not supported by the current purchase plan.",
+    "50004": "Coupon has insufficient remaining uses.",
     "60001": "Subscription has expired, please renew before using.",
     "60002": "Unable to use the subscription at the moment, please try again later.",
     "60003": "An existing subscription is detected. Please cancel it before proceeding.",
