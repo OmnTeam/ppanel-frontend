@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* eslint-disable */
 import request from "@workspace/ui/lib/request";
 
@@ -50,28 +51,6 @@ export async function filterServerList(
       params: {
         ...params,
       },
-      ...(options || {}),
-    }
-  );
-}
-
-/** Check if there is any server or node to migrate GET /v1/admin/server/migrate/has */
-export async function hasMigrateSeverNode(options?: { [key: string]: any }) {
-  return request<API.Response & { data?: API.HasMigrateSeverNodeResponse }>(
-    `${import.meta.env.VITE_API_PREFIX || ""}/v1/admin/server/migrate/has`,
-    {
-      method: "GET",
-      ...(options || {}),
-    }
-  );
-}
-
-/** Migrate server and node data to new database POST /v1/admin/server/migrate/run */
-export async function migrateServerNode(options?: { [key: string]: any }) {
-  return request<API.Response & { data?: API.MigrateServerNodeResponse }>(
-    `${import.meta.env.VITE_API_PREFIX || ""}/v1/admin/server/migrate/run`,
-    {
-      method: "POST",
       ...(options || {}),
     }
   );

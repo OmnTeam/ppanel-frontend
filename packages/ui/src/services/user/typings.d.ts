@@ -985,6 +985,7 @@ declare namespace API {
     allow_deduction: boolean;
     reset_cycle: number;
     renewal_reset: boolean;
+    show_original_price: boolean;
     created_at: number;
     updated_at: number;
   };
@@ -1146,7 +1147,6 @@ declare namespace API {
     created_at: number;
     updated_at: number;
     deleted_at?: number;
-    is_del?: boolean;
   };
 
   type UserAffiliate = {

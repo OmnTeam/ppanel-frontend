@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* eslint-disable */
 import request from "@workspace/ui/lib/request";
 
@@ -420,6 +421,64 @@ export async function getUserSubscribeResetTrafficLogs(
       params: {
         ...params,
       },
+      ...(options || {}),
+    }
+  );
+}
+
+/** Reset user subscribe token POST /v1/admin/user/subscribe/reset/token */
+export async function resetUserSubscribeToken(
+  body: API.ResetUserSubscribeTokenRequest,
+  options?: { [key: string]: any }
+) {
+  return request<API.Response & { data?: any }>(
+    `${
+      import.meta.env.VITE_API_PREFIX || ""
+    }/v1/admin/user/subscribe/reset/token`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: body,
+      ...(options || {}),
+    }
+  );
+}
+
+/** Reset user subscribe traffic POST /v1/admin/user/subscribe/reset/traffic */
+export async function resetUserSubscribeTraffic(
+  body: API.ResetUserSubscribeTrafficRequest,
+  options?: { [key: string]: any }
+) {
+  return request<API.Response & { data?: any }>(
+    `${
+      import.meta.env.VITE_API_PREFIX || ""
+    }/v1/admin/user/subscribe/reset/traffic`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: body,
+      ...(options || {}),
+    }
+  );
+}
+
+/** Stop user subscribe POST /v1/admin/user/subscribe/toggle */
+export async function toggleUserSubscribeStatus(
+  body: API.ToggleUserSubscribeStatusRequest,
+  options?: { [key: string]: any }
+) {
+  return request<API.Response & { data?: any }>(
+    `${import.meta.env.VITE_API_PREFIX || ""}/v1/admin/user/subscribe/toggle`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: body,
       ...(options || {}),
     }
   );
