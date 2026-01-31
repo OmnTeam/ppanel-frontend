@@ -61,6 +61,7 @@ export default function User() {
     user_id: sp.user_id || undefined,
     subscribe_id: sp.subscribe_id || undefined,
     user_subscribe_id: sp.user_subscribe_id || undefined,
+    short_code: sp.short_code || undefined,
   };
 
   return (
@@ -287,6 +288,10 @@ export default function User() {
         {
           key: "user_subscribe_id",
           placeholder: t("subscriptionId", "Subscription ID"),
+        },
+        {
+          key: "short_code",
+          placeholder: t("shortCode", "Short Code"),
         },
       ]}
       request={async (pagination, filter) => {
