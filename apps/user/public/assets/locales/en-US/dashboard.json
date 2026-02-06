@@ -31,5 +31,13 @@
   "subscriptionUrl": "Subscription URL",
   "totalTraffic": "Total Traffic",
   "unknown": "Unknown",
-  "used": "Used"
+  "used": "Used",
+  "redeemCode": "Redeem Code",
+  "redeemCodeTitle": "Redeem Code",
+  "redeemCodeDescription": "Enter redemption code to get subscription plan",
+  "enterRedemptionCode": "Please enter redemption code",
+  "redeemButton": "Redeem Now",
+  "redeeming": "Redeeming...",
+  "redeemSuccess": "Redemption successful! Subscription has been activated.",
+  "redeemFailed": "Redemption failed"
 }

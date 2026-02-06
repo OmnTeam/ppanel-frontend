@@ -31,5 +31,13 @@
   "subscriptionUrl": "订阅链接",
   "totalTraffic": "总流量",
   "unknown": "未知",
-  "used": "已使用"
+  "used": "已使用",
+  "redeemCode": "兑换 CDK",
+  "redeemCodeTitle": "CDK 兑换",
+  "redeemCodeDescription": "输入兑换码以获取订阅套餐",
+  "enterRedemptionCode": "请输入兑换码",
+  "redeemButton": "立即兑换",
+  "redeeming": "兑换中...",
+  "redeemSuccess": "兑换成功！",
+  "redeemFailed": "兑换失败"
 }

@@ -47,6 +47,7 @@ import Subscribe from "../../subscribe";
 import Renewal from "../../subscribe/renewal";
 import ResetTraffic from "../../subscribe/reset-traffic";
 import Unsubscribe from "../../subscribe/unsubscribe";
+import RedeemCode from "./redeem-code";
 
 const platforms: (keyof API.DownloadLink)[] = [
   "windows",
@@ -164,6 +165,7 @@ export default function Content() {
               </Button>
             </div>
           </div>
+          <RedeemCode onSuccess={refetch} />
           <div className="flex flex-wrap justify-between gap-4">
             {availablePlatforms.length > 0 && (
               <Tabs
