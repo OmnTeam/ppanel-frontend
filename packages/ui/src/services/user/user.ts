@@ -268,6 +268,24 @@ export async function updateUserRules(
   );
 }
 
+/** Redeem Code POST /v1/public/redemption/ */
+export async function redeemCode(
+  body: { code: string },
+  options?: { [key: string]: any }
+) {
+  return request<API.Response & { data?: { message: string } }>(
+    `${import.meta.env.VITE_API_PREFIX || ""}/v1/public/redemption/`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: body,
+      ...(options || {}),
+    }
+  );
+}
+
 /** Query User Subscribe GET /v1/public/user/subscribe */
 export async function queryUserSubscribe(options?: { [key: string]: any }) {
   return request<API.Response & { data?: API.QueryUserSubscribeListResponse }>(
