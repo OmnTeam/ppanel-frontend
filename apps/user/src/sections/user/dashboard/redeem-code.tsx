@@ -25,7 +25,8 @@ export default function RedeemCode({ onSuccess }: RedeemCodeProps) {
   const redeemMutation = useMutation({
     mutationFn: (code: string) => redeemCode({ code }),
     onSuccess: (response) => {
-      toast.success(response.data.message || t("redeemSuccess", "兑换成功"));
+      const message = (response.data as { message?: string })?.message || t("redeemSuccess", "兑换成功");
+      toast.success(message);
       setCode("");
       onSuccess?.();
     },
@@ -71,10 +72,11 @@ export default function RedeemCode({ onSuccess }: RedeemCodeProps) {
               />
               <Button
                 disabled={redeemMutation.isPending || !code.trim()}
-                loading={redeemMutation.isPending}
                 type="submit"
               >
-                {t("redeem", "兑换")}
+                {redeemMutation.isPending
+                  ? t("redeeming", "兑换中...")
+                  : t("redeem", "兑换")}
               </Button>
             </div>
           </div>

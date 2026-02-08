@@ -273,7 +273,7 @@ export async function redeemCode(
   body: { code: string },
   options?: { [key: string]: any }
 ) {
-  return request<API.Response & { data?: { message: string } }>(
+  return request<API.Response & { data: { message: string } }>(
     `${import.meta.env.VITE_API_PREFIX || ""}/v1/public/redemption/`,
     {
       method: "POST",
