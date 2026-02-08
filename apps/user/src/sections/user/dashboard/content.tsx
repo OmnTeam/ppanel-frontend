@@ -140,6 +140,7 @@ export default function Content() {
 
   return (
     <>
+      <RedeemCode onSuccess={refetch} />
       {userSubscribe.length ? (
         <>
           <div className="flex items-center justify-between">
@@ -165,7 +166,6 @@ export default function Content() {
               </Button>
             </div>
           </div>
-          <RedeemCode onSuccess={refetch} />
           <div className="flex flex-wrap justify-between gap-4">
             {availablePlatforms.length > 0 && (
               <Tabs
