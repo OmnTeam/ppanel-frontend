@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* eslint-disable */
 import request from "@workspace/ui/lib/request";
 

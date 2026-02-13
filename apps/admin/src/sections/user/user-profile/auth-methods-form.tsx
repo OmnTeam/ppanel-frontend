@@ -21,7 +21,7 @@ export function AuthMethodsForm({
   refetch,
 }: {
   user: API.User;
-  refetch: () => void;
+  refetch: () => Promise<unknown>;
 }) {
   const { t } = useTranslation("user");
 

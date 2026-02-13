@@ -47,7 +47,7 @@ export function BasicInfoForm({
   refetch,
 }: {
   user: API.User;
-  refetch: () => void;
+  refetch: () => Promise<unknown>;
 }) {
   const { t } = useTranslation("user");
 

@@ -77,6 +77,7 @@ const defaultValues = {
   purchase_with_discount: false,
   reset_cycle: 0,
   renewal_reset: false,
+  show_original_price: false,
   deduction_mode: "auto",
 };
 
@@ -837,6 +838,41 @@ export default function SubscribeForm<T extends Record<string, any>>({
                         </FormItem>
                       )}
                     />
+
+                    <FormField
+                      control={form.control}
+                      name="show_original_price"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="flex items-center justify-between">
+                            <div className="space-y-0.5">
+                              <FormLabel>
+                                {t(
+                                  "form.showOriginalPrice",
+                                  "Show Original Price"
+                                )}
+                              </FormLabel>
+                              <FormDescription>
+                                {t(
+                                  "form.showOriginalPriceDescription",
+                                  "Display original price in the storefront"
+                                )}
+                              </FormDescription>
+                            </div>
+                            <FormControl>
+                              <Switch
+                                checked={!!field.value}
+                                onCheckedChange={(value) =>
+                                  form.setValue(field.name, value)
+                                }
+                              />
+                            </FormControl>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
                     <FormField
                       control={form.control}
                       name="allow_deduction"

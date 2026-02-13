@@ -1,3 +1,4 @@
+// @ts-nocheck
 /* eslint-disable */
 import request from "@workspace/ui/lib/request";
 
@@ -38,6 +39,7 @@ export async function appleLoginCallback(
     {
       method: "POST",
       data: formData,
+      requestType: "form",
       ...(options || {}),
     }
   );

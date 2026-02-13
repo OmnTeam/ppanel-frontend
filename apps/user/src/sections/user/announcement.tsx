@@ -11,12 +11,14 @@ import Empty from "@workspace/ui/composed/empty";
 import { Icon } from "@workspace/ui/composed/icon";
 import { Markdown } from "@workspace/ui/composed/markdown";
 import { queryAnnouncement } from "@workspace/ui/services/user/announcement";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useGlobalStore } from "@/stores/global";
 
 export default function Announcement({ type }: { type: "popup" | "pinned" }) {
   const { t } = useTranslation("dashboard");
   const { user } = useGlobalStore();
+  const [open, setOpen] = useState(false);
 
   const { data } = useQuery({
     queryKey: ["announcement", type],
@@ -37,12 +39,16 @@ export default function Announcement({ type }: { type: "popup" | "pinned" }) {
     enabled: !!user,
   });
 
+  useEffect(() => {
+    if (type === "popup" && !!data) setOpen(true);
+  }, [data, type]);
+
   if (!data) return null;
 
   if (type === "popup") {
     return (
-      <Dialog defaultOpen={!!data}>
-        <DialogContent className="sm:max-w-[425px]">
+      <Dialog onOpenChange={setOpen} open={open}>
+        <DialogContent className="max-h-[85vh] overflow-auto sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle>{data.title}</DialogTitle>
           </DialogHeader>

@@ -69,7 +69,11 @@ export default function User() {
       action={ref}
       actions={{
         render: (row) => [
-          <ProfileSheet key="profile" userId={row.id} />,
+          <ProfileSheet
+            key="profile"
+            onUpdated={() => ref.current?.refresh()}
+            userId={row.id}
+          />,
           <SubscriptionSheet key="subscription" userId={row.id} />,
           <ConfirmButton
             cancelText={t("cancel", "Cancel")}
@@ -308,7 +312,13 @@ export default function User() {
   );
 }
 
-function ProfileSheet({ userId }: { userId: number }) {
+function ProfileSheet({
+  userId,
+  onUpdated,
+}: {
+  userId: number;
+  onUpdated?: () => void;
+}) {
   const { t } = useTranslation("user");
   const [open, setOpen] = useState(false);
   const { data: user, refetch } = useQuery({
@@ -319,6 +329,12 @@ function ProfileSheet({ userId }: { userId: number }) {
       return data.data as API.User;
     },
   });
+
+  const refetchAll = async () => {
+    await refetch();
+    onUpdated?.();
+    return Promise.resolve();
+  };
   return (
     <Sheet onOpenChange={setOpen} open={open}>
       <SheetTrigger asChild>
@@ -348,13 +364,13 @@ function ProfileSheet({ userId }: { userId: number }) {
                 </TabsTrigger>
               </TabsList>
               <TabsContent className="mt-0" value="basic">
-                <BasicInfoForm refetch={refetch as any} user={user} />
+                <BasicInfoForm refetch={refetchAll} user={user} />
               </TabsContent>
               <TabsContent className="mt-0" value="notify">
-                <NotifySettingsForm refetch={refetch as any} user={user} />
+                <NotifySettingsForm refetch={refetchAll} user={user} />
               </TabsContent>
               <TabsContent className="mt-0" value="auth">
-                <AuthMethodsForm refetch={refetch as any} user={user} />
+                <AuthMethodsForm refetch={refetchAll} user={user} />
               </TabsContent>
             </Tabs>
           </ScrollArea>

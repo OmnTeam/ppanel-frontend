@@ -19,6 +19,56 @@ This document records all notable changes to ShadCN Admin.
 ---
 
 
+## [1.3.10](https://github.com/perfect-panel/frontend/compare/v1.3.9...v1.3.10) (2026-02-10)
+
+### 🐛 Bug Fixes / 问题修复
+
+* **admin:** persist reset-password Turnstile verify setting (Fixes [#10](https://github.com/perfect-panel/frontend/issues/10)) ([8831c9b](https://github.com/perfect-panel/frontend/commit/8831c9be9c847f9873634112ce614576325d6d3a))
+
+## [1.3.9](https://github.com/perfect-panel/frontend/compare/v1.3.8...v1.3.9) (2026-02-08)
+
+### 🐛 Bug Fixes / 问题修复
+
+* **auth:** support OAuth callbacks with hash router (Fixes [#9](https://github.com/perfect-panel/frontend/issues/9)) ([fee44fa](https://github.com/perfect-panel/frontend/commit/fee44fa1b22bfc6077a758d2cf82cc32840dadd5))
+* **user:** mobile announcement close + payment method selection (Fixes [#8](https://github.com/perfect-panel/frontend/issues/8)) ([b32ba55](https://github.com/perfect-panel/frontend/commit/b32ba55ab8b0af3557a282ff02563d04335106f0))
+* **user:** satisfy biome check for oauth/payment UI ([6e3ef8a](https://github.com/perfect-panel/frontend/commit/6e3ef8ab7ed5903d50ec43ba60544fd88d779c3e))
+
+## [1.3.8](https://github.com/perfect-panel/frontend/compare/v1.3.7...v1.3.8) (2026-02-06)
+
+### 🐛 Bug Fixes / 问题修复
+
+* **payment:** satisfy img size lint rule ([30a6967](https://github.com/perfect-panel/frontend/commit/30a6967187d21d38d602a92c03e631ebad931767))
+* **payment:** use native WeChat Pay QR data ([160e6da](https://github.com/perfect-panel/frontend/commit/160e6da3f66691580752c65063e93c038b7a5547))
+
+## [1.3.7](https://github.com/perfect-panel/frontend/compare/v1.3.6...v1.3.7) (2026-01-27)
+
+### 🐛 Bug Fixes / 问题修复
+
+* **admin:** refresh user list after balance update ([7e1d574](https://github.com/perfect-panel/frontend/commit/7e1d5746d46dd9bf33b1971f71f809afcdba4bbe))
+* **build:** ensure version.lock directory exists + fix merge typo ([052a0a4](https://github.com/perfect-panel/frontend/commit/052a0a420921cffc09c81843d37081d05b4c4717))
+* **ci:** avoid void|Promise union for refetch ([6dd743b](https://github.com/perfect-panel/frontend/commit/6dd743bbf4f383249e97549ed0ed0417b6f5609d))
+* **i18n:** remove duplicate locale keys ([ed3f6cb](https://github.com/perfect-panel/frontend/commit/ed3f6cb737e0e5b3b57e4149fce3be6e46b0c5eb))
+
+### 🔧 Chores / 其他变更
+
+* **openapi:** regenerate services & patch axios requestType typing ([0ec4f84](https://github.com/perfect-panel/frontend/commit/0ec4f84fa9d4d94048b8219896c3d8fb1d8d2175))
+* **release:** Release 1.2.4-dev.2 / 发布版本 1.2.4-dev.2 [skip ci] ([98676fa](https://github.com/perfect-panel/frontend/commit/98676fa27c74eefc9c0fe2d92a549d9e5d7d7fd6))
+* **release:** Release 1.3.7-dev.1 / 发布版本 1.3.7-dev.1 [skip ci] ([852b2b8](https://github.com/perfect-panel/frontend/commit/852b2b84ee926a2dc35a7c8380bf41a74ed8bbbf))
+
+## [1.3.7-dev.1](https://github.com/perfect-panel/frontend/compare/v1.3.6...v1.3.7-dev.1) (2026-01-27)
+
+### 🐛 Bug Fixes / 问题修复
+
+* **admin:** refresh user list after balance update ([7e1d574](https://github.com/perfect-panel/frontend/commit/7e1d5746d46dd9bf33b1971f71f809afcdba4bbe))
+* **build:** ensure version.lock directory exists + fix merge typo ([052a0a4](https://github.com/perfect-panel/frontend/commit/052a0a420921cffc09c81843d37081d05b4c4717))
+* **ci:** avoid void|Promise union for refetch ([6dd743b](https://github.com/perfect-panel/frontend/commit/6dd743bbf4f383249e97549ed0ed0417b6f5609d))
+* **i18n:** remove duplicate locale keys ([ed3f6cb](https://github.com/perfect-panel/frontend/commit/ed3f6cb737e0e5b3b57e4149fce3be6e46b0c5eb))
+
+### 🔧 Chores / 其他变更
+
+* **openapi:** regenerate services & patch axios requestType typing ([0ec4f84](https://github.com/perfect-panel/frontend/commit/0ec4f84fa9d4d94048b8219896c3d8fb1d8d2175))
+* **release:** Release 1.2.4-dev.2 / 发布版本 1.2.4-dev.2 [skip ci] ([98676fa](https://github.com/perfect-panel/frontend/commit/98676fa27c74eefc9c0fe2d92a549d9e5d7d7fd6))
+
 ## [1.3.6](https://github.com/perfect-panel/frontend/compare/v1.3.5...v1.3.6) (2025-12-30)
 
 ### 🐛 Bug Fixes / 问题修复
@@ -92,13 +142,20 @@ This document records all notable changes to ShadCN Admin.
 * Remove the system log dialog component from the system version card ([71cb827](https://github.com/perfect-panel/frontend/commit/71cb827918ee3250f0c9d06d46d876ce6799b8ac))
 * Update invite link format in auth forms and sidebar to include hash fragment for routing. ([7a8c010](https://github.com/perfect-panel/frontend/commit/7a8c0102958a859c9e7476810d5c9b822f882692))
 
+## [1.2.4-dev.2](https://github.com/perfect-panel/frontend/compare/v1.2.4-dev.1...v1.2.4-dev.2) (2026-01-27)
+
+### 🐛 Bug Fixes / 问题修复
+
+* **admin:** refresh user list after balance update ([7e1d574](https://github.com/perfect-panel/frontend/commit/7e1d5746d46dd9bf33b1971f71f809afcdba4bbe))
+* **ci:** avoid void|Promise union for refetch ([6dd743b](https://github.com/perfect-panel/frontend/commit/6dd743bbf4f383249e97549ed0ed0417b6f5609d))
+
 ### 📚 Documentation / 文档更新
 
 * Add one-click installation script for PPanel with Docker support ([912c5c4](https://github.com/perfect-panel/frontend/commit/912c5c4cb63eeb0ecbc33bef6b31bd50d83d6491))
 
 ### 🔧 Chores / 其他变更
 
-* **release:** Release 1.2.4-dev.1 / 发布版本 1.2.4-dev.1 [skip ci] ([62d45bb](https://github.com/perfect-panel/frontend/commit/62d45bbac17fab9656c1cce029a379ce8bb757d6))
+* **openapi:** regenerate services & patch axios requestType typing ([0ec4f84](https://github.com/perfect-panel/frontend/commit/0ec4f84fa9d4d94048b8219896c3d8fb1d8d2175))
 
 ## [1.2.4-dev.1](https://github.com/perfect-panel/frontend/compare/v1.2.3...v1.2.4-dev.1) (2025-12-22)
 

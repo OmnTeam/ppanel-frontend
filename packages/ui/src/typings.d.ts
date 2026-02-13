@@ -8,3 +8,11 @@ declare global {
     i18n: typeof i18n;
   }
 }
+
+// openapi2ts 生成的 request 参数里可能会包含 requestType（umi-request 风格）。
+// 我们的 request 基于 axios：这里做一个类型补丁，避免 TS 报错。
+declare module "axios" {
+  export interface AxiosRequestConfig<D = any> {
+    requestType?: string;
+  }
+}
