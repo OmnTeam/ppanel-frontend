@@ -34,12 +34,19 @@ export default function Announcement() {
     pagination: { page: number; size: number },
     filter: { pinned?: boolean; popup?: boolean }
   ) => {
-    const response = await queryAnnouncement({
+    const params: any = {
       page: pagination.page,
       size: pagination.size,
-      pinned: filter.pinned ?? false,
-      popup: filter.popup ?? false,
-    });
+    };
+
+    if (filter.pinned !== undefined) {
+      params.pinned = filter.pinned;
+    }
+    if (filter.popup !== undefined) {
+      params.popup = filter.popup;
+    }
+
+    const response = await queryAnnouncement(params);
     return {
       list: response.data.data?.announcements || [],
       total: response.data.data?.total || 0,
