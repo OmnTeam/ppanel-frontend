@@ -291,6 +291,32 @@ export async function getUserSubscribe(
       params: {
         ...params,
       },
+      transformResponse: [
+        (data) => {
+          try {
+            if (typeof data === "string") {
+              // Convert large integers (int64) to strings BEFORE JSON.parse to prevent precision loss
+              // JavaScript MAX_SAFE_INTEGER is 2^53 - 1 = 9007199254740991
+              // This regex finds all numbers >= 10^16 (larger than MAX_SAFE_INTEGER)
+              const processedData = data.replace(
+                /"([^"]+)":\s*(\d{16,})/g,
+                (match, key, value) => {
+                  // Check if number exceeds MAX_SAFE_INTEGER
+                  const num = parseInt(value, 10);
+                  if (!Number.isSafeInteger(num)) {
+                    return `"${key}": "${value}"`;
+                  }
+                  return match;
+                }
+              );
+              return JSON.parse(processedData);
+            }
+            return data;
+          } catch {
+            return data;
+          }
+        },
+      ],
       ...(options || {}),
     }
   );
