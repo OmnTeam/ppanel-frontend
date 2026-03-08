@@ -19,6 +19,7 @@
     "description": "Configure currency units, symbols, and exchange rate API settings",
     "title": "Currency Configuration"
   },
+  "groupSettings": "Group Settings",
   "invite": {
     "description": "Configure user invitation and referral reward settings",
     "forcedInvite": "Require Invitation to Register",

@@ -1,5 +1,6 @@
 {
   "address": "Address",
+  "all": "All",
   "cancel": "Cancel",
   "confirm": "Confirm",
   "confirmDeleteDesc": "This action cannot be undone.",
@@ -17,15 +18,21 @@
   "enabled_off": "Disabled",
   "enabled_on": "Enabled",
   "name": "Name",
+  "nodeGroup": "Node Group",
+  "nodeGroups": "Node Groups",
+  "nodeGroup_description": "Assign this node to multiple groups for user access control.",
   "pageTitle": "Nodes",
   "port": "Port",
   "protocol": "Protocol",
+  "public": "Public",
+  "selectNodeGroup": "Select node group…",
   "select_protocol": "Select protocol…",
   "select_server": "Select server…",
   "server": "Server",
   "sorted_success": "Sorted successfully",
   "tags": "Tags",
   "tags_description": "Permission grouping tag (incl. plan binding and delivery policies).",
+  "tags_groupMode_description": "Optional tags for display and filtering (node group name will be used as tag if empty).",
   "tags_placeholder": "Use Enter or comma (,) to add multiple tags",
   "updated": "Updated"
 }

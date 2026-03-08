@@ -16,6 +16,8 @@ import {
   subscribeSort,
   updateSubscribe,
 } from "@workspace/ui/services/admin/subscribe";
+import { getNodeGroupList } from "@workspace/ui/services/admin/group";
+import { useQuery } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -28,8 +30,29 @@ export default function SubscribeTable() {
   const [loading, setLoading] = useState(false);
   const ref = useRef<ProTableActions>(null);
   const { fetchSubscribes } = useSubscribe();
+
+  // Fetch node groups for filtering
+  const { data: nodeGroupsData } = useQuery({
+    queryKey: ["nodeGroups"],
+    queryFn: async () => {
+      const { data } = await getNodeGroupList({ page: 1, size: 1000 });
+      return data.data?.list || [];
+    },
+  });
+
+  // Fetch group config to check if group feature is enabled
+  const { data: groupConfigData } = useQuery({
+    queryKey: ["groupConfig"],
+    queryFn: async () => {
+      const { data } = await (await import("@workspace/ui/services/admin/group")).getGroupConfig();
+      return data.data;
+    },
+  });
+
+  const isGroupEnabled = groupConfigData?.enabled || false;
+
   return (
-    <ProTable<API.SubscribeItem, { group_id: number; query: string }>
+    <ProTable<API.SubscribeItem, { group_id: number; query: string; node_group_id?: number }>
       action={ref}
       actions={{
         render: (row) => [
@@ -40,10 +63,16 @@ export default function SubscribeTable() {
             onSubmit={async (values) => {
               setLoading(true);
               try {
-                await updateSubscribe({
+                const updateBody: any = {
                   ...row,
                   ...values,
-                } as API.UpdateSubscribeRequest);
+                };
+                // Add node_group_ids if it exists in values
+                const vals = values as any;
+                if (vals.node_group_ids) {
+                  updateBody.node_group_ids = vals.node_group_ids.map((id: string | number) => Number(id));
+                }
+                await updateSubscribe(updateBody as API.UpdateSubscribeRequest);
                 toast.success(t("updateSuccess"));
                 ref.current?.refresh();
                 fetchSubscribes();
@@ -243,6 +272,26 @@ export default function SubscribeTable() {
             <Badge variant="outline">{row.getValue("sold")}</Badge>
           ),
         },
+        ...(isGroupEnabled
+          ? [
+              {
+                id: "node_group",
+                header: t("defaultNodeGroup", "Default Node Group"),
+                cell: ({ row }: { row: any }) => {
+                  const nodeGroupId = row.original.node_group_id;
+                  const nodeGroup = nodeGroupsData?.find((g) => g.id === nodeGroupId);
+
+                  return (
+                    <div>
+                      {nodeGroup ? (
+                        <Badge variant="outline">{nodeGroup.name}</Badge>
+                      ) : null}
+                    </div>
+                  );
+                },
+              },
+            ]
+          : []),
       ]}
       header={{
         toolbar: (
@@ -251,11 +300,17 @@ export default function SubscribeTable() {
             onSubmit={async (values) => {
               setLoading(true);
               try {
-                await createSubscribe({
+                const createBody: any = {
                   ...values,
                   show: false,
                   sell: false,
-                });
+                };
+                // Add node_group_ids if it exists in values
+                const vals = values as any;
+                if (vals.node_group_ids) {
+                  createBody.node_group_ids = vals.node_group_ids.map((id: string | number) => Number(id));
+                }
+                await createSubscribe(createBody);
                 toast.success(t("createSuccess"));
                 ref.current?.refresh();
                 fetchSubscribes();
@@ -312,12 +367,30 @@ export default function SubscribeTable() {
         {
           key: "search",
         },
+        ...(isGroupEnabled
+          ? [
+              {
+                key: "node_group_id",
+                placeholder: t("nodeGroups", "Node Groups"),
+                options: [
+                  { label: t("all", "All"), value: "" },
+                  ...(nodeGroupsData?.map((item) => ({
+                    label: item.name,
+                    value: String(item.id),
+                  })) || []),
+                ],
+              },
+            ]
+          : []),
       ]}
       request={async (pagination, filters) => {
-        const { data } = await getSubscribeList({
+        const params = {
           ...pagination,
           ...filters,
-        });
+          node_group_id: filters?.node_group_id ? Number(filters.node_group_id) : undefined,
+        } as any;
+
+        const { data } = await getSubscribeList(params);
         return {
           list: data.data?.list || [],
           total: data.data?.total || 0,

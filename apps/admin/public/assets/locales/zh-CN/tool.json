@@ -12,6 +12,7 @@
   "systemReboot": "系统重启",
   "systemServices": "系统服务",
   "update": "更新",
+  "updateDescription": "",
   "updateFailed": "更新失败",
   "updateServerDescription": "确定要将服务器版本从 {{current}} 更新到 {{latest}} 吗？",
   "updateSuccess": "更新成功",

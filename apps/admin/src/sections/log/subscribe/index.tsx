@@ -23,12 +23,10 @@ export default function SubscribeLogPage() {
   const initialFilters = {
     date: sp.date || today,
     user_id: sp.user_id ? Number(sp.user_id) : undefined,
-    user_subscribe_id: sp.user_subscribe_id
-      ? Number(sp.user_subscribe_id)
-      : undefined,
+    user_subscribe_id: sp.user_subscribe_id || undefined,
   };
   return (
-    <ProTable<API.SubscribeLog, { date?: string; user_id?: number }>
+    <ProTable<API.SubscribeLog, { date?: string; user_id?: number; user_subscribe_id?: string }>
       columns={[
         {
           accessorKey: "user",
@@ -96,7 +94,7 @@ export default function SubscribeLogPage() {
           size: pagination.size,
           date: (filter as any)?.date,
           user_id: (filter as any)?.user_id,
-          user_subscribe_id: (filter as any)?.user_subscribe_id,
+          user_subscribe_id: (filter as any)?.user_subscribe_id ? Number((filter as any)?.user_subscribe_id) : undefined,
         });
         const list = (data?.data?.list || []) as any[];
         const total = Number(data?.data?.total || list.length);

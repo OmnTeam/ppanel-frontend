@@ -19,6 +19,7 @@
     "description": "配置货币单位、符号和汇率 API 设置",
     "title": "货币配置"
   },
+  "groupSettings": "",
   "invite": {
     "description": "配置用户邀请和推荐奖励设置",
     "forcedInvite": "强制邀请注册",

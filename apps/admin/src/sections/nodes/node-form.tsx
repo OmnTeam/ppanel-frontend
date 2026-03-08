@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@workspace/ui/components/button";
+import { Checkbox } from "@workspace/ui/components/checkbox";
 import {
   Form,
   FormControl,
@@ -11,6 +12,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@workspace/ui/components/form";
+import { Label } from "@workspace/ui/components/label";
 import { ScrollArea } from "@workspace/ui/components/scroll-area";
 import {
   Sheet,
@@ -23,6 +25,8 @@ import {
 import { Combobox } from "@workspace/ui/composed/combobox";
 import { EnhancedInput } from "@workspace/ui/composed/enhanced-input";
 import TagInput from "@workspace/ui/composed/tag-input";
+import { getGroupConfig, getNodeGroupList } from "@workspace/ui/services/admin/group";
+import { useQuery } from "@tanstack/react-query";
 import type { TFunction } from "i18next";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -54,7 +58,7 @@ const buildSchema = (t: TFunction) =>
     server_id: z
       .number({ message: t("errors.serverRequired", "Please select a server") })
       .int()
-      .gt(0, t("errors.serverRequired", "Please select a server"))
+      .positive(t("errors.serverRequired", "Please select a server"))
       .optional(),
     protocol: z
       .string()
@@ -71,6 +75,7 @@ const buildSchema = (t: TFunction) =>
       .min(1, t("errors.portRange", "Port must be between 1 and 65535"))
       .max(65_535, t("errors.portRange", "Port must be between 1 and 65535")),
     tags: z.array(z.string()),
+    node_group_ids: z.optional(z.array(z.string()).default([])),
   });
 
 export type NodeFormValues = z.infer<ReturnType<typeof buildSchema>>;
@@ -112,8 +117,10 @@ export default function NodeForm(props: {
       address: "",
       port: 0,
       tags: [],
+      node_group_ids: [],
       ...initialValues,
     },
+    mode: "onSubmit", // Only validate on form submission
   });
 
   const serverId = form.watch("server_id");
@@ -125,17 +132,54 @@ export default function NodeForm(props: {
 
   const availableProtocols = getAvailableProtocols(serverId);
 
+  // Fetch node groups
+  const { data: nodeGroupsData } = useQuery({
+    queryKey: ["nodeGroups"],
+    queryFn: async () => {
+      const { data } = await getNodeGroupList({ page: 1, size: 1000 });
+      return data.data?.list || [];
+    },
+  });
+
+  // Fetch group config to check if group feature is enabled
+  const { data: groupConfigData } = useQuery({
+    queryKey: ["groupConfig"],
+    queryFn: async () => {
+      const { data } = await getGroupConfig();
+      return data.data;
+    },
+  });
+
+  const isGroupEnabled = groupConfigData?.enabled || false;
+
   useEffect(() => {
     if (initialValues) {
-      form.reset({
+      const resetValues: NodeFormValues = {
         name: "",
         server_id: undefined,
         protocol: "",
         address: "",
         port: 0,
         tags: [],
-        ...initialValues,
-      });
+        node_group_ids: [],
+      };
+
+      // Copy only the values we need from initialValues
+      if (initialValues.name) resetValues.name = initialValues.name;
+      if (initialValues.server_id) resetValues.server_id = initialValues.server_id;
+      if (initialValues.protocol) resetValues.protocol = initialValues.protocol;
+      if (initialValues.address) resetValues.address = initialValues.address;
+      if (initialValues.port) resetValues.port = initialValues.port;
+      if (initialValues.tags) resetValues.tags = initialValues.tags;
+
+      // Convert node_group_ids from number[] to string[], ensure it's always an array
+      if (initialValues.node_group_ids && Array.isArray(initialValues.node_group_ids)) {
+        resetValues.node_group_ids = initialValues.node_group_ids.map((id: string | number) => String(id));
+      } else {
+        resetValues.node_group_ids = [];
+      }
+
+      form.reset(resetValues);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialValues]);
@@ -360,6 +404,7 @@ export default function NodeForm(props: {
                   </FormItem>
                 )}
               />
+              {/* Tags field - always shown */}
               <FormField
                 control={form.control}
                 name="tags"
@@ -378,15 +423,77 @@ export default function NodeForm(props: {
                       />
                     </FormControl>
                     <FormDescription>
-                      {t(
-                        "tags_description",
-                        "Permission grouping tag (incl. plan binding and delivery policies)."
-                      )}
+                      {isGroupEnabled
+                        ? t(
+                            "tags_groupMode_description",
+                            "Optional tags for display and filtering (node group will be used as tag if empty)."
+                          )
+                        : t(
+                            "tags_description",
+                            "Permission grouping tag (incl. plan binding and delivery policies)."
+                          )}
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+              {/* Show Node Group field only when group feature is enabled */}
+              {isGroupEnabled && (
+                <FormField
+                  control={form.control}
+                  name="node_group_ids"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("nodeGroup", "Node Group")}</FormLabel>
+                      <FormControl>
+                        <div className="grid grid-cols-2 gap-2">
+                          {nodeGroupsData?.map((g) => (
+                            <div
+                              key={g.id}
+                              className="flex items-center space-x-2"
+                            >
+                              <Checkbox
+                                id={`node-group-${g.id}`}
+                                checked={field.value?.includes(String(g.id)) || false}
+                                onCheckedChange={(checked) => {
+                                  // Ensure field.value is always an array
+                                  const currentValue = Array.isArray(field.value) ? field.value : [];
+                                  if (checked) {
+                                    const newValue = [...currentValue, String(g.id)];
+                                    form.setValue(field.name, newValue, {
+                                      shouldValidate: true,
+                                      shouldDirty: true,
+                                    });
+                                  } else {
+                                    const newValue = currentValue.filter((v: string) => v !== String(g.id));
+                                    form.setValue(field.name, newValue, {
+                                      shouldValidate: true,
+                                      shouldDirty: true,
+                                    });
+                                  }
+                                }}
+                              />
+                              <Label
+                                htmlFor={`node-group-${g.id}`}
+                                className="cursor-pointer"
+                              >
+                                {g.name}
+                              </Label>
+                            </div>
+                          ))}
+                        </div>
+                      </FormControl>
+                      <FormDescription>
+                        {t(
+                          "nodeGroup_description",
+                          "Assign this node to multiple groups for user access control."
+                        )}
+                      </FormDescription>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
             </form>
           </Form>
         </ScrollArea>

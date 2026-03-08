@@ -144,6 +144,19 @@ export default function UserSubscription({ userId }: { userId: number }) {
           ),
         },
         {
+          id: "remaining_traffic",
+          header: t("remainingTraffic", "Remaining Traffic"),
+          cell: ({ row }) => {
+            const upload = row.original.upload || 0;
+            const download = row.original.download || 0;
+            const totalTraffic = row.original.traffic || 0;
+            const remainingTraffic = totalTraffic > 0 ? totalTraffic - upload - download : 0;
+            return (
+              <Display type="traffic" unlimited value={remainingTraffic} />
+            );
+          },
+        },
+        {
           accessorKey: "speed_limit",
           header: t("speedLimit", "Speed Limit"),
           cell: ({ row }) => {
@@ -390,7 +403,7 @@ function RowMoreActions({
           "This action cannot be undone."
         )}
         onConfirm={async () => {
-          await deleteUserSubscribe({ user_subscribe_id: row.id });
+          await deleteUserSubscribe({ user_subscribe_id: String(row.id) });
           toast.success(t("deleteSuccess", "Deleted successfully"));
           refresh();
         }}

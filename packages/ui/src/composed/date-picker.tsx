@@ -53,17 +53,18 @@ export function DatePicker({
           )}
           variant="outline"
         >
-          {value ? intlFormat(value) : <span>{placeholder}</span>}
+          <span className="truncate">{value ? intlFormat(value) : <span>{placeholder}</span>}</span>
           <div className="flex items-center gap-2">
             {value && (
-              <button
-                className="flex items-center"
+              <span
+                className="flex items-center cursor-pointer"
                 onClick={handleClear}
                 onMouseDown={handleClear}
-                type="button"
+                role="button"
+                tabIndex={0}
               >
                 <X className="size-4 opacity-50 hover:opacity-100" />
-              </button>
+              </span>
             )}
             <CalendarIcon className="size-4" />
           </div>

@@ -35,6 +35,11 @@ export function useNavs() {
             icon: "flat-color-icons:mind-map",
           },
           {
+            title: t("Group Management", "Group Management"),
+            url: "/dashboard/group",
+            icon: "flat-color-icons:department",
+          },
+          {
             title: t("Subscribe Config", "Subscribe Config"),
             url: "/dashboard/subscribe",
             icon: "flat-color-icons:ruler",

@@ -3,6 +3,13 @@ import { Link, useSearch } from "@tanstack/react-router";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@workspace/ui/components/dialog";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -35,6 +42,10 @@ import {
   getUserList,
   updateUserBasicInfo,
 } from "@workspace/ui/services/admin/user";
+import {
+  // getUserGroupList,
+  previewUserNodes,
+} from "@workspace/ui/services/admin/group";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -47,6 +58,7 @@ import { AuthMethodsForm } from "./user-profile/auth-methods-form";
 import { BasicInfoForm } from "./user-profile/basic-info-form";
 import { NotifySettingsForm } from "./user-profile/notify-settings-form";
 import UserSubscription from "./user-subscription";
+// import EditUserGroupDialog from "./edit-user-group-dialog";
 
 export default function User() {
   const { t } = useTranslation("user");
@@ -56,12 +68,21 @@ export default function User() {
 
   const { subscribes } = useSubscribe();
 
+  // const { data: userGroupsData } = useQuery({
+  //   queryKey: ["userGroups"],
+  //   queryFn: async () => {
+  //     const { data } = await getUserGroupList({ page: 1, size: 1000 });
+  //     return data.data?.list || [];
+  //   },
+  // });
+
   const initialFilters = {
     search: sp.search || undefined,
     user_id: sp.user_id || undefined,
     subscribe_id: sp.subscribe_id || undefined,
     user_subscribe_id: sp.user_subscribe_id || undefined,
     short_code: sp.short_code || undefined,
+    // user_group_id: sp.user_group_id || undefined,
   };
 
   return (
@@ -75,6 +96,7 @@ export default function User() {
             userId={row.id}
           />,
           <SubscriptionSheet key="subscription" userId={row.id} />,
+          <PreviewNodesDialog key="preview-nodes" userId={row.id} />,
           <ConfirmButton
             cancelText={t("cancel", "Cancel")}
             confirmText={t("confirm", "Confirm")}
@@ -144,6 +166,7 @@ export default function User() {
       }}
       columns={[
         {
+          id: "enable",
           accessorKey: "enable",
           header: t("enable", "Enable"),
           cell: ({ row }) => (
@@ -174,10 +197,12 @@ export default function User() {
           ),
         },
         {
+          id: "id",
           accessorKey: "id",
           header: "ID",
         },
         {
+          id: "deleted_at",
           accessorKey: "deleted_at",
           header: t("isDeleted", "Deleted"),
           cell: ({ row }) => {
@@ -190,6 +215,7 @@ export default function User() {
           },
         },
         {
+          id: "auth_methods",
           accessorKey: "auth_methods",
           header: t("userName", "Username"),
           cell: ({ row }) => {
@@ -208,6 +234,7 @@ export default function User() {
           },
         },
         {
+          id: "balance",
           accessorKey: "balance",
           header: t("balance", "Balance"),
           cell: ({ row }) => (
@@ -215,6 +242,7 @@ export default function User() {
           ),
         },
         {
+          id: "gift_amount",
           accessorKey: "gift_amount",
           header: t("giftAmount", "Gift Amount"),
           cell: ({ row }) => (
@@ -222,6 +250,7 @@ export default function User() {
           ),
         },
         {
+          id: "commission",
           accessorKey: "commission",
           header: t("commission", "Commission"),
           cell: ({ row }) => (
@@ -229,16 +258,19 @@ export default function User() {
           ),
         },
         {
+          id: "refer_code",
           accessorKey: "refer_code",
           header: t("inviteCode", "Invite Code"),
           cell: ({ row }) => row.getValue("refer_code") || "--",
         },
         {
+          id: "referer_id",
           accessorKey: "referer_id",
           header: t("referer", "Referer"),
           cell: ({ row }) => <UserDetail id={row.original.referer_id} />,
         },
         {
+          id: "created_at",
           accessorKey: "created_at",
           header: t("createdAt", "Created At"),
           cell: ({ row }) => formatDate(row.getValue("created_at")),
@@ -276,10 +308,13 @@ export default function User() {
         {
           key: "subscribe_id",
           placeholder: t("subscription", "Subscription"),
-          options: subscribes?.map((item) => ({
-            label: item.name!,
-            value: String(item.id!),
-          })),
+          options: [
+            { label: t("all", "All"), value: "" },
+            ...(subscribes?.map((item) => ({
+              label: item.name!,
+              value: String(item.id!),
+            })) || []),
+          ],
         },
         {
           key: "search",
@@ -399,5 +434,82 @@ function SubscriptionSheet({ userId }: { userId: number }) {
         </div>
       </SheetContent>
     </Sheet>
+  );
+}
+
+function PreviewNodesDialog({ userId }: { userId: number }) {
+  const { t } = useTranslation("user");
+  const [open, setOpen] = useState(false);
+  const { data: previewData, isLoading } = useQuery({
+    enabled: open,
+    queryKey: ["previewUserNodes", userId],
+    queryFn: async () => {
+      const { data } = await previewUserNodes({ user_id: userId });
+      return data.data;
+    },
+  });
+
+  return (
+    <Dialog onOpenChange={setOpen} open={open}>
+      <DialogTrigger asChild>
+        <Button variant="outline">{t("previewNodes", "Preview Nodes")}</Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>
+            {t("previewNodes", "Preview Nodes")} · ID: {userId}
+          </DialogTitle>
+        </DialogHeader>
+        {isLoading ? (
+          <div className="py-8 text-center text-muted-foreground">
+            {t("loading", "Loading...")}
+          </div>
+        ) : previewData ? (
+          <div className="space-y-4">
+            <div>
+              <span className="text-sm font-medium text-muted-foreground">
+                {t("availableNodes", "Available Nodes")}:
+              </span>{" "}
+              {previewData.node_groups?.reduce((sum, group) => sum + (group.nodes?.length || 0), 0) || 0}
+            </div>
+            {previewData.node_groups && previewData.node_groups.length > 0 ? (
+              <div className="max-h-[400px] overflow-y-auto space-y-4">
+                {previewData.node_groups.map((group) => (
+                  <div key={group.id}>
+                    <h4 className="text-sm font-semibold mb-2">
+                      {group.name || (group.id === 0 ? t("publicNodes", "Public Nodes") : `${t("nodeGroup", "Node Group")} ${group.id}`)}
+                    </h4>
+                    {group.nodes && group.nodes.length > 0 ? (
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b">
+                            <th className="p-2 text-left font-medium">ID</th>
+                            <th className="p-2 text-left font-medium">{t("name", "Name")}</th>
+                            <th className="p-2 text-left font-medium">{t("address", "Address")}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {group.nodes.map((node) => (
+                            <tr key={node.id} className="border-b">
+                              <td className="p-2">{node.id}</td>
+                              <td className="p-2">{node.name}</td>
+                              <td className="p-2">{node.address}:{node.port}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="py-4 text-center text-muted-foreground">
+                {t("noNodesAvailable", "No nodes available")}
+              </div>
+            )}
+          </div>
+        ) : null}
+      </DialogContent>
+    </Dialog>
   );
 }

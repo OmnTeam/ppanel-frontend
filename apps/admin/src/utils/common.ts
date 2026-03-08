@@ -24,8 +24,20 @@ export function differenceInDays(date1: Date, date2: Date): number {
 
 export function formatDate(date?: Date | number, showTime = true) {
   if (!date) return;
+
+  // 如果是数字（Unix时间戳），需要判断是秒级还是毫秒级
+  // Unix时间戳（秒级）：10位数字，如 1771936457
+  // JavaScript时间戳（毫秒级）：13位数字
+  let dateValue = date;
+  if (typeof date === "number") {
+    // 如果小于 10000000000（100亿），认为是秒级时间戳，需要乘以1000
+    if (date < 10000000000) {
+      dateValue = date * 1000;
+    }
+  }
+
   const timeZone = localStorage.getItem("timezone") || "UTC";
-  return intlFormat(date, {
+  return intlFormat(dateValue, {
     year: "numeric",
     month: "numeric",
     day: "numeric",

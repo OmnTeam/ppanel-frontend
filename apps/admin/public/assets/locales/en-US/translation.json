@@ -7,6 +7,10 @@
     "serverRequired": "Please select a server"
   },
   "form": {
+    "quantityRequired": "Quantity is required",
+    "subscribePlanRequired": "Subscribe plan is required",
+    "totalCountRequired": "Total count is required",
+    "unitTimeRequired": "Unit time is required",
     "validation": {
       "nameRequired": "Client name is required",
       "userAgentRequiredSuffix": "is required"

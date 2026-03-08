@@ -25,6 +25,7 @@ interface NodeState {
   isServerReferencedByNodes: (serverId: number) => boolean;
   getNodesByTag: (tag: string) => API.Node[];
   getNodesWithoutTags: () => API.Node[];
+  getNodesWithoutGroups: () => API.Node[];
   getNodeTags: () => string[];
   getAllAvailableTags: () => string[];
 }
@@ -92,6 +93,12 @@ export const useNodeStore = create<NodeState>((set, get) => ({
   getNodesWithoutTags: () =>
     get().nodes.filter((node) => (node.tags || []).length === 0),
 
+  getNodesWithoutGroups: () =>
+    get().nodes.filter((node) => {
+      const groupIds = (node as any).node_group_ids;
+      return !groupIds || groupIds.length === 0;
+    }),
+
   getNodeTags: () =>
     Array.from(
       new Set(
@@ -135,6 +142,7 @@ export const useNode = () => {
     isServerReferencedByNodes: store.isServerReferencedByNodes,
     getNodesByTag: store.getNodesByTag,
     getNodesWithoutTags: store.getNodesWithoutTags,
+    getNodesWithoutGroups: store.getNodesWithoutGroups,
     getNodeTags: store.getNodeTags,
     getAllAvailableTags: store.getAllAvailableTags,
   };

@@ -25,14 +25,12 @@ export default function ResetSubscribeLogPage() {
 
   const initialFilters = {
     date: sp.date || today,
-    user_subscribe_id: sp.user_subscribe_id
-      ? Number(sp.user_subscribe_id)
-      : undefined,
+    user_subscribe_id: sp.user_subscribe_id || undefined,
   };
   return (
     <ProTable<
       API.ResetSubscribeLog,
-      { date?: string; user_subscribe_id?: number }
+      { date?: string; user_subscribe_id?: string }
     >
       columns={[
         {
@@ -83,7 +81,7 @@ export default function ResetSubscribeLogPage() {
           page: pagination.page,
           size: pagination.size,
           date: (filter as any)?.date,
-          user_subscribe_id: (filter as any)?.user_subscribe_id,
+          user_subscribe_id: (filter as any)?.user_subscribe_id ? Number((filter as any)?.user_subscribe_id) : undefined,
         });
         const list = (data?.data?.list || []) as any[];
         const total = Number(data?.data?.total || list.length);

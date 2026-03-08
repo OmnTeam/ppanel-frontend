@@ -103,6 +103,7 @@ declare namespace API {
     longitude: string;
     created_at: number;
     download: number;
+    port: number;
   };
 
   type AuthConfig = {
@@ -534,7 +535,7 @@ declare namespace API {
   };
 
   type DeleteUserSubscribeRequest = {
-    user_subscribe_id: number;
+    user_subscribe_id: string;
   };
 
   type DeviceAuthticateConfig = {
@@ -702,12 +703,14 @@ declare namespace API {
     page: number;
     size: number;
     search?: string;
+    node_group_id?: number;
   };
 
   type FilterNodeListRequest = {
     page: number;
     size: number;
     search?: string;
+    node_group_id?: number;
   };
 
   type FilterNodeListResponse = {
@@ -1147,6 +1150,7 @@ declare namespace API {
     size: number;
     language?: string;
     search?: string;
+    node_group_id?: number;
   };
 
   type GetSubscribeListRequest = {
@@ -1154,6 +1158,7 @@ declare namespace API {
     size: number;
     language?: string;
     search?: string;
+    node_group_id?: number;
   };
 
   type GetSubscribeListResponse = {
@@ -1210,6 +1215,7 @@ declare namespace API {
     unscoped?: boolean;
     subscribe_id?: number;
     user_subscribe_id?: number;
+    user_group_id?: number;
   };
 
   type GetUserListRequest = {
@@ -1440,6 +1446,8 @@ declare namespace API {
     protocol: string;
     enabled: boolean;
     sort?: number;
+    node_group_id?: number;
+    node_group_ids?: number[];
     created_at: number;
     updated_at: number;
   };
@@ -1921,11 +1929,11 @@ declare namespace API {
   };
 
   type ResetUserSubscribeTokenRequest = {
-    user_subscribe_id: number;
+    user_subscribe_id: any;
   };
 
   type ResetUserSubscribeTrafficRequest = {
-    user_subscribe_id: number;
+    user_subscribe_id: string;
   };
 
   type Response = {
@@ -2106,6 +2114,8 @@ declare namespace API {
     quota: number;
     nodes: number[];
     node_tags: string[];
+    node_group_ids?: number[];
+    node_group_id?: number;
     show: boolean;
     sell: boolean;
     sort: number;
@@ -2171,6 +2181,8 @@ declare namespace API {
     quota?: number;
     nodes?: number[];
     node_tags?: string[];
+    node_group_ids?: number[];
+    node_group_id?: number;
     show?: boolean;
     sell?: boolean;
     sort?: number;
@@ -2244,7 +2256,7 @@ declare namespace API {
   };
 
   type ToggleUserSubscribeStatusRequest = {
-    user_subscribe_id: number;
+    user_subscribe_id: any;
   };
 
   type TosConfig = {
@@ -2473,7 +2485,7 @@ declare namespace API {
   };
 
   type UpdateUserSubscribeRequest = {
-    user_subscribe_id: number;
+    user_subscribe_id: string;
     subscribe_id: number;
     traffic: number;
     expired_at: number;
@@ -2498,6 +2510,8 @@ declare namespace API {
     enable_login_notify: boolean;
     enable_subscribe_notify: boolean;
     enable_trade_notify: boolean;
+    user_group_id: string;
+    group_locked: boolean;
     auth_methods: UserAuthMethod[];
     user_devices: UserDevice[];
     rules: string[];
@@ -2658,5 +2672,264 @@ declare namespace API {
     transport_config: TransportConfig;
     security: string;
     security_config: SecurityConfig;
+  };
+
+  // ===== Group Management Types =====
+
+  type UserGroup = {
+    id: number;
+    name: string;
+    description: string;
+    sort: number;
+    node_group_id?: number | null;
+    for_calculation?: boolean;
+    created_at: number;
+    updated_at: number;
+  };
+
+  type NodeGroup = {
+    id: number;
+    name: string;
+    description: string;
+    sort: number;
+    for_calculation: boolean;
+    min_traffic_gb?: number;
+    max_traffic_gb?: number;
+    created_at: number;
+    updated_at: number;
+  };
+
+  type Subscribe = {
+    id: number;
+    name: string;
+    unit_price: number;
+    unit_time: number;
+    show?: boolean;
+    sell?: boolean;
+    sort: number;
+    created_at: number;
+    updated_at: number;
+  };
+
+  type SubscribeGroupMapping = {
+    subscribe_id: number;
+    user_group_id: string;
+    created_at: number;
+    updated_at: number;
+  };
+
+  type SubscribeGroupMappingInfo = {
+    id: number;
+    subscribe_id: number;
+    user_group_id: number;
+    subscribe?: Subscribe;
+    user_group?: UserGroup;
+    created_at: number;
+    updated_at: number;
+  };
+
+  type GroupHistory = {
+    id: number;
+    group_mode: string;
+    trigger_type: string;
+    total_users: number;
+    success_count: number;
+    failed_count: number;
+    start_time?: number;
+    end_time?: number;
+    operator?: string;
+    error_log?: string;
+    created_at: number;
+  };
+
+  type GroupHistoryDetailItem = {
+    id: number;
+    history_id: number;
+    user_group_id: string;
+    node_group_id: string;
+    user_count: number;
+    node_count: number;
+    user_data?: string;
+    created_at: number;
+  };
+
+  type GroupHistoryDetail = {
+    id: number;
+    group_mode: string;
+    trigger_type: string;
+    total_users: number;
+    success_count: number;
+    failed_count: number;
+    start_time?: number;
+    end_time?: number;
+    operator?: string;
+    error_log?: string;
+    created_at: number;
+    config_snapshot?: {
+      group_details?: GroupHistoryDetailItem[];
+      config?: Record<string, unknown>;
+    };
+  };
+
+  type RecalculationState = {
+    state: string;
+    progress: number;
+    total: number;
+  };
+
+  // ===== Group Request/Response Types =====
+
+  type GetUserGroupListRequest = {
+    page: number;
+    size: number;
+    group_id?: string;
+  };
+
+  type GetUserGroupListResponse = {
+    total: number;
+    list: UserGroup[];
+  };
+
+  type CreateUserGroupRequest = {
+    name: string;
+    description?: string;
+    sort?: number;
+    node_group_id?: number | null;
+    for_calculation?: boolean | null;
+  };
+
+  type UpdateUserGroupRequest = {
+    id: number;
+    name?: string;
+    description?: string;
+    sort?: number;
+    node_group_id?: number | null;
+    for_calculation?: boolean | null;
+  };
+
+  type DeleteUserGroupRequest = {
+    id: number;
+  };
+
+  type BindNodeGroupsRequest = {
+    user_group_ids: number[];
+    node_group_id?: number | null;
+  };
+
+  type GetNodeGroupListRequest = {
+    page: number;
+    size: number;
+    group_id?: string;
+  };
+
+  type GetNodeGroupListResponse = {
+    total: number;
+    list: NodeGroup[];
+  };
+
+  type CreateNodeGroupRequest = {
+    name: string;
+    description?: string;
+    sort?: number;
+    for_calculation?: boolean;
+    min_traffic_gb?: number;
+    max_traffic_gb?: number;
+  };
+
+  type UpdateNodeGroupRequest = {
+    id: number;
+    name?: string;
+    description?: string;
+    sort?: number;
+    for_calculation?: boolean;
+    min_traffic_gb?: number;
+    max_traffic_gb?: number;
+  };
+
+  type DeleteNodeGroupRequest = {
+    id: number;
+  };
+
+  type GetSubscribeMappingRequest = {
+    page: number;
+    size: number;
+    subscribe_id?: number;
+    user_group_id?: number;
+  };
+
+  type GetSubscribeMappingResponse = {
+    total: number;
+    list: SubscribeGroupMappingInfo[];
+  };
+
+  type UpdateSubscribeMappingRequest = {
+    subscribe_id: number;
+    user_group_id: number;
+  };
+
+  type GetGroupConfigResponse = {
+    enabled: boolean;
+    mode: string;
+  };
+
+  type UpdateGroupConfigRequest = {
+    enabled?: boolean;
+    mode?: string;
+  };
+
+  type RecalculateGroupRequest = {
+    mode: string;
+  };
+
+  type GetGroupHistoryRequest = {
+    page: number;
+    size: number;
+    group_mode?: string;
+    trigger_type?: string;
+  };
+
+  type GetGroupHistoryResponse = {
+    total: number;
+    list: GroupHistory[];
+  };
+
+  type GetGroupHistoryDetailRequest = {
+    id: number;
+  };
+
+  type GetGroupHistoryDetailResponse = GroupHistoryDetail;
+
+  type ExportGroupResultRequest = {
+    history_id?: number;
+  };
+  type MigrateUsersRequest = {
+    from_user_group_id: number;
+    to_user_group_id: number;
+    include_locked?: boolean;
+  };
+  type MigrateUsersResponse = {
+    success_count: number;
+    failed_count: number;
+  };
+  type ResetGroupsRequest = {
+    confirm: boolean;
+  };
+
+  type PreviewUserNodesRequest = {
+    user_id: number;
+  };
+
+  type PreviewUserNodesResponse = {
+    user_id: number;
+    node_groups: Array<{
+      id: number;
+      name: string;
+      nodes: Array<{
+        id: number;
+        name: string;
+        address: string;
+        port: number;
+      }>;
+    }>;
   };
 }

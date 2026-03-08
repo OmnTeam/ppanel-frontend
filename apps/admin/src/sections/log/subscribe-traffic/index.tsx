@@ -17,14 +17,12 @@ export default function SubscribeTrafficLogPage() {
   const initialFilters = {
     date: sp.date || today,
     user_id: sp.user_id ? Number(sp.user_id) : undefined,
-    user_subscribe_id: sp.user_subscribe_id
-      ? Number(sp.user_subscribe_id)
-      : undefined,
+    user_subscribe_id: sp.user_subscribe_id || undefined,
   };
   return (
     <ProTable<
       API.UserSubscribeTrafficLog,
-      { date?: string; user_id?: number; user_subscribe_id?: number }
+      { date?: string; user_id?: number; user_subscribe_id?: string }
     >
       actions={{
         render: (row) => [
@@ -95,7 +93,7 @@ export default function SubscribeTrafficLogPage() {
           size: pagination.size,
           date: (filter as any)?.date,
           user_id: (filter as any)?.user_id,
-          user_subscribe_id: (filter as any)?.user_subscribe_id,
+          user_subscribe_id: (filter as any)?.user_subscribe_id ? Number((filter as any)?.user_subscribe_id) : undefined,
         });
         const list =
           ((data?.data?.list || []) as API.UserSubscribeTrafficLog[]) || [];

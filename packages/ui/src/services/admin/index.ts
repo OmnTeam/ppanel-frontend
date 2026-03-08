@@ -9,6 +9,7 @@ import * as authMethod from "./authMethod";
 import * as console from "./console";
 import * as coupon from "./coupon";
 import * as document from "./document";
+import * as group from "./group";
 import * as log from "./log";
 import * as marketing from "./marketing";
 import * as order from "./order";
@@ -27,6 +28,7 @@ export default {
   console,
   coupon,
   document,
+  group,
   log,
   marketing,
   order,

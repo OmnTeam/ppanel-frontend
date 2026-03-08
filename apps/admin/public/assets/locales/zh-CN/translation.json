@@ -7,6 +7,10 @@
     "serverRequired": "请选择服务器"
   },
   "form": {
+    "quantityRequired": "",
+    "subscribePlanRequired": "",
+    "totalCountRequired": "",
+    "unitTimeRequired": "",
     "validation": {
       "nameRequired": "客户端名称必填",
       "userAgentRequiredSuffix": "是必填项"

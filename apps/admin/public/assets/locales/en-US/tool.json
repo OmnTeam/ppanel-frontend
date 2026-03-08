@@ -12,6 +12,7 @@
   "systemReboot": "System Reboot",
   "systemServices": "System Services",
   "update": "Update",
+  "updateDescription": "Are you sure you want to update?",
   "updateFailed": "Update failed",
   "updateServerDescription": "Are you sure you want to update the server version from {{current}} to {{latest}}?",
   "updateSuccess": "Update completed successfully",

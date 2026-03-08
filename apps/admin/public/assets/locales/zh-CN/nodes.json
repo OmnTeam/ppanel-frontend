@@ -1,5 +1,6 @@
 {
   "address": "地址",
+  "all": "全部",
   "cancel": "取消",
   "confirm": "确认",
   "confirmDeleteDesc": "此操作无法撤销。",
@@ -17,15 +18,21 @@
   "enabled_off": "已禁用",
   "enabled_on": "已启用",
   "name": "名称",
+  "nodeGroup": "节点分组",
+  "nodeGroups": "节点分组",
+  "nodeGroup_description": "将此节点分配到多个分组以控制用户访问。",
   "pageTitle": "节点",
   "port": "端口",
   "protocol": "协议",
+  "public": "公共",
+  "selectNodeGroup": "选择节点分组…",
   "select_protocol": "选择协议…",
   "select_server": "选择服务器…",
   "server": "服务器",
   "sorted_success": "排序成功",
   "tags": "标签",
   "tags_description": "权限分组标签（包含计划绑定和投递策略）。",
+  "tags_groupMode_description": "可选标签，用于显示和过滤（如果为空，节点组名称将作为标签使用）。",
   "tags_placeholder": "使用回车或逗号 (,) 添加多个标签",
   "updated": "已更新"
 }

@@ -39,6 +39,8 @@ const DashboardOrderIndexLazyRouteImport =
 const DashboardMarketingIndexLazyRouteImport = createFileRoute(
   '/dashboard/marketing/',
 )()
+const DashboardGroupIndexLazyRouteImport =
+  createFileRoute('/dashboard/group/')()
 const DashboardDocumentIndexLazyRouteImport = createFileRoute(
   '/dashboard/document/',
 )()
@@ -189,6 +191,13 @@ const DashboardMarketingIndexLazyRoute =
   } as any).lazy(() =>
     import('./routes/dashboard/marketing/index.lazy').then((d) => d.Route),
   )
+const DashboardGroupIndexLazyRoute = DashboardGroupIndexLazyRouteImport.update({
+  id: '/group/',
+  path: '/group/',
+  getParentRoute: () => DashboardRouteLazyRoute,
+} as any).lazy(() =>
+  import('./routes/dashboard/group/index.lazy').then((d) => d.Route),
+)
 const DashboardDocumentIndexLazyRoute =
   DashboardDocumentIndexLazyRouteImport.update({
     id: '/document/',
@@ -345,6 +354,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/auth-control': typeof DashboardAuthControlIndexLazyRoute
   '/dashboard/coupon': typeof DashboardCouponIndexLazyRoute
   '/dashboard/document': typeof DashboardDocumentIndexLazyRoute
+  '/dashboard/group': typeof DashboardGroupIndexLazyRoute
   '/dashboard/marketing': typeof DashboardMarketingIndexLazyRoute
   '/dashboard/order': typeof DashboardOrderIndexLazyRoute
   '/dashboard/payment': typeof DashboardPaymentIndexLazyRoute
@@ -377,6 +387,7 @@ export interface FileRoutesByTo {
   '/dashboard/auth-control': typeof DashboardAuthControlIndexLazyRoute
   '/dashboard/coupon': typeof DashboardCouponIndexLazyRoute
   '/dashboard/document': typeof DashboardDocumentIndexLazyRoute
+  '/dashboard/group': typeof DashboardGroupIndexLazyRoute
   '/dashboard/marketing': typeof DashboardMarketingIndexLazyRoute
   '/dashboard/order': typeof DashboardOrderIndexLazyRoute
   '/dashboard/payment': typeof DashboardPaymentIndexLazyRoute
@@ -411,6 +422,7 @@ export interface FileRoutesById {
   '/dashboard/auth-control/': typeof DashboardAuthControlIndexLazyRoute
   '/dashboard/coupon/': typeof DashboardCouponIndexLazyRoute
   '/dashboard/document/': typeof DashboardDocumentIndexLazyRoute
+  '/dashboard/group/': typeof DashboardGroupIndexLazyRoute
   '/dashboard/marketing/': typeof DashboardMarketingIndexLazyRoute
   '/dashboard/order/': typeof DashboardOrderIndexLazyRoute
   '/dashboard/payment/': typeof DashboardPaymentIndexLazyRoute
@@ -446,6 +458,7 @@ export interface FileRouteTypes {
     | '/dashboard/auth-control'
     | '/dashboard/coupon'
     | '/dashboard/document'
+    | '/dashboard/group'
     | '/dashboard/marketing'
     | '/dashboard/order'
     | '/dashboard/payment'
@@ -478,6 +491,7 @@ export interface FileRouteTypes {
     | '/dashboard/auth-control'
     | '/dashboard/coupon'
     | '/dashboard/document'
+    | '/dashboard/group'
     | '/dashboard/marketing'
     | '/dashboard/order'
     | '/dashboard/payment'
@@ -511,6 +525,7 @@ export interface FileRouteTypes {
     | '/dashboard/auth-control/'
     | '/dashboard/coupon/'
     | '/dashboard/document/'
+    | '/dashboard/group/'
     | '/dashboard/marketing/'
     | '/dashboard/order/'
     | '/dashboard/payment/'
@@ -625,6 +640,13 @@ declare module '@tanstack/react-router' {
       path: '/marketing'
       fullPath: '/dashboard/marketing'
       preLoaderRoute: typeof DashboardMarketingIndexLazyRouteImport
+      parentRoute: typeof DashboardRouteLazyRoute
+    }
+    '/dashboard/group/': {
+      id: '/dashboard/group/'
+      path: '/group'
+      fullPath: '/dashboard/group'
+      preLoaderRoute: typeof DashboardGroupIndexLazyRouteImport
       parentRoute: typeof DashboardRouteLazyRoute
     }
     '/dashboard/document/': {
@@ -770,6 +792,7 @@ interface DashboardRouteLazyRouteChildren {
   DashboardAuthControlIndexLazyRoute: typeof DashboardAuthControlIndexLazyRoute
   DashboardCouponIndexLazyRoute: typeof DashboardCouponIndexLazyRoute
   DashboardDocumentIndexLazyRoute: typeof DashboardDocumentIndexLazyRoute
+  DashboardGroupIndexLazyRoute: typeof DashboardGroupIndexLazyRoute
   DashboardMarketingIndexLazyRoute: typeof DashboardMarketingIndexLazyRoute
   DashboardOrderIndexLazyRoute: typeof DashboardOrderIndexLazyRoute
   DashboardPaymentIndexLazyRoute: typeof DashboardPaymentIndexLazyRoute
@@ -802,6 +825,7 @@ const DashboardRouteLazyRouteChildren: DashboardRouteLazyRouteChildren = {
   DashboardAuthControlIndexLazyRoute: DashboardAuthControlIndexLazyRoute,
   DashboardCouponIndexLazyRoute: DashboardCouponIndexLazyRoute,
   DashboardDocumentIndexLazyRoute: DashboardDocumentIndexLazyRoute,
+  DashboardGroupIndexLazyRoute: DashboardGroupIndexLazyRoute,
   DashboardMarketingIndexLazyRoute: DashboardMarketingIndexLazyRoute,
   DashboardOrderIndexLazyRoute: DashboardOrderIndexLazyRoute,
   DashboardPaymentIndexLazyRoute: DashboardPaymentIndexLazyRoute,
