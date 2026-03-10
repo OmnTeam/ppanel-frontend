@@ -163,3 +163,17 @@ export async function telephoneResetPassword(
     }
   );
 }
+
+/** Generate captcha POST /v1/auth/captcha/generate */
+export async function generateCaptcha(options?: { [key: string]: any }) {
+  return request<API.Response & { data?: API.GenerateCaptchaResponse }>(
+    `${import.meta.env.VITE_API_PREFIX || ""}/v1/auth/captcha/generate`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      ...(options || {}),
+    }
+  );
+}

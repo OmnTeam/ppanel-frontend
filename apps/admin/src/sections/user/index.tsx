@@ -477,7 +477,12 @@ function PreviewNodesDialog({ userId }: { userId: number }) {
                 {previewData.node_groups.map((group) => (
                   <div key={group.id}>
                     <h4 className="text-sm font-semibold mb-2">
-                      {group.name || (group.id === 0 ? t("publicNodes", "Public Nodes") : `${t("nodeGroup", "Node Group")} ${group.id}`)}
+                      {group.name ||
+                        (group.id === -1
+                          ? t("subscriptionNodes", "Subscription Nodes")
+                          : group.id === 0
+                            ? t("publicNodes", "Public Nodes")
+                            : `${t("nodeGroup", "Node Group")} ${group.id}`)}
                     </h4>
                     {group.nodes && group.nodes.length > 0 ? (
                       <table className="w-full text-sm">

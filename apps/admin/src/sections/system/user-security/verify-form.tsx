@@ -12,6 +12,13 @@ import {
 } from "@workspace/ui/components/form";
 import { ScrollArea } from "@workspace/ui/components/scroll-area";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select";
+import {
   Sheet,
   SheetContent,
   SheetFooter,
@@ -33,11 +40,13 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 const verifySchema = z.object({
+  captcha_type: z.string().optional(),
   turnstile_site_key: z.string().optional(),
   turnstile_secret: z.string().optional(),
-  enable_register_verify: z.boolean().optional(),
-  enable_login_verify: z.boolean().optional(),
-  enable_reset_password_verify: z.boolean().optional(),
+  enable_user_login_captcha: z.boolean().optional(),
+  enable_user_register_captcha: z.boolean().optional(),
+  enable_admin_login_captcha: z.boolean().optional(),
+  enable_user_reset_password_captcha: z.boolean().optional(),
 });
 
 type VerifyFormData = z.infer<typeof verifySchema>;
@@ -59,11 +68,13 @@ export default function VerifyConfig() {
   const form = useForm<VerifyFormData>({
     resolver: zodResolver(verifySchema),
     defaultValues: {
+      captcha_type: "local",
       turnstile_site_key: "",
       turnstile_secret: "",
-      enable_register_verify: false,
-      enable_login_verify: false,
-      enable_reset_password_verify: false,
+      enable_user_login_captcha: false,
+      enable_user_register_captcha: false,
+      enable_admin_login_captcha: false,
+      enable_user_reset_password_captcha: false,
     },
   });
 
@@ -126,26 +137,42 @@ export default function VerifyConfig() {
             >
               <FormField
                 control={form.control}
-                name="turnstile_site_key"
+                name="captcha_type"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
-                      {t("verify.turnstileSiteKey", "Turnstile Site Key")}
+                      {t("verify.captchaType", "Captcha Type")}
                     </FormLabel>
                     <FormControl>
-                      <EnhancedInput
+                      <Select
                         onValueChange={field.onChange}
-                        placeholder={t(
-                          "verify.turnstileSiteKeyPlaceholder",
-                          "Enter Turnstile site key"
-                        )}
                         value={field.value}
-                      />
+                      >
+                        <SelectTrigger>
+                          <SelectValue
+                            placeholder={t(
+                              "verify.captchaTypePlaceholder",
+                              "Select captcha type"
+                            )}
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="local">
+                            {t("verify.captchaTypeLocal", "Local Image Captcha")}
+                          </SelectItem>
+                          <SelectItem value="turnstile">
+                            {t(
+                              "verify.captchaTypeTurnstile",
+                              "Cloudflare Turnstile"
+                            )}
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
                     </FormControl>
                     <FormDescription>
                       {t(
-                        "verify.turnstileSiteKeyDescription",
-                        "Cloudflare Turnstile site key for frontend verification"
+                        "verify.captchaTypeDescription",
+                        "Choose between local image captcha (offline) or Cloudflare Turnstile"
                       )}
                     </FormDescription>
                     <FormMessage />
@@ -153,103 +180,78 @@ export default function VerifyConfig() {
                 )}
               />
 
-              <FormField
-                control={form.control}
-                name="turnstile_secret"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t("verify.turnstileSecret", "Turnstile Secret Key")}
-                    </FormLabel>
-                    <FormControl>
-                      <EnhancedInput
-                        onValueChange={field.onChange}
-                        placeholder={t(
-                          "verify.turnstileSecretPlaceholder",
-                          "Enter Turnstile secret key"
-                        )}
-                        type="password"
-                        value={field.value}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      {t(
-                        "verify.turnstileSecretDescription",
-                        "Cloudflare Turnstile secret key for backend verification"
-                      )}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {form.watch("captcha_type") === "turnstile" && (
+                <>
+                  <FormField
+                    control={form.control}
+                    name="turnstile_site_key"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          {t("verify.turnstileSiteKey", "Turnstile Site Key")}
+                        </FormLabel>
+                        <FormControl>
+                          <EnhancedInput
+                            onValueChange={field.onChange}
+                            placeholder={t(
+                              "verify.turnstileSiteKeyPlaceholder",
+                              "Enter Turnstile site key"
+                            )}
+                            value={field.value}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          {t(
+                            "verify.turnstileSiteKeyDescription",
+                            "Cloudflare Turnstile site key for frontend verification"
+                          )}
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="turnstile_secret"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          {t("verify.turnstileSecret", "Turnstile Secret Key")}
+                        </FormLabel>
+                        <FormControl>
+                          <EnhancedInput
+                            onValueChange={field.onChange}
+                            placeholder={t(
+                              "verify.turnstileSecretPlaceholder",
+                              "Enter Turnstile secret key"
+                            )}
+                            type="password"
+                            value={field.value}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          {t(
+                            "verify.turnstileSecretDescription",
+                            "Cloudflare Turnstile secret key for backend verification"
+                          )}
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </>
+              )}
 
               <FormField
                 control={form.control}
-                name="enable_register_verify"
+                name="enable_user_login_captcha"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
                       {t(
-                        "verify.enableRegisterVerify",
-                        "Enable Verification on Registration"
-                      )}
-                    </FormLabel>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        className="!mt-0 float-end"
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      {t(
-                        "verify.enableRegisterVerifyDescription",
-                        "When enabled, users must pass human verification during registration"
-                      )}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="enable_login_verify"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t(
-                        "verify.enableLoginVerify",
-                        "Enable Verification on Login"
-                      )}
-                    </FormLabel>
-                    <FormControl>
-                      <Switch
-                        checked={field.value}
-                        className="!mt-0 float-end"
-                        onCheckedChange={field.onChange}
-                      />
-                    </FormControl>
-                    <FormDescription>
-                      {t(
-                        "verify.enableLoginVerifyDescription",
-                        "When enabled, users must pass human verification during login"
-                      )}
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="enable_reset_password_verify"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      {t(
-                        "verify.enablePasswordVerify",
-                        "Enable Verification on Password Reset"
+                        "verify.enableUserLoginCaptcha",
+                        "Enable User Login Captcha"
                       )}
                     </FormLabel>
                     <FormControl>
@@ -261,8 +263,95 @@ export default function VerifyConfig() {
                     </FormControl>
                     <FormDescription>
                       {t(
-                        "verify.enablePasswordVerifyDescription",
-                        "When enabled, users must pass human verification during password reset"
+                        "verify.enableUserLoginCaptchaDescription",
+                        "When enabled, users must pass captcha verification during login"
+                      )}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="enable_user_register_captcha"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {t(
+                        "verify.enableUserRegisterCaptcha",
+                        "Enable User Registration Captcha"
+                      )}
+                    </FormLabel>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        className="!mt-0 float-end"
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t(
+                        "verify.enableUserRegisterCaptchaDescription",
+                        "When enabled, users must pass captcha verification during registration"
+                      )}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="enable_user_reset_password_captcha"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {t(
+                        "verify.enableUserResetPasswordCaptcha",
+                        "Enable User Password Reset Captcha"
+                      )}
+                    </FormLabel>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        className="!mt-0 float-end"
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t(
+                        "verify.enableUserResetPasswordCaptchaDescription",
+                        "When enabled, users must pass captcha verification during password reset"
+                      )}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="enable_admin_login_captcha"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {t(
+                        "verify.enableAdminLoginCaptcha",
+                        "Enable Admin Authentication Captcha"
+                      )}
+                    </FormLabel>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        className="!mt-0 float-end"
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t(
+                        "verify.enableAdminLoginCaptchaDescription",
+                        "When enabled, administrators must pass captcha verification during login"
                       )}
                     </FormDescription>
                     <FormMessage />

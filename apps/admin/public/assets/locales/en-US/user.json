@@ -147,5 +147,6 @@
   "address": "Address",
   "noNodesAvailable": "No nodes available",
   "nodeGroup": "Node Group",
-  "publicNodes": "Public Nodes"
+  "publicNodes": "Public Nodes",
+  "subscriptionNodes": "Subscription Nodes"
 }

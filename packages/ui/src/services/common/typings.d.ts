@@ -1111,9 +1111,14 @@ declare namespace API {
 
   type VeifyConfig = {
     turnstile_site_key: string;
+    captcha_type: string;
     enable_login_verify: boolean;
     enable_register_verify: boolean;
     enable_reset_password_verify: boolean;
+    enable_user_login_captcha: boolean;
+    enable_user_register_captcha: boolean;
+    enable_user_reset_password_captcha: boolean;
+    enable_admin_login_captcha: boolean;
   };
 
   type VerifyCodeConfig = {

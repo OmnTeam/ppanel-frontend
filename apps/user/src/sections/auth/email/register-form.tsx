@@ -11,7 +11,7 @@ import { Input } from "@workspace/ui/components/input";
 import { Icon } from "@workspace/ui/composed/icon";
 import { Markdown } from "@workspace/ui/composed/markdown";
 import type { Dispatch, SetStateAction } from "react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
@@ -19,6 +19,7 @@ import { useGlobalStore } from "@/stores/global";
 import SendCode from "../send-code";
 import type { TurnstileRef } from "../turnstile";
 import CloudFlareTurnstile from "../turnstile";
+import LocalCaptcha, { type LocalCaptchaRef } from "../local-captcha";
 
 export default function RegisterForm({
   loading,
@@ -36,6 +37,11 @@ export default function RegisterForm({
   const { t } = useTranslation("auth");
   const { common } = useGlobalStore();
   const { verify, auth, invite } = common;
+  const [captchaId, setCaptchaId] = useState("");
+
+  const isTurnstile = verify.captcha_type === "turnstile";
+  const isLocal = verify.captcha_type === "local";
+  const captchaEnabled = verify.enable_user_register_captcha;
 
   const handleCheckUser = async (email: string) => {
     try {
@@ -67,8 +73,12 @@ export default function RegisterForm({
       code: auth.email.enable_verify ? z.string() : z.string().nullish(),
       invite: invite.forced_invite ? z.string().min(1) : z.string().nullish(),
       cf_token:
-        verify.enable_register_verify && verify.turnstile_site_key
+        captchaEnabled && isTurnstile && verify.turnstile_site_key
           ? z.string()
+          : z.string().nullish(),
+      captcha_code:
+        captchaEnabled && isLocal
+          ? z.string().min(1, t("captcha.required", "Please enter captcha code"))
           : z.string().nullish(),
     })
     .superRefine(({ password, repeat_password }, ctx) => {
@@ -90,11 +100,17 @@ export default function RegisterForm({
   });
 
   const turnstile = useRef<TurnstileRef>(null);
+  const localCaptcha = useRef<LocalCaptchaRef>(null);
   const handleSubmit = form.handleSubmit((data) => {
     try {
+      // Add captcha_id for local captcha
+      if (isLocal && captchaEnabled) {
+        (data as any).captcha_id = captchaId;
+      }
       onSubmit(data);
     } catch (_error) {
       turnstile.current?.reset();
+      localCaptcha.current?.reset();
     }
   });
 
@@ -114,7 +130,7 @@ export default function RegisterForm({
                 <FormItem>
                   <FormControl>
                     <Input
-                      placeholder="Enter your email..."
+                      placeholder={t("register.emailPlaceholder", "Enter your email...")}
                       type="email"
                       {...field}
                     />
@@ -130,7 +146,7 @@ export default function RegisterForm({
                 <FormItem>
                   <FormControl>
                     <Input
-                      placeholder="Enter your password..."
+                      placeholder={t("register.passwordPlaceholder", "Enter your password...")}
                       type="password"
                       {...field}
                     />
@@ -147,7 +163,7 @@ export default function RegisterForm({
                   <FormControl>
                     <Input
                       disabled={loading}
-                      placeholder="Enter password again..."
+                      placeholder={t("register.repeatPasswordPlaceholder", "Enter password again...")}
                       type="password"
                       {...field}
                     />
@@ -166,7 +182,7 @@ export default function RegisterForm({
                       <div className="flex items-center gap-2">
                         <Input
                           disabled={loading}
-                          placeholder="Enter code..."
+                          placeholder={t("register.codePlaceholder", "Enter code...")}
                           type="text"
                           {...field}
                           value={field.value as string}
@@ -205,7 +221,7 @@ export default function RegisterForm({
                 </FormItem>
               )}
             />
-            {verify.enable_register_verify && (
+            {captchaEnabled && isTurnstile && (
               <FormField
                 control={form.control}
                 name="cf_token"
@@ -216,6 +232,24 @@ export default function RegisterForm({
                         id="register"
                         {...field}
                         ref={turnstile}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+            {captchaEnabled && isLocal && (
+              <FormField
+                control={form.control}
+                name="captcha_code"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <LocalCaptcha
+                        {...field}
+                        ref={localCaptcha}
+                        onCaptchaIdChange={setCaptchaId}
                       />
                     </FormControl>
                     <FormMessage />

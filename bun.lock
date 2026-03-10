@@ -1,6 +1,5 @@
 {
   "lockfileVersion": 1,
-  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "shadcn-ui-monorepo",
@@ -30,7 +29,7 @@
       "name": "ppanel-admin-web",
       "dependencies": {
         "@faker-js/faker": "^10.0.0",
-        "@lottiefiles/dotlottie-react": "^0.17.7",
+        "@lottiefiles/dotlottie-react": "^0.17.15",
         "@noble/curves": "^2.0.1",
         "@stripe/react-stripe-js": "^5.4.0",
         "@stripe/stripe-js": "^8.5.2",
@@ -70,7 +69,7 @@
       "name": "ppanel-user-web",
       "dependencies": {
         "@faker-js/faker": "^10.0.0",
-        "@lottiefiles/dotlottie-react": "^0.17.7",
+        "@lottiefiles/dotlottie-react": "^0.17.15",
         "@stripe/react-stripe-js": "^5.4.0",
         "@stripe/stripe-js": "^8.5.2",
         "@tailwindcss/vite": "^4.0.6",
@@ -548,9 +547,9 @@
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.29", "", { "dependencies": { "@jridgewell/resolve-uri": "3.1.2", "@jridgewell/sourcemap-codec": "1.5.4" } }, "sha512-uw6guiW/gcAGPDhLmd77/6lW8QLeiV5RUTsAX46Db6oLhGaVj4lhnPwb184s1bkc8kdVg/+h988dro8GRDpmYQ=="],
 
-    "@lottiefiles/dotlottie-react": ["@lottiefiles/dotlottie-react@0.17.7", "", { "dependencies": { "@lottiefiles/dotlottie-web": "0.56.0" }, "peerDependencies": { "react": "^17 || ^18 || ^19" } }, "sha512-A6wO3zqkDx/t0ULfctcr1Bmb1f1hc4zUV3NcbKQOsBGAOIx1vABV/fRabFYElvbJl9lmOR24yMh//Z0fvvJV+Q=="],
+    "@lottiefiles/dotlottie-react": ["@lottiefiles/dotlottie-react@0.17.15", "", { "dependencies": { "@lottiefiles/dotlottie-web": "0.63.0" }, "peerDependencies": { "react": "^17 || ^18 || ^19" } }, "sha512-4wYAjsJhM28eUvJ/gT3KRM6fcyT7EM9n7PDrP71LaBTacc6bSN43qFTSJc1Li3QxUiraz23p0Q8EJBzXo8DsRw=="],
 
-    "@lottiefiles/dotlottie-web": ["@lottiefiles/dotlottie-web@0.56.0", "", {}, "sha512-bWHRIGzjZs3Hjkz0JRsCMX2ya9a1tGU4atdrlfM3UoN0iamsDE64kSCMfGuchCwGAxg0xEh84CkF+SVV1NU9ow=="],
+    "@lottiefiles/dotlottie-web": ["@lottiefiles/dotlottie-web@0.63.0", "", {}, "sha512-oYIkvu6E4n8fZH7ciQsVqamlUDeBnd6JbNYa1UWC/npkNzEHqM5saL3vk/nNorqdfjYwdcdmhLtYbnuwVy+3/Q=="],
 
     "@monaco-editor/loader": ["@monaco-editor/loader@1.7.0", "", { "dependencies": { "state-local": "^1.0.6" } }, "sha512-gIwR1HrJrrx+vfyOhYmCZ0/JcWqG5kbfG7+d3f/C1LXk2EvzAbHSg3MQ5lO2sMlo9izoAZ04shohfKLVT6crVA=="],
 

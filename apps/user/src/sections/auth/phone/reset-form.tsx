@@ -11,7 +11,7 @@ import { Input } from "@workspace/ui/components/input";
 import { AreaCodeSelect } from "@workspace/ui/composed/area-code-select";
 import { Icon } from "@workspace/ui/composed/icon";
 import type { Dispatch, SetStateAction } from "react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
@@ -19,6 +19,7 @@ import { useGlobalStore } from "@/stores/global";
 import SendCode from "../send-code";
 import type { TurnstileRef } from "../turnstile";
 import CloudFlareTurnstile from "../turnstile";
+import LocalCaptcha, { type LocalCaptchaRef } from "../local-captcha";
 
 export default function ResetForm({
   loading,
@@ -36,6 +37,11 @@ export default function ResetForm({
 
   const { common } = useGlobalStore();
   const { verify, auth } = common;
+  const [captchaId, setCaptchaId] = useState("");
+
+  const isTurnstile = verify.captcha_type === "turnstile";
+  const isLocal = verify.captcha_type === "local";
+  const captchaEnabled = verify.enable_user_reset_password_captcha;
 
   const formSchema = z.object({
     telephone_area_code: z.string(),
@@ -43,8 +49,12 @@ export default function ResetForm({
     password: z.string(),
     code: auth?.email?.enable_verify ? z.string() : z.string().nullish(),
     cf_token:
-      verify.enable_register_verify && verify.turnstile_site_key
+      captchaEnabled && isTurnstile && verify.turnstile_site_key
         ? z.string()
+        : z.string().nullish(),
+    captcha_code:
+      captchaEnabled && isLocal
+        ? z.string().min(1, t("captcha.required", "Please enter captcha code"))
         : z.string().nullish(),
   });
   const form = useForm<z.infer<typeof formSchema>>({
@@ -53,11 +63,17 @@ export default function ResetForm({
   });
 
   const turnstile = useRef<TurnstileRef>(null);
+  const localCaptcha = useRef<LocalCaptchaRef>(null);
   const handleSubmit = form.handleSubmit((data) => {
     try {
+      // Add captcha_id for local captcha
+      if (isLocal && captchaEnabled) {
+        (data as any).captcha_id = captchaId;
+      }
       onSubmit(data);
     } catch (_error) {
       turnstile.current?.reset();
+      localCaptcha.current?.reset();
     }
   });
 
@@ -88,7 +104,7 @@ export default function ResetForm({
                                   );
                                 }
                               }}
-                              placeholder="Area code..."
+                              placeholder={t("register.areaCodePlaceholder", "Area code...")}
                               simple
                               value={field.value}
                             />
@@ -99,7 +115,7 @@ export default function ResetForm({
                     />
                     <Input
                       className="rounded-l-none"
-                      placeholder="Enter your telephone..."
+                      placeholder={t("register.telephonePlaceholder", "Enter your telephone...")}
                       type="tel"
                       {...field}
                     />
@@ -117,7 +133,7 @@ export default function ResetForm({
                 <FormControl>
                   <div className="flex items-center gap-2">
                     <Input
-                      placeholder="Enter code..."
+                      placeholder={t("register.codePlaceholder", "Enter code...")}
                       type="text"
                       {...field}
                       value={field.value as string}
@@ -143,7 +159,7 @@ export default function ResetForm({
               <FormItem>
                 <FormControl>
                   <Input
-                    placeholder="Enter your new password..."
+                    placeholder={t("reset.passwordPlaceholder", "Enter your new password...")}
                     type="password"
                     {...field}
                   />
@@ -152,7 +168,7 @@ export default function ResetForm({
               </FormItem>
             )}
           />
-          {verify.enable_reset_password_verify && (
+          {captchaEnabled && isTurnstile && (
             <FormField
               control={form.control}
               name="cf_token"
@@ -163,6 +179,24 @@ export default function ResetForm({
                       id="reset"
                       {...field}
                       ref={turnstile}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
+          {captchaEnabled && isLocal && (
+            <FormField
+              control={form.control}
+              name="captcha_code"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <LocalCaptcha
+                      {...field}
+                      ref={localCaptcha}
+                      onCaptchaIdChange={setCaptchaId}
                     />
                   </FormControl>
                   <FormMessage />

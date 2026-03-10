@@ -49,9 +49,14 @@ export const useGlobalStore = create<GlobalStore>((set, get) => ({
     },
     verify: {
       turnstile_site_key: "",
+      captcha_type: "turnstile",
       enable_login_verify: false,
       enable_register_verify: false,
       enable_reset_password_verify: false,
+      enable_user_login_captcha: false,
+      enable_user_register_captcha: false,
+      enable_user_reset_password_captcha: false,
+      enable_admin_login_captcha: false,
     },
     auth: {
       mobile: {

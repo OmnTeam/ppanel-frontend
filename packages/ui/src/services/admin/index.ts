@@ -5,6 +5,7 @@
 import * as ads from "./ads";
 import * as announcement from "./announcement";
 import * as application from "./application";
+import * as auth from "./auth";
 import * as authMethod from "./authMethod";
 import * as console from "./console";
 import * as coupon from "./coupon";
@@ -24,6 +25,7 @@ export default {
   ads,
   announcement,
   application,
+  auth,
   authMethod,
   console,
   coupon,
