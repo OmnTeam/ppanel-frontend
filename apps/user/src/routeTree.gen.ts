@@ -28,6 +28,9 @@ const mainPurchasingIndexLazyRouteImport = createFileRoute(
   '/(main)/purchasing/',
 )()
 const mainuserWalletLazyRouteImport = createFileRoute('/(main)/(user)/wallet')()
+const mainuserTrafficLazyRouteImport = createFileRoute(
+  '/(main)/(user)/traffic',
+)()
 const mainuserTicketLazyRouteImport = createFileRoute('/(main)/(user)/ticket')()
 const mainuserSubscribeLazyRouteImport = createFileRoute(
   '/(main)/(user)/subscribe',
@@ -126,6 +129,15 @@ const mainuserWalletLazyRoute = mainuserWalletLazyRouteImport
     getParentRoute: () => mainuserRouteLazyRoute,
   } as any)
   .lazy(() => import('./routes/(main)/(user)/wallet.lazy').then((d) => d.Route))
+const mainuserTrafficLazyRoute = mainuserTrafficLazyRouteImport
+  .update({
+    id: '/traffic',
+    path: '/traffic',
+    getParentRoute: () => mainuserRouteLazyRoute,
+  } as any)
+  .lazy(() =>
+    import('./routes/(main)/(user)/traffic.lazy').then((d) => d.Route),
+  )
 const mainuserTicketLazyRoute = mainuserTicketLazyRouteImport
   .update({
     id: '/ticket',
@@ -220,6 +232,7 @@ export interface FileRoutesByFullPath {
   '/profile': typeof mainuserProfileLazyRoute
   '/subscribe': typeof mainuserSubscribeLazyRoute
   '/ticket': typeof mainuserTicketLazyRoute
+  '/traffic': typeof mainuserTrafficLazyRoute
   '/wallet': typeof mainuserWalletLazyRoute
   '/purchasing': typeof mainPurchasingIndexLazyRoute
   '/purchasing/order': typeof mainPurchasingOrderIndexRoute
@@ -240,6 +253,7 @@ export interface FileRoutesByTo {
   '/profile': typeof mainuserProfileLazyRoute
   '/subscribe': typeof mainuserSubscribeLazyRoute
   '/ticket': typeof mainuserTicketLazyRoute
+  '/traffic': typeof mainuserTrafficLazyRoute
   '/wallet': typeof mainuserWalletLazyRoute
   '/purchasing': typeof mainPurchasingIndexLazyRoute
   '/purchasing/order': typeof mainPurchasingOrderIndexRoute
@@ -263,6 +277,7 @@ export interface FileRoutesById {
   '/(main)/(user)/profile': typeof mainuserProfileLazyRoute
   '/(main)/(user)/subscribe': typeof mainuserSubscribeLazyRoute
   '/(main)/(user)/ticket': typeof mainuserTicketLazyRoute
+  '/(main)/(user)/traffic': typeof mainuserTrafficLazyRoute
   '/(main)/(user)/wallet': typeof mainuserWalletLazyRoute
   '/(main)/purchasing/': typeof mainPurchasingIndexLazyRoute
   '/(main)/purchasing/order/': typeof mainPurchasingOrderIndexRoute
@@ -285,6 +300,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/subscribe'
     | '/ticket'
+    | '/traffic'
     | '/wallet'
     | '/purchasing'
     | '/purchasing/order'
@@ -305,6 +321,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/subscribe'
     | '/ticket'
+    | '/traffic'
     | '/wallet'
     | '/purchasing'
     | '/purchasing/order'
@@ -327,6 +344,7 @@ export interface FileRouteTypes {
     | '/(main)/(user)/profile'
     | '/(main)/(user)/subscribe'
     | '/(main)/(user)/ticket'
+    | '/(main)/(user)/traffic'
     | '/(main)/(user)/wallet'
     | '/(main)/purchasing/'
     | '/(main)/purchasing/order/'
@@ -418,6 +436,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof mainuserWalletLazyRouteImport
       parentRoute: typeof mainuserRouteLazyRoute
     }
+    '/(main)/(user)/traffic': {
+      id: '/(main)/(user)/traffic'
+      path: '/traffic'
+      fullPath: '/traffic'
+      preLoaderRoute: typeof mainuserTrafficLazyRouteImport
+      parentRoute: typeof mainuserRouteLazyRoute
+    }
     '/(main)/(user)/ticket': {
       id: '/(main)/(user)/ticket'
       path: '/ticket'
@@ -493,6 +518,7 @@ interface mainuserRouteLazyRouteChildren {
   mainuserProfileLazyRoute: typeof mainuserProfileLazyRoute
   mainuserSubscribeLazyRoute: typeof mainuserSubscribeLazyRoute
   mainuserTicketLazyRoute: typeof mainuserTicketLazyRoute
+  mainuserTrafficLazyRoute: typeof mainuserTrafficLazyRoute
   mainuserWalletLazyRoute: typeof mainuserWalletLazyRoute
 }
 
@@ -505,6 +531,7 @@ const mainuserRouteLazyRouteChildren: mainuserRouteLazyRouteChildren = {
   mainuserProfileLazyRoute: mainuserProfileLazyRoute,
   mainuserSubscribeLazyRoute: mainuserSubscribeLazyRoute,
   mainuserTicketLazyRoute: mainuserTicketLazyRoute,
+  mainuserTrafficLazyRoute: mainuserTrafficLazyRoute,
   mainuserWalletLazyRoute: mainuserWalletLazyRoute,
 }
 

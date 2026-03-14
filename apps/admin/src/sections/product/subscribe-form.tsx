@@ -84,6 +84,7 @@ const defaultValues = {
   renewal_reset: false,
   show_original_price: false,
   deduction_mode: "auto",
+  traffic_limit: [],
 };
 
 export default function SubscribeForm<T extends Record<string, any>>({
@@ -129,6 +130,16 @@ export default function SubscribeForm<T extends Record<string, any>>({
     reset_cycle: z.number().optional(),
     renewal_reset: z.boolean().optional(),
     show_original_price: z.boolean().optional(),
+    traffic_limit: z
+      .array(
+        z.object({
+          stat_type: z.string(),
+          stat_value: z.number().int(),
+          traffic_usage: z.number(),
+          speed_limit: z.number(),
+        })
+      )
+      .optional(),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -283,12 +294,14 @@ export default function SubscribeForm<T extends Record<string, any>>({
 
   const tagGroups = getAllAvailableTags();
 
-  // Fetch node groups
+  // Fetch node groups (exclude expired groups)
   const { data: nodeGroupsData } = useQuery({
     queryKey: ["nodeGroups"],
     queryFn: async () => {
       const { data } = await getNodeGroupList({ page: 1, size: 1000 });
-      return data.data?.list || [];
+      const allGroups = data.data?.list || [];
+      // Filter out expired node groups
+      return allGroups.filter((group) => !group.is_expired_group);
     },
   });
 
@@ -344,7 +357,7 @@ export default function SubscribeForm<T extends Record<string, any>>({
           <Form {...form}>
             <form className="pt-4" onSubmit={form.handleSubmit(handleSubmit)}>
               <Tabs className="w-full" defaultValue="basic">
-                <TabsList className="mb-6 grid w-full grid-cols-3">
+                <TabsList className="mb-6 grid w-full grid-cols-4">
                   <TabsTrigger
                     className="flex items-center gap-2"
                     value="basic"
@@ -365,6 +378,13 @@ export default function SubscribeForm<T extends Record<string, any>>({
                   >
                     <Server className="h-4 w-4" />
                     {t("form.nodes")}
+                  </TabsTrigger>
+                  <TabsTrigger
+                    className="flex items-center gap-2"
+                    value="traffic-limit"
+                  >
+                    <Icon className="h-4 w-4" icon="uil:tachometer-fast" />
+                    {t("form.trafficLimit")}
                   </TabsTrigger>
                 </TabsList>
 
@@ -1394,6 +1414,91 @@ export default function SubscribeForm<T extends Record<string, any>>({
                         )}
                       </>
                     )}
+                  </div>
+                </TabsContent>
+
+                {/* Traffic Limit Tab */}
+                <TabsContent className="space-y-4" value="traffic-limit">
+                  <div className="space-y-4">
+                    <FormField
+                      control={form.control}
+                      name="traffic_limit"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t("form.trafficLimitRules", "Traffic Limit Rules")}</FormLabel>
+                          <FormControl>
+                            <ArrayInput
+                              value={field.value && field.value.length > 0 ? field.value : [{ stat_type: "day" }]}
+                              onChange={field.onChange}
+                              fields={[
+                                {
+                                  name: "stat_type",
+                                  type: "select",
+                                  placeholder: t("form.statType", "Statistics Type"),
+                                  value: "day",
+                                  options: [
+                                    { label: t("form.statTypeHour", "Hour"), value: "hour" },
+                                    { label: t("form.statTypeDay", "Day"), value: "day" },
+                                  ],
+                                },
+                                {
+                                  name: "stat_value",
+                                  type: "number",
+                                  placeholder: t("form.statValue", "Time Value"),
+                                  min: 1,
+                                  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => {
+                                    if (e.key === '.' || e.key === ',') {
+                                      e.preventDefault();
+                                    }
+                                  },
+                                  formatOutput: (value: string | number) => {
+                                    const num = Number(value);
+                                    return isNaN(num) ? 0 : Math.floor(num);
+                                  },
+                                },
+                                {
+                                  name: "traffic_usage",
+                                  type: "number",
+                                  placeholder: t("form.trafficUsage", "Traffic Usage (GB)"),
+                                  min: 0,
+                                  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => {
+                                    if (e.key === '.' || e.key === ',') {
+                                      e.preventDefault();
+                                    }
+                                  },
+                                  formatOutput: (value: string | number) => {
+                                    const num = Number(value);
+                                    return isNaN(num) ? 0 : Math.floor(num);
+                                  },
+                                },
+                                {
+                                  name: "speed_limit",
+                                  type: "number",
+                                  placeholder: t("form.speedLimitKb", "Speed Limit (kb)"),
+                                  min: 0,
+                                  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => {
+                                    if (e.key === '.' || e.key === ',') {
+                                      e.preventDefault();
+                                    }
+                                  },
+                                  formatOutput: (value: string | number) => {
+                                    const num = Number(value);
+                                    return isNaN(num) ? 0 : Math.floor(num);
+                                  },
+                                },
+                              ]}
+                            />
+                          </FormControl>
+                          <FormDescription>
+                            {t(
+                              "form.trafficLimitDescription",
+                              "Configure traffic-based speed limit rules. When traffic usage reaches the specified amount, the speed will be limited."
+                            )}
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                   </div>
                 </TabsContent>
               </Tabs>

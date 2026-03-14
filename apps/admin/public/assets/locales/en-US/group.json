@@ -182,5 +182,19 @@
   "validationFailed": "Validation failed",
   "totalNodeGroups": "Total Node Groups",
   "invalidRange": "Minimum traffic must be less than maximum traffic",
-  "rangeConflict": "Traffic range conflicts with node group \"{{name}}\" (range: {{min}} - {{max}} GB)"
+  "rangeConflict": "Traffic range conflicts with node group \"{{name}}\" (range: {{min}} - {{max}} GB)",
+  "isExpiredGroup": "Expired Node Group",
+  "isExpiredGroupDescription": "Allow expired users to use limited nodes",
+  "expiredDaysLimit": "Expired Days Limit",
+  "expiredDaysLimitDescription": "Number of days after expiration that users can still access nodes",
+  "maxTrafficGBExpired": "Max Traffic for Expired Users (GB)",
+  "maxTrafficGBExpiredDescription": "Maximum traffic allowed for expired users (0 = unlimited)",
+  "speedLimit": "Speed Limit (KB/s)",
+  "speedLimitDescription": "Speed limit for users in this node group (0 = unlimited)",
+  "expiredGroup": "Expired Only",
+  "expiredSettings": "Expired Settings",
+  "days": "days",
+  "expiredGroupExists": "System already has an expired node group: {{name}}",
+  "nodeGroupUsedBySubscribe": "This node group is used as default node group in subscription products, cannot set as expired group",
+  "expiredGroupForCalculationDescription": "Expired-only node groups cannot participate in group calculation"
 }

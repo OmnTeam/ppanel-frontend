@@ -76,6 +76,7 @@
     "server": "服务器管理",
     "subscribe": "订阅管理",
     "ticket": "工单管理",
+    "traffic": "流量统计",
     "wallet": "余额管理"
   },
   "pagination": {

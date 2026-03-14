@@ -31,12 +31,14 @@ export default function SubscribeTable() {
   const ref = useRef<ProTableActions>(null);
   const { fetchSubscribes } = useSubscribe();
 
-  // Fetch node groups for filtering
+  // Fetch node groups for filtering (exclude expired groups)
   const { data: nodeGroupsData } = useQuery({
     queryKey: ["nodeGroups"],
     queryFn: async () => {
       const { data } = await getNodeGroupList({ page: 1, size: 1000 });
-      return data.data?.list || [];
+      const allGroups = data.data?.list || [];
+      // Filter out expired node groups
+      return allGroups.filter((group) => !group.is_expired_group);
     },
   });
 

@@ -1184,6 +1184,7 @@ declare namespace API {
 
   type UserSubscribe = {
     id: number;
+    id_str: string;
     user_id: number;
     order_id: number;
     subscribe_id: number;

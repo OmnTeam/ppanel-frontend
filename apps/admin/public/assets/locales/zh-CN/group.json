@@ -182,6 +182,20 @@
   "validationFailed": "验证失败",
   "totalNodeGroups": "总节点组数",
   "invalidRange": "最小流量必须小于最大流量",
-  "rangeConflict": "流量区间与节点组 \"{{name}}\" 冲突（区间：{{min}} - {{max}} GB）"
+  "rangeConflict": "流量区间与节点组 \"{{name}}\" 冲突（区间：{{min}} - {{max}} GB）",
+  "isExpiredGroup": "过期节点组",
+  "isExpiredGroupDescription": "允许过期用户使用受限节点",
+  "expiredDaysLimit": "过期天数限制",
+  "expiredDaysLimitDescription": "用户订阅过期后仍可访问节点的天数",
+  "maxTrafficGBExpired": "过期用户最大流量 (GB)",
+  "maxTrafficGBExpiredDescription": "过期用户允许使用的最大流量（0 = 不限制）",
+  "speedLimit": "限速 (KB/s)",
+  "speedLimitDescription": "该节点组用户的速度限制（0 = 不限制）",
+  "expiredGroup": "过期专用",
+  "expiredSettings": "过期设置",
+  "days": "天",
+  "expiredGroupExists": "系统中已存在过期节点组：{{name}}",
+  "nodeGroupUsedBySubscribe": "该节点组已被订阅商品设置为默认节点组，不能设为过期节点组",
+  "expiredGroupForCalculationDescription": "过期专用节点组不能参与分组计算"
 }
 

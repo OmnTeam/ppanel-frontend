@@ -1,0 +1,16 @@
+{
+  "title": "Traffic Statistics",
+  "selectSubscription": "Select Subscription",
+  "days7": "7 Days",
+  "days30": "30 Days",
+  "totalTraffic": "Total Traffic",
+  "uploadTraffic": "Upload Traffic",
+  "downloadTraffic": "Download Traffic",
+  "trafficTrend": "Traffic Trend",
+  "trafficRatio": "Upload/Download Ratio",
+  "upload": "Upload",
+  "download": "Download",
+  "noData": "No traffic data available",
+  "date": "Date",
+  "traffic": "Traffic (MB)"
+}

@@ -40,6 +40,10 @@ const NodeGroupForm = forwardRef<
     description: "",
     sort: 0,
     for_calculation: true,
+    is_expired_group: false,
+    expired_days_limit: 7,
+    max_traffic_gb_expired: 0,
+    speed_limit: 0,
     min_traffic_gb: 0,
     max_traffic_gb: 0,
   });
@@ -53,6 +57,10 @@ const NodeGroupForm = forwardRef<
           description: initialValues.description || "",
           sort: initialValues.sort ?? 0,
           for_calculation: initialValues.for_calculation ?? true,
+          is_expired_group: initialValues.is_expired_group ?? false,
+          expired_days_limit: initialValues.expired_days_limit ?? 7,
+          max_traffic_gb_expired: initialValues.max_traffic_gb_expired ?? 0,
+          speed_limit: initialValues.speed_limit ?? 0,
           min_traffic_gb: initialValues.min_traffic_gb ?? 0,
           max_traffic_gb: initialValues.max_traffic_gb ?? 0,
         });
@@ -62,6 +70,10 @@ const NodeGroupForm = forwardRef<
           description: "",
           sort: 0,
           for_calculation: true,
+          is_expired_group: false,
+          expired_days_limit: 7,
+          max_traffic_gb_expired: 0,
+          speed_limit: 0,
           min_traffic_gb: 0,
           max_traffic_gb: 0,
         });
@@ -118,14 +130,67 @@ const NodeGroupForm = forwardRef<
     return "";
   };
 
+  // 检测过期节点组冲突
+  const checkExpiredGroupConflict = async (isExpiredGroup: boolean): Promise<string> => {
+    if (!isExpiredGroup) {
+      return "";
+    }
+
+    // 检查是否已存在其他过期节点组
+    const existingExpiredGroup = allNodeGroups.find(
+      (group) => group.is_expired_group && group.id !== currentGroupId
+    );
+
+    if (existingExpiredGroup) {
+      return t("expiredGroupExists", `System already has an expired node group: ${existingExpiredGroup.name}`);
+    }
+
+    // 检查当前节点组是否被订阅商品使用
+    if (currentGroupId) {
+      try {
+        const { getSubscribeList } = await import("@workspace/ui/services/admin/subscribe");
+        const { data } = await getSubscribeList({
+          page: 1,
+          size: 1,
+          node_group_id: currentGroupId
+        });
+
+        if (data.data && data.data.total > 0) {
+          return t("nodeGroupUsedBySubscribe", "This node group is used as default node group in subscription products, cannot set as expired group");
+        }
+      } catch (error) {
+        console.error("Failed to check subscribe usage:", error);
+      }
+    }
+
+    return "";
+  };
+
+  // 检查是否存在其他过期节点组（用于隐藏开关）
+  const hasOtherExpiredGroup = allNodeGroups.some(
+    (group) => group.is_expired_group && group.id !== currentGroupId
+  );
+
+  // 当前是否是过期节点组（编辑模式下）
+  const isCurrentExpiredGroup = initialValues?.is_expired_group ?? false;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // 检测流量区间冲突
-    const conflict = checkTrafficRangeConflict(values.min_traffic_gb, values.max_traffic_gb);
-    if (conflict) {
-      setConflictError(conflict);
+    // 检测过期节点组冲突
+    const expiredGroupConflict = await checkExpiredGroupConflict(values.is_expired_group);
+    if (expiredGroupConflict) {
+      setConflictError(expiredGroupConflict);
       return;
+    }
+
+    // 仅在非过期节点组时检测流量区间冲突
+    if (!values.is_expired_group) {
+      const conflict = checkTrafficRangeConflict(values.min_traffic_gb, values.max_traffic_gb);
+      if (conflict) {
+        setConflictError(conflict);
+        return;
+      }
     }
 
     setSubmitting(true);
@@ -139,6 +204,10 @@ const NodeGroupForm = forwardRef<
         description: "",
         sort: 0,
         for_calculation: true,
+        is_expired_group: false,
+        expired_days_limit: 7,
+        max_traffic_gb_expired: 0,
+        speed_limit: 0,
         min_traffic_gb: 0,
         max_traffic_gb: 0,
       });
@@ -207,69 +276,159 @@ const NodeGroupForm = forwardRef<
                 {t("forCalculation", "For Calculation")}
               </Label>
               <p className="text-sm text-muted-foreground">
-                {t("forCalculationDescription", "Whether this node group participates in grouping calculation")}
+                {values.is_expired_group
+                  ? t("expiredGroupForCalculationDescription", "Expired-only node groups cannot participate in group calculation")
+                  : t("forCalculationDescription", "Whether this node group participates in grouping calculation")}
               </p>
             </div>
             <Switch
               id="for_calculation"
               checked={values.for_calculation}
+              disabled={values.is_expired_group}
               onCheckedChange={(checked) =>
                 setValues({ ...values, for_calculation: checked })
               }
             />
           </div>
 
-          <div className="space-y-2">
+          {/* 仅在没有其他过期节点组或当前就是过期节点组时显示 */}
+          {(!hasOtherExpiredGroup || isCurrentExpiredGroup) && (
             <div className="flex items-center justify-between">
-              <Label>{t("trafficRangeGB", "Traffic Range (GB)")}</Label>
+              <div className="space-y-0.5">
+                <Label htmlFor="is_expired_group">
+                  {t("isExpiredGroup", "Expired Node Group")}
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  {t("isExpiredGroupDescription", "Allow expired users to use limited nodes")}
+                </p>
+              </div>
+              <Switch
+                id="is_expired_group"
+                checked={values.is_expired_group}
+                onCheckedChange={async (checked) => {
+                  setValues({
+                    ...values,
+                    is_expired_group: checked,
+                    for_calculation: checked ? false : values.for_calculation,
+                    min_traffic_gb: checked ? 0 : values.min_traffic_gb,
+                    max_traffic_gb: checked ? 0 : values.max_traffic_gb,
+                  });
+                  // 实时检测过期节点组冲突
+                  const conflict = await checkExpiredGroupConflict(checked);
+                  setConflictError(conflict);
+                }}
+              />
             </div>
-            <p className="text-sm text-muted-foreground">
-              {t("trafficRangeDescription", "Users with traffic >= Min and < Max will be assigned to this node group")}
-            </p>
-            <div className="grid grid-cols-2 gap-4">
+          )}
+
+          {values.is_expired_group && (
+            <>
               <div className="space-y-2">
-                <Label htmlFor="min_traffic_gb">{t("minTrafficGB", "Min Traffic (GB)")}</Label>
+                <Label htmlFor="expired_days_limit">
+                  {t("expiredDaysLimit", "Expired Days Limit")}
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  {t("expiredDaysLimitDescription", "Number of days after expiration that users can still access nodes")}
+                </p>
                 <Input
-                  id="min_traffic_gb"
+                  id="expired_days_limit"
                   type="number"
-                  min={0}
-                  step={1}
-                  value={values.min_traffic_gb}
-                  onChange={(e) => {
-                    const newValue = parseFloat(e.target.value) || 0;
-                    setValues({ ...values, min_traffic_gb: newValue });
-                    // 实时检测冲突
-                    const conflict = checkTrafficRangeConflict(newValue, values.max_traffic_gb);
-                    setConflictError(conflict);
-                  }}
+                  min={1}
+                  value={values.expired_days_limit}
+                  onChange={(e) =>
+                    setValues({ ...values, expired_days_limit: parseInt(e.target.value) || 7 })
+                  }
                 />
               </div>
+
               <div className="space-y-2">
-                <Label htmlFor="max_traffic_gb">{t("maxTrafficGB", "Max Traffic (GB)")}</Label>
+                <Label htmlFor="max_traffic_gb_expired">
+                  {t("maxTrafficGBExpired", "Max Traffic for Expired Users (GB)")}
+                </Label>
+                <p className="text-sm text-muted-foreground">
+                  {t("maxTrafficGBExpiredDescription", "Maximum traffic allowed for expired users (0 = unlimited)")}
+                </p>
                 <Input
-                  id="max_traffic_gb"
+                  id="max_traffic_gb_expired"
                   type="number"
                   min={0}
-                  step={1}
-                  value={values.max_traffic_gb}
-                  onChange={(e) => {
-                    const newValue = parseFloat(e.target.value) || 0;
-                    setValues({ ...values, max_traffic_gb: newValue });
-                    // 实时检测冲突
-                    const conflict = checkTrafficRangeConflict(values.min_traffic_gb, newValue);
-                    setConflictError(conflict);
-                  }}
+                  value={values.max_traffic_gb_expired}
+                  onChange={(e) =>
+                    setValues({ ...values, max_traffic_gb_expired: parseInt(e.target.value) || 0 })
+                  }
                 />
               </div>
-            </div>
-            {/* 显示冲突错误 */}
-            {conflictError && (
-              <div className="flex items-center gap-2 rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
-                <AlertCircle className="h-4 w-4 flex-shrink-0" />
-                <span>{conflictError}</span>
+
+              <div className="space-y-2">
+                <Label htmlFor="speed_limit">
+                  {t("speedLimit", "Speed Limit (KB/s)")}
+                </Label>
+                <Input
+                  id="speed_limit"
+                  type="number"
+                  min={0}
+                  value={values.speed_limit}
+                  onChange={(e) =>
+                    setValues({ ...values, speed_limit: parseInt(e.target.value) || 0 })
+                  }
+                />
               </div>
-            )}
-          </div>
+            </>
+          )}
+
+          {!values.is_expired_group && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label>{t("trafficRangeGB", "Traffic Range (GB)")}</Label>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {t("trafficRangeDescription", "Users with traffic >= Min and < Max will be assigned to this node group")}
+              </p>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="min_traffic_gb">{t("minTrafficGB", "Min Traffic (GB)")}</Label>
+                  <Input
+                    id="min_traffic_gb"
+                    type="number"
+                    min={0}
+                    step={1}
+                    value={values.min_traffic_gb}
+                    onChange={(e) => {
+                      const newValue = parseFloat(e.target.value) || 0;
+                      setValues({ ...values, min_traffic_gb: newValue });
+                      // 实时检测冲突
+                      const conflict = checkTrafficRangeConflict(newValue, values.max_traffic_gb);
+                      setConflictError(conflict);
+                    }}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="max_traffic_gb">{t("maxTrafficGB", "Max Traffic (GB)")}</Label>
+                  <Input
+                    id="max_traffic_gb"
+                    type="number"
+                    min={0}
+                    step={1}
+                    value={values.max_traffic_gb}
+                    onChange={(e) => {
+                      const newValue = parseFloat(e.target.value) || 0;
+                      setValues({ ...values, max_traffic_gb: newValue });
+                      // 实时检测冲突
+                      const conflict = checkTrafficRangeConflict(values.min_traffic_gb, newValue);
+                      setConflictError(conflict);
+                    }}
+                  />
+                </div>
+              </div>
+              {/* 显示冲突错误 */}
+              {conflictError && (
+                <div className="flex items-center gap-2 rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
+                  <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                  <span>{conflictError}</span>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="flex justify-end gap-2">
             <button

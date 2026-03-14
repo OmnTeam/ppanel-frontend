@@ -77,6 +77,19 @@ export default function NodeGroups() {
                 id: "name",
                 accessorKey: "name",
                 header: t("name", "Name"),
+                cell: ({ row }: { row: any }) => {
+                  const isExpiredGroup = row.original.is_expired_group;
+                  return (
+                    <div className="flex items-center gap-2">
+                      <span>{row.getValue("name")}</span>
+                      {isExpiredGroup && (
+                        <Badge variant="destructive">
+                          {t("expiredGroup", "Expired")}
+                        </Badge>
+                      )}
+                    </div>
+                  );
+                },
               },
               {
                 id: "description",
@@ -99,7 +112,6 @@ export default function NodeGroups() {
               },
               {
                 id: "traffic_range",
-                accessorKey: "traffic_range",
                 header: t("trafficRange", "Traffic Range (GB)"),
                 cell: ({ row }: { row: any }) => {
                   const min = row.original.min_traffic_gb;

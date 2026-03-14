@@ -40,6 +40,11 @@ export function useNavs() {
           icon: "uil:shop",
           title: t("menu.subscribe", "Subscribe"),
         },
+        {
+          url: "/traffic",
+          icon: "uil:chart-line",
+          title: t("menu.traffic", "Traffic Statistics"),
+        },
       ],
     },
     {

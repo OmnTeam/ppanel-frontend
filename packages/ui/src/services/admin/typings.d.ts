@@ -2693,8 +2693,13 @@ declare namespace API {
     description: string;
     sort: number;
     for_calculation: boolean;
+    is_expired_group: boolean;
+    expired_days_limit: number;
+    max_traffic_gb_expired?: number;
+    speed_limit: number;
     min_traffic_gb?: number;
     max_traffic_gb?: number;
+    node_count?: number;
     created_at: number;
     updated_at: number;
   };
@@ -2832,6 +2837,10 @@ declare namespace API {
     description?: string;
     sort?: number;
     for_calculation?: boolean;
+    is_expired_group?: boolean;
+    expired_days_limit?: number;
+    max_traffic_gb_expired?: number;
+    speed_limit?: number;
     min_traffic_gb?: number;
     max_traffic_gb?: number;
   };
@@ -2842,6 +2851,10 @@ declare namespace API {
     description?: string;
     sort?: number;
     for_calculation?: boolean;
+    is_expired_group?: boolean;
+    expired_days_limit?: number;
+    max_traffic_gb_expired?: number;
+    speed_limit?: number;
     min_traffic_gb?: number;
     max_traffic_gb?: number;
   };

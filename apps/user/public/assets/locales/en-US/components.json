@@ -76,6 +76,7 @@
     "server": "Server Management",
     "subscribe": "Subscribe",
     "ticket": "Ticket Management",
+    "traffic": "Traffic Statistics",
     "wallet": "Balance"
   },
   "pagination": {
