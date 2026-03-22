@@ -19,6 +19,7 @@ import SendCode from "../send-code";
 import type { TurnstileRef } from "../turnstile";
 import CloudFlareTurnstile from "../turnstile";
 import LocalCaptcha, { type LocalCaptchaRef } from "../local-captcha";
+import SliderCaptcha, { type SliderCaptchaRef } from "../slider-captcha";
 
 export default function ResetForm({
   loading,
@@ -41,6 +42,7 @@ export default function ResetForm({
 
   const isTurnstile = verify.captcha_type === "turnstile";
   const isLocal = verify.captcha_type === "local";
+  const isSlider = verify.captcha_type === "slider";
   const captchaEnabled = verify.enable_user_reset_password_captcha;
 
   const formSchema = z.object({
@@ -57,14 +59,19 @@ export default function ResetForm({
       captchaEnabled && isLocal
         ? z.string().min(1, t("captcha.required", "Please enter captcha code"))
         : z.string().nullish(),
+    slider_token:
+      captchaEnabled && isSlider
+        ? z.string().min(1, t("captcha.sliderRequired", "Please complete the slider"))
+        : z.string().optional(),
   });
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: initialValues,
+    defaultValues: { cf_token: "", captcha_code: "", slider_token: "", ...initialValues },
   });
 
   const turnstile = useRef<TurnstileRef>(null);
   const localCaptcha = useRef<LocalCaptchaRef>(null);
+  const sliderCaptcha = useRef<SliderCaptchaRef>(null);
   const handleSubmit = form.handleSubmit((data) => {
     try {
       // Add captcha_id for local captcha
@@ -75,6 +82,7 @@ export default function ResetForm({
     } catch (_error) {
       turnstile.current?.reset();
       localCaptcha.current?.reset();
+      sliderCaptcha.current?.reset();
     }
   });
 
@@ -170,6 +178,23 @@ export default function ResetForm({
                       {...field}
                       ref={localCaptcha}
                       onCaptchaIdChange={setCaptchaId}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          )}
+          {captchaEnabled && isSlider && (
+            <FormField
+              control={form.control}
+              name="slider_token"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <SliderCaptcha
+                      {...field}
+                      ref={sliderCaptcha}
                     />
                   </FormControl>
                   <FormMessage />

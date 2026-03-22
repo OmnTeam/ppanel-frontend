@@ -105,9 +105,10 @@
   "userSecuritySettings": "User & Security",
   "verify": {
     "captchaType": "Captcha Type",
-    "captchaTypeDescription": "Choose between local image captcha (offline) or Cloudflare Turnstile",
+    "captchaTypeDescription": "Choose between local image captcha, local slider captcha (offline) or Cloudflare Turnstile",
     "captchaTypeLocal": "Local Image Captcha",
     "captchaTypePlaceholder": "Select captcha type",
+    "captchaTypeSlider": "Local Slider Captcha",
     "captchaTypeTurnstile": "Cloudflare Turnstile",
     "description": "Configure captcha type and verification settings",
     "enableAdminLoginCaptcha": "Enable Admin Authentication Captcha",

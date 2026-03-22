@@ -105,9 +105,10 @@
   "userSecuritySettings": "用户与安全",
   "verify": {
     "captchaType": "验证码类型",
-    "captchaTypeDescription": "选择本地图形验证码（离线）或 Cloudflare Turnstile",
+    "captchaTypeDescription": "选择本地图形验证码、本地滑块验证码（均可离线）或 Cloudflare Turnstile",
     "captchaTypeLocal": "本地图形验证码",
     "captchaTypePlaceholder": "选择验证码类型",
+    "captchaTypeSlider": "本地滑块验证码",
     "captchaTypeTurnstile": "Cloudflare Turnstile",
     "description": "配置验证码类型和验证设置",
     "enableAdminLoginCaptcha": "启用管理端认证验证码",

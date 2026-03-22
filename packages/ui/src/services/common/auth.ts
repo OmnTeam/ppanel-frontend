@@ -177,3 +177,21 @@ export async function generateCaptcha(options?: { [key: string]: any }) {
     }
   );
 }
+
+/** Verify slider captcha POST /v1/auth/captcha/slider/verify */
+export async function verifyCaptchaSlider(
+  body: { id: string; x: number; y: number; trail: string },
+  options?: { [key: string]: any }
+) {
+  return request<API.Response & { data?: API.SliderVerifyCaptchaResponse }>(
+    `${import.meta.env.VITE_API_PREFIX || ""}/v1/auth/captcha/slider/verify`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: body,
+      ...(options || {}),
+    }
+  );
+}

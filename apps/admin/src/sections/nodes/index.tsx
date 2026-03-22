@@ -274,7 +274,6 @@ export default function Nodes() {
                   port: Number(values.port!),
                   tags: values.tags || [],
                 };
-                // Add node_group_ids if it exists
                 if (values.node_group_ids) {
                   body.node_group_ids = values.node_group_ids.map((id: string | number) => Number(id));
                 }
@@ -290,8 +289,8 @@ export default function Nodes() {
                 return false;
               }
             }}
-            title={t("drawerCreateTitle", "Create Node")}
-            trigger={t("create", "Create")}
+            title={t("drawerCreateTitle", "Create Landing Node")}
+            trigger={t("create", "Create Landing Node")}
           />
         ),
       }}

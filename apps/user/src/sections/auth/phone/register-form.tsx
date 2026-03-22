@@ -21,6 +21,7 @@ import SendCode from "../send-code";
 import type { TurnstileRef } from "../turnstile";
 import CloudFlareTurnstile from "../turnstile";
 import LocalCaptcha, { type LocalCaptchaRef } from "../local-captcha";
+import SliderCaptcha, { type SliderCaptchaRef } from "../slider-captcha";
 
 export default function RegisterForm({
   loading,
@@ -41,6 +42,7 @@ export default function RegisterForm({
 
   const isTurnstile = verify.captcha_type === "turnstile";
   const isLocal = verify.captcha_type === "local";
+  const isSlider = verify.captcha_type === "slider";
   const captchaEnabled = verify.enable_user_register_captcha;
 
   const formSchema = z
@@ -59,6 +61,10 @@ export default function RegisterForm({
         captchaEnabled && isLocal
           ? z.string().min(1, t("captcha.required", "Please enter captcha code"))
           : z.string().nullish(),
+      slider_token:
+        captchaEnabled && isSlider
+          ? z.string().min(1, t("captcha.sliderRequired", "Please complete the slider"))
+          : z.string().optional(),
     })
     .superRefine(({ password, repeat_password }, ctx) => {
       if (password !== repeat_password) {
@@ -73,6 +79,9 @@ export default function RegisterForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      cf_token: "",
+      captcha_code: "",
+      slider_token: "",
       ...initialValues,
       telephone_area_code: initialValues?.telephone_area_code || "1",
       invite: localStorage.getItem("invite") || "",
@@ -81,6 +90,7 @@ export default function RegisterForm({
 
   const turnstile = useRef<TurnstileRef>(null);
   const localCaptcha = useRef<LocalCaptchaRef>(null);
+  const sliderCaptcha = useRef<SliderCaptchaRef>(null);
   const handleSubmit = form.handleSubmit((data) => {
     try {
       // Add captcha_id for local captcha
@@ -91,6 +101,7 @@ export default function RegisterForm({
     } catch (_error) {
       turnstile.current?.reset();
       localCaptcha.current?.reset();
+      sliderCaptcha.current?.reset();
     }
   });
 
@@ -261,6 +272,23 @@ export default function RegisterForm({
                         {...field}
                         ref={localCaptcha}
                         onCaptchaIdChange={setCaptchaId}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+            {captchaEnabled && isSlider && (
+              <FormField
+                control={form.control}
+                name="slider_token"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <SliderCaptcha
+                        {...field}
+                        ref={sliderCaptcha}
                       />
                     </FormControl>
                     <FormMessage />

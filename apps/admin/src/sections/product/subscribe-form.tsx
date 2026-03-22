@@ -1428,7 +1428,7 @@ export default function SubscribeForm<T extends Record<string, any>>({
                           <FormLabel>{t("form.trafficLimitRules", "Traffic Limit Rules")}</FormLabel>
                           <FormControl>
                             <ArrayInput
-                              value={field.value && field.value.length > 0 ? field.value : [{ stat_type: "day" }]}
+                              value={field.value && field.value.length > 0 ? field.value : [{ stat_type: "day", stat_value: 1, traffic_usage: 0, speed_limit: 0 }]}
                               onChange={field.onChange}
                               fields={[
                                 {
@@ -1453,7 +1453,7 @@ export default function SubscribeForm<T extends Record<string, any>>({
                                   },
                                   formatOutput: (value: string | number) => {
                                     const num = Number(value);
-                                    return isNaN(num) ? 0 : Math.floor(num);
+                                    return String(isNaN(num) ? 0 : Math.floor(num));
                                   },
                                 },
                                 {
@@ -1468,7 +1468,7 @@ export default function SubscribeForm<T extends Record<string, any>>({
                                   },
                                   formatOutput: (value: string | number) => {
                                     const num = Number(value);
-                                    return isNaN(num) ? 0 : Math.floor(num);
+                                    return String(isNaN(num) ? 0 : Math.floor(num));
                                   },
                                 },
                                 {
@@ -1483,7 +1483,7 @@ export default function SubscribeForm<T extends Record<string, any>>({
                                   },
                                   formatOutput: (value: string | number) => {
                                     const num = Number(value);
-                                    return isNaN(num) ? 0 : Math.floor(num);
+                                    return String(isNaN(num) ? 0 : Math.floor(num));
                                   },
                                 },
                               ]}

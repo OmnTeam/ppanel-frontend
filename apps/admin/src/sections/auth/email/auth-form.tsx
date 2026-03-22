@@ -2,10 +2,9 @@
 
 import { useNavigate } from "@tanstack/react-router";
 import {
-  resetPassword,
-  userLogin,
   userRegister,
 } from "@workspace/ui/services/common/auth";
+import { adminLogin, adminResetPassword } from "@workspace/ui/services/admin/auth";
 import type { ReactNode } from "react";
 import { useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
@@ -42,7 +41,7 @@ export default function EmailAuthForm() {
       try {
         switch (type) {
           case "login": {
-            const login = await userLogin(params);
+            const login = await adminLogin(params);
             toast.success(t("login.success", "Login successful!"));
             onLogin(login.data.data?.token);
             break;
@@ -54,7 +53,7 @@ export default function EmailAuthForm() {
             break;
           }
           case "reset":
-            await resetPassword(params);
+            await adminResetPassword(params);
             toast.success(t("reset.success", "Password reset successful!"));
             setType("login");
             break;

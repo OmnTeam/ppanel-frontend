@@ -338,6 +338,17 @@ declare namespace API {
     state: string;
   };
 
+  type GenerateCaptchaResponse = {
+    type: string;
+    id: string;
+    image: string;
+    block_image?: string;
+  };
+
+  type SliderVerifyCaptchaResponse = {
+    token: string;
+  };
+
   type HeartbeatResponse = {
     status: boolean;
     message?: string;
@@ -731,6 +742,9 @@ declare namespace API {
     password: string;
     code?: string;
     cf_token?: string;
+    captcha_id?: string;
+    captcha_code?: string;
+    slider_token?: string;
   };
 
   type ResetSubscribeTrafficLog = {
@@ -930,6 +944,9 @@ declare namespace API {
     telephone_area_code: string;
     password: string;
     cf_token?: string;
+    captcha_id?: string;
+    captcha_code?: string;
+    slider_token?: string;
   };
 
   type TelephoneRegisterRequest = {
@@ -940,6 +957,9 @@ declare namespace API {
     invite?: string;
     code?: string;
     cf_token?: string;
+    captcha_id?: string;
+    captcha_code?: string;
+    slider_token?: string;
   };
 
   type TelephoneResetPasswordRequest = {
@@ -949,6 +969,9 @@ declare namespace API {
     password: string;
     code?: string;
     cf_token?: string;
+    captcha_id?: string;
+    captcha_code?: string;
+    slider_token?: string;
   };
 
   type Ticket = {
@@ -1068,6 +1091,9 @@ declare namespace API {
     email: string;
     password: string;
     cf_token?: string;
+    captcha_id?: string;
+    captcha_code?: string;
+    slider_token?: string;
   };
 
   type UserRegisterRequest = {
@@ -1077,6 +1103,9 @@ declare namespace API {
     invite?: string;
     code?: string;
     cf_token?: string;
+    captcha_id?: string;
+    captcha_code?: string;
+    slider_token?: string;
   };
 
   type UserSubscribe = {
