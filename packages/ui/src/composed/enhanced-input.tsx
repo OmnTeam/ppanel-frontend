@@ -30,7 +30,7 @@ export function EnhancedInput<T = string>({
   ...props
 }: EnhancedInputProps<T>) {
   const getProcessedValue = (inputValue: unknown) => {
-    if (inputValue === "" || inputValue === 0 || inputValue === "0") return "";
+    if (inputValue === "" || inputValue === undefined || inputValue === null) return "";
     const newValue = String(inputValue ?? "");
     return formatInput ? formatInput(inputValue as T) : newValue;
   };
@@ -70,7 +70,7 @@ export function EnhancedInput<T = string>({
 
     if (props.type === "number") {
       if (inputValue === "0") {
-        setValue("");
+        setValue("0");
         setInternalValue(0);
         onValueChange?.(processValue(0));
         return;
@@ -99,7 +99,7 @@ export function EnhancedInput<T = string>({
         } else {
           setInternalValue(inputValue);
         }
-        setValue(inputValue === "0" ? "" : inputValue);
+        setValue(inputValue);
       }
     } else {
       setValue(inputValue);
@@ -119,11 +119,6 @@ export function EnhancedInput<T = string>({
         return;
       }
 
-      if (value === "0") {
-        setValue("");
-        onValueBlur?.(processValue(0));
-        return;
-      }
     }
 
     const outputValue = processValue(value);

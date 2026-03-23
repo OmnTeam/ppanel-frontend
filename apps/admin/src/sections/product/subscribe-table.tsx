@@ -241,10 +241,12 @@ export default function SubscribeTable() {
           header: t("inventory"),
           cell: ({ row }) => {
             const inventory = row.getValue("inventory") as number;
-            return inventory === -1 ? (
-              <Display type="number" unlimited value={0} />
-            ) : (
-              <Display type="number" unlimited value={inventory} />
+            return (
+              <Display
+                type="number"
+                unlimited={inventory === -1}
+                value={inventory === -1 ? 0 : inventory}
+              />
             );
           },
         },
