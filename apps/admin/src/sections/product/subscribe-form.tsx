@@ -87,6 +87,30 @@ const defaultValues = {
   traffic_limit: [],
 };
 
+function getFirstValidationMessage(error: unknown): string | undefined {
+  if (!error || typeof error !== "object") return undefined;
+
+  const message = (error as { message?: unknown }).message;
+  if (typeof message === "string" && message.trim()) {
+    return message;
+  }
+
+  if (Array.isArray(error)) {
+    for (const item of error) {
+      const nestedMessage = getFirstValidationMessage(item);
+      if (nestedMessage) return nestedMessage;
+    }
+    return undefined;
+  }
+
+  for (const value of Object.values(error as Record<string, unknown>)) {
+    const nestedMessage = getFirstValidationMessage(value);
+    if (nestedMessage) return nestedMessage;
+  }
+
+  return undefined;
+}
+
 export default function SubscribeForm<T extends Record<string, any>>({
   onSubmit,
   initialValues,
@@ -1453,7 +1477,7 @@ export default function SubscribeForm<T extends Record<string, any>>({
                                   },
                                   formatOutput: (value: string | number) => {
                                     const num = Number(value);
-                                    return String(isNaN(num) ? 0 : Math.floor(num));
+                                    return Number.isNaN(num) ? 0 : Math.floor(num);
                                   },
                                 },
                                 {
@@ -1468,7 +1492,7 @@ export default function SubscribeForm<T extends Record<string, any>>({
                                   },
                                   formatOutput: (value: string | number) => {
                                     const num = Number(value);
-                                    return String(isNaN(num) ? 0 : Math.floor(num));
+                                    return Number.isNaN(num) ? 0 : Math.floor(num);
                                   },
                                 },
                                 {
@@ -1483,7 +1507,7 @@ export default function SubscribeForm<T extends Record<string, any>>({
                                   },
                                   formatOutput: (value: string | number) => {
                                     const num = Number(value);
-                                    return String(isNaN(num) ? 0 : Math.floor(num));
+                                    return Number.isNaN(num) ? 0 : Math.floor(num);
                                   },
                                 },
                               ]}
@@ -1523,10 +1547,10 @@ export default function SubscribeForm<T extends Record<string, any>>({
                 const formattedKey = key.replace(/_([a-z])/g, (_, letter) =>
                   letter.toUpperCase()
                 );
-                const error = (errors as any)[key];
-                toast.error(
-                  `${t(`form.${formattedKey}`)} is ${error?.message}`
-                );
+                const error = (errors as Record<string, unknown>)[key];
+                const errorMessage =
+                  getFirstValidationMessage(error) || "Validation failed";
+                toast.error(`${t(`form.${formattedKey}`)}: ${errorMessage}`);
                 return false;
               }
             })}

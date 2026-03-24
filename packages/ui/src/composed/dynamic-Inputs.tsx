@@ -11,7 +11,7 @@ import { cn } from "@workspace/ui/lib/utils";
 import { CircleMinusIcon, CirclePlusIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
-interface FieldConfig extends Omit<EnhancedInputProps, "type"> {
+interface FieldConfig extends Omit<EnhancedInputProps<string | number>, "type"> {
   name: string;
   type: "text" | "number" | "select" | "time" | "boolean" | "textarea";
   options?: { label: string; value: string }[];
