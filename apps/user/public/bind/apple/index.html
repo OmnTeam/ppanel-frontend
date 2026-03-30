@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bind Redirect</title>
+    <meta http-equiv="refresh" content="0; url=/#/profile">
+    <script>
+    "use strict";
+
+    // Providers redirect to a path without URL fragments (#). Our app uses hash routing.
+    // Bridge /bind/<provider>[/]?... -> /#/bind/<provider>?...
+    (() => {
+      try {
+        let path = window.location.pathname || "/";
+        path = path.replace(/\/$/, "");
+
+        const search = window.location.search || "";
+        const target = `/#${path}${search}`;
+        window.location.replace(target);
+      } catch (_e) {
+        window.location.replace("/#/profile");
+      }
+    })();
+    </script>
+  </head>
+  <body>Redirecting…</body>
+</html>
