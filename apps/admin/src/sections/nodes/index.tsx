@@ -61,12 +61,11 @@ export default function Nodes() {
       name: values.name,
       address: values.address,
       port: Number(values.port),
-      tags: isFrontNode ? [] : values.tags || [],
+      tags: values.tags || [],
       node_type: values.node_type,
       is_hidden: values.is_hidden ?? false,
-      node_group_ids: isFrontNode
-        ? []
-        : values.node_group_ids?.map((id: string | number) => Number(id)) || [],
+      node_group_ids:
+        values.node_group_ids?.map((id: string | number) => Number(id)) || [],
     };
 
     if (isFrontNode) {
@@ -105,6 +104,20 @@ export default function Nodes() {
         id: "name",
         accessorKey: "name",
         header: t("name", "Name"),
+      },
+      {
+        id: "node_type",
+        header: t("node_type", "Node Type"),
+        cell: ({ row }: { row: any }) => {
+          const nodeType = row.original.node_type || "landing";
+          return (
+            <Badge variant={nodeType === "front" ? "secondary" : "outline"}>
+              {nodeType === "front"
+                ? t("node_type_front", "Frontend Node")
+                : t("node_type_landing", "Landing Node")}
+            </Badge>
+          );
+        },
       },
       {
         id: "address_port",

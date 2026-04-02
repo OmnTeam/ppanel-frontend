@@ -21,19 +21,38 @@ import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Display } from "@/components/display";
-import PaymentForm from "./payment-form";
+import PaymentForm, { type PaymentFormValues } from "./payment-form";
+
+type PaymentRow = API.PaymentConfig & {
+  notify_url?: string;
+  sort?: number;
+};
 
 export default function PaymentTable() {
   const { t } = useTranslation("payment");
   const [loading, setLoading] = useState(false);
   const ref = useRef<ProTableActions>(null);
 
+  const buildPaymentPayload = (
+    values: Partial<PaymentFormValues>,
+    row?: Partial<PaymentRow>
+  ) => ({
+    ...(row || {}),
+    ...values,
+    sort:
+      typeof values.sort === "number"
+        ? values.sort
+        : typeof row?.sort === "number"
+          ? row.sort
+          : 0,
+  });
+
   return (
-    <ProTable<API.PaymentConfig, { search: string }>
+    <ProTable<PaymentRow, { search: string }>
       action={ref}
       actions={{
         render: (row) => [
-          <PaymentForm<API.UpdatePaymentMethodRequest>
+          <PaymentForm<PaymentFormValues>
             initialValues={row}
             isEdit
             key="edit"
@@ -41,10 +60,9 @@ export default function PaymentTable() {
             onSubmit={async (values) => {
               setLoading(true);
               try {
-                await updatePaymentMethod({
-                  ...row,
-                  ...values,
-                });
+                await updatePaymentMethod(
+                  buildPaymentPayload(values, row) as API.UpdatePaymentMethodRequest
+                );
                 toast.success(t("updateSuccess", "Updated successfully"));
                 ref.current?.refresh();
                 setLoading(false);
@@ -83,10 +101,12 @@ export default function PaymentTable() {
               setLoading(true);
               try {
                 const { id: _id, ...params } = row;
-                await createPaymentMethod({
-                  ...params,
-                  enable: false,
-                });
+                await createPaymentMethod(
+                  {
+                    ...buildPaymentPayload(params),
+                    enable: false,
+                  } as API.CreatePaymentMethodRequest
+                );
                 toast.success(t("copySuccess", "Copied successfully"));
                 ref.current?.refresh();
                 setLoading(false);
@@ -136,10 +156,12 @@ export default function PaymentTable() {
             <Switch
               checked={Boolean(row.getValue("enable"))}
               onCheckedChange={async (checked) => {
-                await updatePaymentMethod({
-                  ...row.original,
-                  enable: checked,
-                });
+                await updatePaymentMethod(
+                  {
+                    ...buildPaymentPayload({}, row.original),
+                    enable: checked,
+                  } as API.UpdatePaymentMethodRequest
+                );
                 ref.current?.refresh();
               }}
             />
@@ -165,6 +187,11 @@ export default function PaymentTable() {
         {
           accessorKey: "name",
           header: t("name", "Name"),
+        },
+        {
+          accessorKey: "sort",
+          header: t("sort", "Sort"),
+          cell: ({ row }) => row.original.sort ?? 0,
         },
         {
           accessorKey: "platform",
@@ -197,15 +224,17 @@ export default function PaymentTable() {
       header={{
         title: t("paymentManagement", "Payment Management"),
         toolbar: (
-          <PaymentForm<API.CreatePaymentMethodRequest>
+          <PaymentForm<PaymentFormValues>
             loading={loading}
             onSubmit={async (values) => {
               setLoading(true);
               try {
-                await createPaymentMethod({
-                  ...values,
-                  enable: false,
-                });
+                await createPaymentMethod(
+                  {
+                    ...buildPaymentPayload(values),
+                    enable: false,
+                  } as API.CreatePaymentMethodRequest
+                );
                 toast.success(t("createSuccess", "Created successfully"));
                 ref.current?.refresh();
                 setLoading(false);
@@ -231,8 +260,13 @@ export default function PaymentTable() {
           ...pagination,
           ...filter,
         });
+        const list = ((data?.data?.list || []) as PaymentRow[]).sort((a, b) => {
+          const sortDiff = (a.sort ?? 0) - (b.sort ?? 0);
+          if (sortDiff !== 0) return sortDiff;
+          return a.id - b.id;
+        });
         return {
-          list: data?.data?.list || [],
+          list,
           total: data?.data?.total || 0,
         };
       }}

@@ -34,6 +34,7 @@
   "platform": "平台",
   "searchPlaceholder": "输入搜索内容",
   "selectPlatform": "选择平台",
+  "sort": "排序",
   "submit": "提交",
   "updateSuccess": "更新成功"
 }

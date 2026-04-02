@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="915b3a33-5ddf-4269-ba3e-de18779a2edb" name="Changes" comment="feat(update): server node">
+      <change beforePath="$PROJECT_DIR$/apps/admin/src/sections/nodes/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/apps/admin/src/sections/nodes/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/admin/src/sections/nodes/node-form.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/apps/admin/src/sections/nodes/node-form.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/admin/src/sections/order/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/apps/admin/src/sections/order/index.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/admin/src/sections/payment/payment-form.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/apps/admin/src/sections/payment/payment-form.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/admin/src/sections/payment/payment-table.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/apps/admin/src/sections/payment/payment-table.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/packages/ui/src/services/admin/typings.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/packages/ui/src/services/admin/typings.d.ts" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager">
+    <option name="groupingKeys">
+      <option value="directory" />
+      <option value="repository" />
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 4
+}</component>
+  <component name="ProjectId" id="37svAhzbtrBMuZH2Vxt48ce3CEd" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/development/workspace_temp/ppanel/new/ppanel-frontend/apps/user&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;bun&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;E:\\development\\workspace_temp\\ppanel\\new\\ppanel-frontend\\node_modules\\typescript\\lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\development\workspace_temp\ppanel\new\ppanel-frontend\apps\user" />
+      <recent name="E:\development\workspace_temp\ppanel\new\ppanel-frontend\packages\ui\src\lib" />
+      <recent name="E:\development\workspace_temp\ppanel\new\ppanel-frontend\packages\ui\src\services\admin" />
+    </key>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-3aa1da707db6-JavaScript-WS-252.26830.93" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="915b3a33-5ddf-4269-ba3e-de18779a2edb" name="Changes" comment="" />
+      <created>1767704451960</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1767704451960</updated>
+      <workItem from="1767704453250" duration="1324000" />
+      <workItem from="1767706949512" duration="11477000" />
+      <workItem from="1767854822080" duration="19000" />
+      <workItem from="1767865660119" duration="3721000" />
+      <workItem from="1768457223227" duration="32000" />
+      <workItem from="1769831690804" duration="1356000" />
+      <workItem from="1770992865170" duration="3390000" />
+      <workItem from="1771343965974" duration="74000" />
+      <workItem from="1771382290293" duration="2439000" />
+      <workItem from="1771753341551" duration="47468000" />
+      <workItem from="1772983696847" duration="17865000" />
+      <workItem from="1773663235661" duration="7758000" />
+      <workItem from="1774097726968" duration="21626000" />
+      <workItem from="1774793709494" duration="1292000" />
+      <workItem from="1774882544101" duration="7335000" />
+      <workItem from="1775046991140" duration="12172000" />
+    </task>
+    <task id="LOCAL-00001" summary="feat: Device Bind Limit">
+      <option name="closed" value="true" />
+      <created>1767704559502</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1767704559502</updated>
+    </task>
+    <task id="LOCAL-00002" summary="feat: Device Bind Limit">
+      <option name="closed" value="true" />
+      <created>1767704612080</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1767704612080</updated>
+    </task>
+    <task id="LOCAL-00003" summary="feat: Redemption Code">
+      <option name="closed" value="true" />
+      <created>1767704723903</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1767704723903</updated>
+    </task>
+    <task id="LOCAL-00004" summary="fix bug: Internationalized translation of document content">
+      <option name="closed" value="true" />
+      <created>1767704850001</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1767704850001</updated>
+    </task>
+    <task id="LOCAL-00005" summary="fix bug: Repeatedly opening new tabs on the payment page.">
+      <option name="closed" value="true" />
+      <created>1767704876884</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1767704876884</updated>
+    </task>
+    <task id="LOCAL-00006" summary="fix bug: The client cannot be downloaded without a schema configured.">
+      <option name="closed" value="true" />
+      <created>1767704900790</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1767704900790</updated>
+    </task>
+    <task id="LOCAL-00007" summary="feat: Redemption code">
+      <option name="closed" value="true" />
+      <created>1767707386411</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1767707386411</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="feat: Device Bind Limit" />
+    <MESSAGE value="feat: Redemption Code" />
+    <MESSAGE value="fix bug: Internationalized translation of document content" />
+    <MESSAGE value="fix bug: Repeatedly opening new tabs on the payment page." />
+    <MESSAGE value="fix bug: The client cannot be downloaded without a schema configured." />
+    <MESSAGE value="fix bug: Registration limit" />
+    <MESSAGE value="feat: Redemption code" />
+    <MESSAGE value="update:  IP restrictions during development" />
+    <MESSAGE value="fix: announcement manage" />
+    <MESSAGE value="fix: build error" />
+    <MESSAGE value="fix: Invalid redemption code prompts system error message" />
+    <MESSAGE value="feat: Device short code lookup" />
+    <MESSAGE value="feat: Authentication verification code" />
+    <MESSAGE value="fix bug: Inventory cannot be zero." />
+    <MESSAGE value="feat(add): Node Type And Is Hidden" />
+    <MESSAGE value="feat(update): server node" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(update): server node" />
+  </component>
+</project>

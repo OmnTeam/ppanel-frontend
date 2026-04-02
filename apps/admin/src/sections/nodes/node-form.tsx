@@ -184,8 +184,6 @@ export default function NodeForm(props: {
 
     form.setValue("server_id", undefined, { shouldDirty: true });
     form.setValue("protocol", "", { shouldDirty: true });
-    form.setValue("tags", [], { shouldDirty: true });
-    form.setValue("node_group_ids", [], { shouldDirty: true });
     removeAutoFilledField("protocol");
     form.clearErrors(["server_id", "protocol"]);
   }, [form, isFrontNode]);
@@ -323,8 +321,6 @@ export default function NodeForm(props: {
             ...values,
             server_id: undefined,
             protocol: "",
-            tags: [],
-            node_group_ids: [],
           }
         : values;
 
@@ -499,41 +495,39 @@ export default function NodeForm(props: {
                   </FormItem>
                 )}
               />
-              {!isFrontNode && (
-                <FormField
-                  control={form.control}
-                  name="tags"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("tags", "Tags")}</FormLabel>
-                      <FormControl>
-                        <TagInput
-                          onChange={(v) => form.setValue(field.name, v)}
-                          options={existingTags}
-                          placeholder={t(
-                            "tags_placeholder",
-                            "Use Enter or comma (,) to add multiple tags"
+              <FormField
+                control={form.control}
+                name="tags"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("tags", "Tags")}</FormLabel>
+                    <FormControl>
+                      <TagInput
+                        onChange={(v) => form.setValue(field.name, v)}
+                        options={existingTags}
+                        placeholder={t(
+                          "tags_placeholder",
+                          "Use Enter or comma (,) to add multiple tags"
+                        )}
+                        value={field.value || []}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {isGroupEnabled
+                        ? t(
+                            "tags_groupMode_description",
+                            "Optional tags for display and filtering (node group will be used as tag if empty)."
+                          )
+                        : t(
+                            "tags_description",
+                            "Permission grouping tag (incl. plan binding and delivery policies)."
                           )}
-                          value={field.value || []}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        {isGroupEnabled
-                          ? t(
-                              "tags_groupMode_description",
-                              "Optional tags for display and filtering (node group will be used as tag if empty)."
-                            )
-                          : t(
-                              "tags_description",
-                              "Permission grouping tag (incl. plan binding and delivery policies)."
-                            )}
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-              {isGroupEnabled && !isFrontNode && (
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              {isGroupEnabled && (
                 <FormField
                   control={form.control}
                   name="node_group_ids"

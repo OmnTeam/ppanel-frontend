@@ -40,6 +40,19 @@ import { useTranslation } from "react-i18next";
 import * as z from "zod";
 import { useGlobalStore } from "@/stores/global";
 
+export type PaymentFormValues = {
+  name: string;
+  platform?: string;
+  icon?: string;
+  domain?: string;
+  config: Record<string, any>;
+  fee_mode: number;
+  fee_percent?: number;
+  fee_amount?: number;
+  description?: string;
+  sort?: number;
+};
+
 interface PaymentFormProps<T extends { platform?: string }> {
   trigger: React.ReactNode;
   title: string;
@@ -80,6 +93,7 @@ export default function PaymentForm<T extends { platform?: string }>({
     fee_percent: z.number().optional(),
     fee_amount: z.number().optional(),
     description: z.string().optional(),
+    sort: z.number().optional(),
   });
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -93,6 +107,7 @@ export default function PaymentForm<T extends { platform?: string }>({
       fee_mode: 0,
       fee_percent: 0,
       fee_amount: 0,
+      sort: 0,
       ...(initialValues as any),
     },
   });
@@ -219,6 +234,26 @@ export default function PaymentForm<T extends { platform?: string }>({
                           }
                           placeholder="http(s)://example.com"
                           value={field.value}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="sort"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("sort", "Sort")}</FormLabel>
+                      <FormControl>
+                        <EnhancedInput
+                          min={0}
+                          onValueChange={(value) =>
+                            form.setValue("sort", Number(value) || 0)
+                          }
+                          type="number"
+                          value={field.value ?? 0}
                         />
                       </FormControl>
                       <FormMessage />

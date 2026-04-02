@@ -377,6 +377,7 @@ declare namespace API {
     fee_mode: number;
     fee_percent?: number;
     fee_amount?: number;
+    sort?: number;
     enable: boolean;
   };
 
@@ -1554,6 +1555,7 @@ declare namespace API {
     fee_mode: number;
     fee_percent?: number;
     fee_amount?: number;
+    sort?: number;
     enable: boolean;
   };
 
@@ -1579,6 +1581,7 @@ declare namespace API {
     fee_mode: number;
     fee_percent: number;
     fee_amount: number;
+    sort?: number;
     enable: boolean;
     notify_url: string;
   };
@@ -2399,6 +2402,7 @@ declare namespace API {
     fee_mode: number;
     fee_percent?: number;
     fee_amount?: number;
+    sort?: number;
     enable: boolean;
   };
 

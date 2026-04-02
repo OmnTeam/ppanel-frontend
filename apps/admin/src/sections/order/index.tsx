@@ -16,6 +16,7 @@ import {
   getOrderList,
   updateOrderStatus,
 } from "@workspace/ui/services/admin/order";
+import { useSearch } from "@tanstack/react-router";
 import { useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Display } from "@/components/display";
@@ -25,6 +26,7 @@ import { UserDetail } from "../user/user-detail";
 
 export default function Order() {
   const { t } = useTranslation("order");
+  const sp = useSearch({ strict: false }) as Record<string, string | undefined>;
 
   const statusOptions = [
     {
@@ -56,9 +58,15 @@ export default function Order() {
   const ref = useRef<ProTableActions>(null);
 
   const { subscribes, getSubscribeName } = useSubscribe();
+  const initialFilters = {
+    status: sp.status ? Number(sp.status) : undefined,
+    subscribe_id: sp.subscribe_id ? Number(sp.subscribe_id) : undefined,
+    search: sp.search || undefined,
+    user_id: sp.user_id ? Number(sp.user_id) : undefined,
+  };
 
   return (
-    <ProTable<API.Order, any>
+    <ProTable<API.Order, API.GetOrderListParams>
       action={ref}
       columns={[
         {
@@ -229,6 +237,7 @@ export default function Order() {
           },
         },
       ]}
+      initialFilters={initialFilters}
       params={[
         {
           key: "status",
@@ -253,6 +262,7 @@ export default function Order() {
           options: undefined,
         },
       ]}
+      key={JSON.stringify(initialFilters)}
       request={async (pagination, filter) => {
         const { data } = await getOrderList({ ...pagination, ...filter });
         return {
