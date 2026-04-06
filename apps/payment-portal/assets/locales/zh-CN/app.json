@@ -26,6 +26,7 @@
     "description": "选择启用中的支付方式和预设充值金额，先确认手续费，再创建充值订单。",
     "refresh": "刷新",
     "logout": "退出登录",
+    "email": "用户邮箱",
     "amounts": "充值金额",
     "selectAmountTitle": "预设充值金额",
     "selectAmountHint": "充值金额来自当前前端项目的 .env 配置。",
@@ -82,7 +83,8 @@
     "amount": "充值金额",
     "time": "充值时间",
     "method": "支付方式",
-    "status": "状态"
+    "status": "状态",
+    "action": "操作"
   },
   "type": {
     "recharge": "充值",

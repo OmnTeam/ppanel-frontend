@@ -9,6 +9,11 @@ export interface PaymentMethod {
   fee_amount: number;
 }
 
+export interface CurrentUserSummary {
+  email: string;
+  balance: number;
+}
+
 export interface RechargeRecord {
   id: number;
   orderNo: string;

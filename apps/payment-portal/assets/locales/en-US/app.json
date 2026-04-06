@@ -26,6 +26,7 @@
     "description": "Choose an enabled payment method and a preset recharge amount, review the fee summary, then create the recharge order.",
     "refresh": "Refresh",
     "logout": "Logout",
+    "email": "Email",
     "amounts": "Recharge Amount",
     "selectAmountTitle": "Preset Recharge Amounts",
     "selectAmountHint": "Preset recharge amounts come from this frontend project's .env file.",
@@ -82,7 +83,8 @@
     "amount": "Amount",
     "time": "Recharge Time",
     "method": "Payment Method",
-    "status": "Status"
+    "status": "Status",
+    "action": "Action"
   },
   "type": {
     "recharge": "Recharge",

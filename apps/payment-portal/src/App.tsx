@@ -22,6 +22,7 @@ import { toMinorUnits } from "@/lib/fees";
 import type {
   ActiveOrder,
   CheckoutInfo,
+  CurrentUserSummary,
   PaymentMethod,
   PortalVerifyConfig,
   RechargeRecord,
@@ -62,6 +63,22 @@ function mapRechargeRecord(item: any): RechargeRecord {
     createdAt: Number(item?.created_at || 0),
     status: Number(item?.status || 0),
     paymentName: item?.payment?.name ? String(item.payment.name) : "",
+  };
+}
+
+function mapCurrentUser(item: any): CurrentUserSummary {
+  const authMethods = Array.isArray(item?.auth_methods) ? item.auth_methods : [];
+  const emailMethod = authMethods.find(
+    (method: any) =>
+      String(method?.auth_type || "").toLowerCase() === "email" &&
+      method?.auth_identifier
+  );
+
+  return {
+    balance: Number(item?.balance || 0) / 100,
+    email: emailMethod?.auth_identifier
+      ? String(emailMethod.auth_identifier)
+      : "",
   };
 }
 
@@ -132,6 +149,7 @@ export default function App() {
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   const [records, setRecords] = useState<RechargeRecord[]>([]);
   const [userBalance, setUserBalance] = useState<number | null>(null);
+  const [userEmail, setUserEmail] = useState("");
   const [selectedMethodId, setSelectedMethodId] = useState<number | null>(null);
   const [selectedAmount, setSelectedAmount] = useState(
     portalConfig.rechargeAmounts[0] || 10
@@ -190,11 +208,9 @@ export default function App() {
         queryOrderList({ page: 1, size: 20 }),
       ]);
 
-      setUserBalance(
-        typeof userResponse.data?.data?.balance === "number"
-          ? userResponse.data.data.balance
-          : 0
-      );
+      const userSummary = mapCurrentUser(userResponse.data?.data);
+      setUserBalance(userSummary.balance);
+      setUserEmail(userSummary.email);
 
       const methods = ((methodsResponse.data.data?.list || []) as any[])
         .filter((item) => Number(item?.id) !== -1)
@@ -386,6 +402,7 @@ export default function App() {
     setPaymentMethods([]);
     setRecords([]);
     setUserBalance(null);
+    setUserEmail("");
     setCustomAmountEnabled(false);
     setCustomAmountInput("");
     setActiveOrder(null);
@@ -700,6 +717,7 @@ export default function App() {
         selectedMethodId={selectedMethodId}
         submitting={submitPending}
         userBalance={userBalance}
+        userEmail={userEmail}
         hasPendingOrder={isCurrentSelectionPendingOrder}
       />
 

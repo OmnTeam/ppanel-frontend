@@ -26,6 +26,7 @@ interface RechargeScreenProps {
   records: RechargeRecord[];
   activeOrder: ActiveOrder | null;
   userBalance: number | null;
+  userEmail: string;
   hasPendingOrder: boolean;
   selectedAmount: number;
   customAmountEnabled: boolean;
@@ -54,6 +55,7 @@ export function RechargeScreen({
   records,
   activeOrder,
   userBalance,
+  userEmail,
   hasPendingOrder,
   selectedAmount,
   customAmountEnabled,
@@ -93,12 +95,19 @@ export function RechargeScreen({
                 "选择启用中的支付方式和预设充值金额，先确认手续费，再创建充值订单。"
               )}
             </p>
-            <p className="text-sm text-white/86">
-              {t("dashboard.balance", "当前余额")}:{" "}
-              {userBalance == null
-                ? "-"
-                : formatCurrency(userBalance, currentLanguage, currency)}
-            </p>
+            <div className="space-y-1 text-sm text-white/86">
+              <p>
+                {t("dashboard.balance", "当前余额")}:{" "}
+                {userBalance == null
+                  ? "-"
+                  : formatCurrency(userBalance, currentLanguage, currency)}
+              </p>
+              {userEmail ? (
+                <p>
+                  {t("dashboard.email", "用户邮箱")}: {userEmail}
+                </p>
+              ) : null}
+            </div>
           </div>
         </div>
       </section>
@@ -206,7 +215,7 @@ export function RechargeScreen({
               </div>
 
               <div className="flex flex-col items-stretch gap-3 xl:min-w-[360px] xl:max-w-[360px]">
-                <div className="flex flex-wrap items-center justify-end gap-2.5">
+              <div className="flex flex-wrap items-center justify-end gap-2.5">
                   <div className="flex items-center gap-2 rounded-full border border-blue-100 bg-blue-50 p-1">
                     {supportedLngs.map((language) => (
                       <button
@@ -290,17 +299,6 @@ export function RechargeScreen({
                     >
                       {t("dashboard.reloadOrder", "刷新订单")}
                     </button>
-                    {activeOrder.checkout?.checkoutUrl ||
-                    (activeOrder.checkout?.type === "stripe" &&
-                      activeOrder.checkout.stripe) ? (
-                      <button
-                        className="portal-primary-btn"
-                        onClick={onContinuePayment}
-                        type="button"
-                      >
-                        {t("dashboard.paymentNow", "前往支付")}
-                      </button>
-                    ) : null}
                   </div>
                 </div>
 
@@ -405,6 +403,7 @@ export function RechargeScreen({
                       <th>{t("order.amount", "充值金额")}</th>
                       <th>{t("order.status", "状态")}</th>
                       <th>{t("order.time", "充值时间")}</th>
+                      <th>{t("order.action", "操作")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -418,6 +417,22 @@ export function RechargeScreen({
                         </td>
                         <td>{getOrderStatusLabel(record.status, t)}</td>
                         <td>{formatTimestamp(record.createdAt, currentLanguage)}</td>
+                        <td>
+                          {record.orderNo === activeOrder?.orderNo &&
+                          (activeOrder.checkout?.checkoutUrl ||
+                            (activeOrder.checkout?.type === "stripe" &&
+                              activeOrder.checkout.stripe)) ? (
+                            <button
+                              className="text-sm font-medium text-blue-600 transition-colors hover:text-blue-700"
+                              onClick={onContinuePayment}
+                              type="button"
+                            >
+                              {t("dashboard.paymentNow", "前往支付")}
+                            </button>
+                          ) : (
+                            "-"
+                          )}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
