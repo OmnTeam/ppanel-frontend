@@ -1,5 +1,4 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery } from "@tanstack/react-query";
 import { Button } from "@workspace/ui/components/button";
 import {
   Form,
@@ -30,16 +29,13 @@ import { Textarea } from "@workspace/ui/components/textarea";
 import { HTMLEditor } from "@workspace/ui/composed/editor/html";
 import { EnhancedInput } from "@workspace/ui/composed/enhanced-input";
 import { Icon } from "@workspace/ui/composed/icon";
-import {
-  getAuthMethodConfig,
-  testEmailSend,
-  updateAuthMethodConfig,
-} from "@workspace/ui/services/admin/authMethod";
+import { testEmailSend } from "@workspace/ui/services/admin/authMethod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useAuthMethodConfig } from "../use-auth-method-config";
 
 const emailSettingsSchema = z.object({
   id: z.string(),
@@ -77,14 +73,7 @@ export default function EmailSettingsForm() {
   const [loading, setLoading] = useState(false);
   const [testEmail, setTestEmail] = useState<string>();
 
-  const { data, refetch, isFetching } = useQuery({
-    queryKey: ["getAuthMethodConfig", "email"],
-    queryFn: async () => {
-      const { data } = await getAuthMethodConfig({
-        method: "email",
-      });
-      return data.data;
-    },
+  const { data, refetch, isFetching, save } = useAuthMethodConfig("email", {
     enabled: open,
   });
 
@@ -116,26 +105,48 @@ export default function EmailSettingsForm() {
   });
 
   useEffect(() => {
-    if (data) {
-      form.reset(data);
-    }
+    if (!data) return;
+
+    form.reset({
+      id: data.id,
+      method: data.method || "email",
+      enabled: data.enabled,
+      config: {
+        enable_verify: false,
+        enable_domain_suffix: false,
+        domain_suffix_list: "",
+        verify_email_template: "",
+        expiration_email_template: "",
+        maintenance_email_template: "",
+        traffic_exceed_email_template: "",
+        platform: "smtp",
+        ...data.config,
+        platform_config: {
+          host: "",
+          port: 587,
+          ssl: false,
+          user: "",
+          pass: "",
+          from: "",
+          ...(data.config.platform_config || {}),
+        },
+      },
+    });
   }, [data, form]);
 
   async function onSubmit(values: EmailSettingsFormData) {
     setLoading(true);
     try {
-      await updateAuthMethodConfig({
-        ...values,
+      await save({
+        enabled: values.enabled,
         config: {
           ...values.config,
           platform: "smtp",
         },
-      } as API.UpdateAuthMethodConfigRequest);
+      });
       toast.success(t("common.saveSuccess", "Saved successfully"));
       refetch();
       setOpen(false);
-    } catch (_error) {
-      toast.error(t("common.saveFailed", "Save failed"));
     } finally {
       setLoading(false);
     }

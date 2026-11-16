@@ -202,57 +202,78 @@ export default function App() {
 
     setLoadingPortal(true);
     try {
-      const [userResponse, methodsResponse, ordersResponse] = await Promise.all([
+      // The user profile is the only required call; payment methods or orders may
+      // fail independently (or be empty) without blanking the whole portal.
+      const [userResult, methodsResult, ordersResult] = await Promise.allSettled([
         queryUserInfo(),
         getAvailablePaymentMethods(),
-        queryOrderList({ page: 1, size: 20 }),
+        queryOrderList({ page: 1, size: 50 }),
       ]);
 
-      const userSummary = mapCurrentUser(userResponse.data?.data);
+      if (userResult.status === "rejected") throw userResult.reason;
+
+      const userSummary = mapCurrentUser(userResult.value.data?.data);
       setUserBalance(userSummary.balance);
       setUserEmail(userSummary.email);
 
-      const methods = ((methodsResponse.data.data?.list || []) as any[])
-        .filter((item) => Number(item?.id) !== -1)
-        .map(mapPaymentMethod);
+      if (methodsResult.status === "fulfilled") {
+        const payload = methodsResult.value.data?.data as
+          | { methods?: any[]; list?: any[] }
+          | undefined;
+        // Backend contract: GetAvailablePaymentMethodsReply.methods.
+        // `list` is kept as a fallback for older gateways.
+        const rawMethods = payload?.methods ?? payload?.list ?? [];
+        const methods = (rawMethods as any[]).map(mapPaymentMethod);
 
-      setPaymentMethods(methods);
-      setSelectedMethodId((current) => {
-        if (current && methods.some((item) => item.id === current)) return current;
-        return methods[0]?.id ?? null;
-      });
+        setPaymentMethods(methods);
+        setSelectedMethodId((current) => {
+          if (current && methods.some((item) => item.id === current))
+            return current;
+          return methods[0]?.id ?? null;
+        });
+      } else {
+        console.error("[portal] failed to load payment methods", methodsResult.reason);
+        setPaymentMethods([]);
+      }
 
-      const rechargeOrderItems = ((ordersResponse.data.data?.list || []) as any[])
-        .filter((item) => Number(item?.type) === 4)
-        .sort(
-          (a, b) => Number(b?.created_at || 0) - Number(a?.created_at || 0)
+      if (ordersResult.status === "fulfilled") {
+        const orders = ordersResult.value.data?.data as
+          | { list?: any[] }
+          | undefined;
+        const rechargeOrderItems = (orders?.list || [])
+          .filter((item) => Number(item?.type) === 4)
+          .sort(
+            (a, b) => Number(b?.created_at || 0) - Number(a?.created_at || 0)
+          );
+        const rechargeRecords = rechargeOrderItems.map(mapRechargeRecord);
+
+        setRecords(rechargeRecords);
+
+        const pendingRechargeOrder = rechargeOrderItems.find(
+          (item) => Number(item?.status) === 1
         );
-      const rechargeRecords = rechargeOrderItems.map(mapRechargeRecord);
 
-      setRecords(rechargeRecords);
+        if (pendingRechargeOrder?.order_no) {
+          const orderNo = String(pendingRechargeOrder.order_no);
+          const detailResponse = await queryOrderDetail({ order_no: orderNo });
+          const detail = detailResponse.data.data;
+          if (detail) {
+            let checkout: CheckoutInfo | undefined;
+            try {
+              const checkoutResponse = await purchaseCheckout({
+                order_no: orderNo,
+                return_url: window.location.href,
+              });
+              checkout = mapCheckoutInfo(checkoutResponse.data.data);
+            } catch (_error) {
+              checkout = undefined;
+            }
 
-      const pendingRechargeOrder = rechargeOrderItems.find(
-        (item) => Number(item?.status) === 1
-      );
-
-      if (pendingRechargeOrder?.order_no) {
-        const orderNo = String(pendingRechargeOrder.order_no);
-        const detailResponse = await queryOrderDetail({ order_no: orderNo });
-        const detail = detailResponse.data.data;
-        if (detail) {
-          let checkout: CheckoutInfo | undefined;
-          try {
-            const checkoutResponse = await purchaseCheckout({
-              orderNo,
-              returnUrl: window.location.href,
-            });
-            checkout = mapCheckoutInfo(checkoutResponse.data.data);
-          } catch (_error) {
-            checkout = undefined;
+            setActiveOrder(mapActiveOrder(detail, checkout));
           }
-
-          setActiveOrder(mapActiveOrder(detail, checkout));
         }
+      } else {
+        console.error("[portal] failed to load orders", ordersResult.reason);
       }
     } finally {
       setLoadingPortal(false);
@@ -279,8 +300,8 @@ export default function App() {
       if (requestCheckout && Number(detail.status) === 1) {
         try {
           const checkoutResponse = await purchaseCheckout({
-            orderNo,
-            returnUrl: window.location.href,
+            order_no: orderNo,
+            return_url: window.location.href,
           });
           checkout = mapCheckoutInfo(checkoutResponse.data.data);
         } catch (_error) {
@@ -470,7 +491,20 @@ export default function App() {
         await refreshPortal();
         setAuthenticated(true);
         toast.success(t("login.success", "登录成功"));
-      } catch (_error) {
+      } catch (error) {
+        // Surface transport details (status/url) so support can tell a network
+        // outage apart from a credential error instead of a generic toast.
+        const detail = error as {
+          message?: string;
+          response?: { status?: number; data?: { code?: number } };
+          config?: { url?: string };
+        };
+        console.error("[portal] login failed", {
+          url: detail?.config?.url,
+          status: detail?.response?.status,
+          code: detail?.response?.data?.code,
+          message: detail?.message,
+        });
         resetCaptcha();
       }
     });

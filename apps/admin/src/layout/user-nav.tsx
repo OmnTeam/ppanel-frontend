@@ -30,7 +30,7 @@ export function UserNav() {
               <AvatarImage alt={user?.avatar ?? ""} src={user?.avatar ?? ""} />
               <AvatarFallback className="rounded-none bg-transparent">
                 {user?.auth_methods?.[0]?.auth_identifier
-                  .toUpperCase()
+                  ?.toUpperCase()
                   .charAt(0)}
               </AvatarFallback>
             </Avatar>

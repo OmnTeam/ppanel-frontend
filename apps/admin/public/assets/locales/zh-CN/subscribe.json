@@ -28,6 +28,8 @@
     "subscriptionPath": "订阅路径",
     "subscriptionPathDescription": "订阅端点的自定义路径（系统重启后性能更佳）",
     "subscriptionPathPlaceholder": "输入订阅路径",
+    "surplusEnable": "换套餐时抵扣剩余价值",
+    "surplusEnableDescription": "开启后，当前订阅的剩余价值会在购买新套餐时抵扣",
     "title": "订阅配置",
     "updateError": "更新失败",
     "updateSuccess": "设置更新成功",

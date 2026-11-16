@@ -29,7 +29,12 @@ const PaymentMethods: React.FC<PaymentMethodsProps> = ({
     queryKey: ["getAvailablePaymentMethods", { balance }],
     queryFn: async () => {
       const { data } = await getAvailablePaymentMethods();
-      const list = data.data?.list || [];
+      const payload = data.data;
+      // The current backend returns `methods`. Keep `list` as a fallback for
+      // older gateways that still use the legacy field name.
+      const list = payload?.methods ?? payload?.list ?? [];
+      // The backend no longer returns the synthetic balance method (id "-1"),
+      // but older gateways still do, so keep filtering it when not wanted.
       return balance ? list : list.filter((item) => item.id !== "-1");
     },
   });

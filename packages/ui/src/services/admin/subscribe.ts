@@ -80,7 +80,8 @@ export async function getSubscribeDetails(
   params: API.GetSubscribeDetailsParams,
   options?: { [key: string]: any }
 ) {
-  return request<API.Response & { data?: API.Subscribe }>(
+  // 后端返回 SubscribeInfo（在 Subscribe 基础上附带统计字段），结构为 { subscribe: {...} }
+  return request<API.Response & { data?: { subscribe: API.Subscribe } }>(
     `${import.meta.env.VITE_API_PREFIX || ""}/v1/admin/subscribe/details`,
     {
       method: "GET",

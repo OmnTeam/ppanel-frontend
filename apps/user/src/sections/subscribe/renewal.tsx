@@ -16,12 +16,14 @@ import { preCreateOrder, renewal } from "@workspace/ui/services/user/order";
 import { LoaderCircle } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import CouponInput from "@/sections/subscribe/coupon-input";
 import DurationSelector from "@/sections/subscribe/duration-selector";
 import PaymentMethods from "@/sections/subscribe/payment-methods";
 import { useGlobalStore } from "@/stores/global";
 import { SubscribeBilling } from "./billing";
 import { SubscribeDetail } from "./detail";
+import { getDefaultPriceOption, getPriceOptions } from "./price-option";
 
 interface RenewalProps {
   id: string;
@@ -38,19 +40,34 @@ export default function Renewal({ id, subscribe }: Readonly<RenewalProps>) {
   >({
     quantity: 1,
     payment: "",
+    price_option_id: undefined,
     coupon: "",
     user_subscribe_id: id,
   });
   const [loading, startTransition] = useTransition();
   const lastSuccessOrderRef = useRef<any>(null);
 
+  const priceOptions = getPriceOptions(subscribe.price_options);
+  const hasPriceOptions = priceOptions.length > 0;
+  const selectedPriceOption = priceOptions.find(
+    (option) => String(option.id) === String(params.price_option_id ?? "")
+  );
+
   const { data: order } = useQuery({
-    enabled: !!subscribe.id && open,
+    // The backend rejects an empty `payment` (int64) and silently falls back
+    // to the default tier when `price_option_id` is missing, so wait until
+    // both are known before pre-creating the order.
+    enabled:
+      !!subscribe.id &&
+      open &&
+      !!params.payment &&
+      (!hasPriceOptions || !!params.price_option_id),
     queryKey: [
       "preCreateOrder",
       subscribe.id,
       params.quantity,
       params.payment,
+      params.price_option_id,
       params.coupon,
     ],
     queryFn: async () => {
@@ -74,18 +91,23 @@ export default function Renewal({ id, subscribe }: Readonly<RenewalProps>) {
 
   useEffect(() => {
     if (subscribe.id && id) {
+      const options = getPriceOptions(subscribe.price_options);
+      const defaultOption = getDefaultPriceOption(subscribe.price_options);
       const defaultQuantity =
-        subscribe.show_original_price === false && subscribe.discount?.[0]
-          ? subscribe.discount[0].quantity
-          : 1;
+        options.length > 0
+          ? 1
+          : subscribe.show_original_price === false && subscribe.discount?.[0]
+            ? subscribe.discount[0].quantity
+            : 1;
       setParams((prev) => ({
         ...prev,
         quantity: defaultQuantity,
         subscribe_id: subscribe.id,
+        price_option_id: defaultOption?.id,
         user_subscribe_id: id,
       }));
     }
-  }, [subscribe.id, id]);
+  }, [subscribe, id]);
 
   const handleChange = useCallback(
     (field: keyof typeof params, value: string | number) => {
@@ -98,6 +120,14 @@ export default function Renewal({ id, subscribe }: Readonly<RenewalProps>) {
   );
 
   const handleSubmit = useCallback(async () => {
+    if (!params.payment) {
+      toast.error(t("selectPaymentMethod", "Please select a payment method"));
+      return;
+    }
+    if (hasPriceOptions && !params.price_option_id) {
+      toast.error(t("selectDuration", "Please select a duration"));
+      return;
+    }
     startTransition(async () => {
       try {
         const response = await renewal(params as API.RenewalOrderRequest);
@@ -110,7 +140,7 @@ export default function Renewal({ id, subscribe }: Readonly<RenewalProps>) {
         /* empty */
       }
     });
-  }, [params, getUserInfo, navigate]);
+  }, [params, getUserInfo, navigate, hasPriceOptions, t]);
 
   return (
     <Dialog onOpenChange={setOpen} open={open}>
@@ -136,7 +166,10 @@ export default function Renewal({ id, subscribe }: Readonly<RenewalProps>) {
               <SubscribeBilling
                 order={{
                   ...order,
-                  quantity: params.quantity,
+                  quantity:
+                    selectedPriceOption?.duration_value ?? params.quantity,
+                  unit_time:
+                    selectedPriceOption?.duration_unit ?? subscribe?.unit_time,
                   unit_price: subscribe?.unit_price,
                   show_original_price: subscribe?.show_original_price,
                 }}
@@ -150,9 +183,14 @@ export default function Renewal({ id, subscribe }: Readonly<RenewalProps>) {
                 onChange={(value) => {
                   handleChange("quantity", value);
                 }}
+                onPriceOptionChange={(option) => {
+                  handleChange("price_option_id", option.id);
+                }}
+                priceOptions={subscribe?.price_options}
                 quantity={params.quantity!}
                 showOriginalPrice={subscribe?.show_original_price}
                 unitTime={subscribe?.unit_time}
+                value={params.price_option_id}
               />
               <CouponInput
                 coupon={params.coupon}
@@ -167,7 +205,11 @@ export default function Renewal({ id, subscribe }: Readonly<RenewalProps>) {
             </div>
             <Button
               className="fixed bottom-0 left-0 w-full md:relative md:mt-6"
-              disabled={loading}
+              disabled={
+                loading ||
+                !params.payment ||
+                (hasPriceOptions && !params.price_option_id)
+              }
               onClick={handleSubmit}
             >
               {loading && <LoaderCircle className="mr-2 animate-spin" />}

@@ -148,5 +148,7 @@
   "noNodesAvailable": "No nodes available",
   "nodeGroup": "Node Group",
   "publicNodes": "Public Nodes",
-  "subscriptionNodes": "Subscription Nodes"
+  "subscriptionNodes": "Subscription Nodes",
+  "role": "Role",
+  "noRole": "No role"
 }

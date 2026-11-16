@@ -148,7 +148,13 @@ declare namespace API {
   };
 
   type CheckoutOrderRequest = {
-    orderNo: string;
+    /** Backend contract field name (proto: order_no). */
+    order_no: string;
+    /** Backend contract field name (proto: return_url). */
+    return_url?: string;
+    /** @deprecated legacy camelCase alias, ignored by the current backend. */
+    orderNo?: string;
+    /** @deprecated legacy camelCase alias, ignored by the current backend. */
     returnUrl?: string;
   };
 
@@ -159,7 +165,10 @@ declare namespace API {
   };
 
   type CloseOrderRequest = {
-    orderNo: string;
+    /** Backend contract field name (proto: order_no). */
+    order_no: string;
+    /** @deprecated legacy camelCase alias, ignored by the current backend. */
+    orderNo?: string;
   };
 
   type CommissionLog = {
@@ -266,7 +275,10 @@ declare namespace API {
   };
 
   type GetAvailablePaymentMethodsResponse = {
-    list: PaymentMethod[];
+    /** Newer backend contract: the list is returned as `methods`. */
+    methods: PaymentMethod[];
+    /** Legacy field kept for backwards compatibility with older gateways. */
+    list?: PaymentMethod[];
   };
 
   type GetDeviceListResponse = {
@@ -466,6 +478,14 @@ declare namespace API {
     status: number;
     subscribe_id: string;
     subscribe: Subscribe;
+    /** New pricing model: selected tier and its resolved duration. */
+    price_option_id?: string;
+    price_option_name?: string;
+    duration_unit?: string;
+    duration_value?: number;
+    option_price?: number;
+    /** Payment countdown deadline in milliseconds (unpaid orders only). */
+    expire_at?: number;
     created_at: number;
     updated_at: number;
   };
@@ -524,9 +544,12 @@ declare namespace API {
     auth_type: string;
     identifier: string;
     password?: string;
+    /** Selected payment method id (int64 serialized as string). Must not be "". */
     payment: string;
     subscribe_id: string;
     quantity: number;
+    /** Selected price tier id (int64 serialized as string). */
+    price_option_id?: string;
     coupon?: string;
     invite_code?: string;
     turnstile_token?: string;
@@ -547,9 +570,12 @@ declare namespace API {
   };
 
   type PrePurchaseOrderRequest = {
+    /** Selected payment method id (int64 serialized as string). Must not be "". */
     payment?: string;
     subscribe_id: string;
     quantity: number;
+    /** Selected price tier id (int64 serialized as string). */
+    price_option_id?: string;
     coupon?: string;
   };
 
@@ -663,7 +689,10 @@ declare namespace API {
   type PurchaseOrderRequest = {
     subscribe_id: string;
     quantity: number;
+    /** Selected payment method id (int64 serialized as string). Must not be "". */
     payment?: string;
+    /** Selected price tier id (int64 serialized as string). */
+    price_option_id?: string;
     coupon?: string;
   };
 
@@ -859,7 +888,10 @@ declare namespace API {
   type RenewalOrderRequest = {
     user_subscribe_id: string;
     quantity: number;
+    /** Selected payment method id (int64 serialized as string). Must not be "". */
     payment: string;
+    /** Selected price tier id (int64 serialized as string). */
+    price_option_id?: string;
     coupon?: string;
   };
 
@@ -988,6 +1020,39 @@ declare namespace API {
     show_original_price: boolean;
     created_at: number;
     updated_at: number;
+    /** New pricing model: duration/price tiers. Falls back to unit_price+discount when empty. */
+    price_options?: SubscribePriceOption[];
+    category_id?: number;
+    category_name?: string;
+    short_description?: string;
+    features?: string;
+    detail_format?: string;
+    detail_content?: string;
+  };
+
+  type SubscribePriceOption = {
+    id: string;
+    subscribe_id: string;
+    name: string;
+    /** Minute | Hour | Day | Week | Month | Year | NoLimit */
+    duration_unit: string;
+    duration_value: number;
+    /** Price in minor units (cents). */
+    price: number;
+    /** Original price in minor units (cents). */
+    original_price: number;
+    /** -1 means unlimited. */
+    inventory: number;
+    show: boolean;
+    sell: boolean;
+    is_default: boolean;
+    sort: number;
+    created_at: number;
+    updated_at: number;
+    code: string;
+    /** duration | traffic_pack | reset_pack */
+    type: string;
+    version?: number;
   };
 
   type SubscribeConfig = {

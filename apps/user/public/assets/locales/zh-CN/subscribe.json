@@ -48,6 +48,9 @@
   "resetTraffic": "重置流量",
   "resetTrafficDescription": "将流量重置为零，并开始新的计费周期",
   "resetTrafficTitle": "重置流量",
+  "selectDuration": "请选择购买时长",
+  "selectPaymentMethod": "请选择支付方式",
+  "soldOut": "已售罄",
   "subscriptionNotFound": "未找到订阅",
   "unsubscribe": {
     "cancel": "取消",
@@ -60,5 +63,6 @@
     "unsubscribe": "取消订阅",
     "unsubscribeDescription": "请注意：如果您现在取消订阅，订阅的剩余价值将退还到您的账户余额中，可用于您下次的订阅购买或续订。"
   },
+  "Week": "周",
   "Year": "年"
 }

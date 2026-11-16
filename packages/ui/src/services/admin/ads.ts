@@ -62,7 +62,7 @@ export async function getAdsDetail(
   params: API.GetAdsDetailParams,
   options?: { [key: string]: any }
 ) {
-  return request<API.Response & { data?: API.Ads }>(
+  return request<API.Response & { data?: { ads: API.Ads } }>(
     `${import.meta.env.VITE_API_PREFIX || ""}/v1/admin/ads/detail`,
     {
       method: "GET",

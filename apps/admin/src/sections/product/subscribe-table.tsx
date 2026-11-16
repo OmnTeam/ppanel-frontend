@@ -23,6 +23,10 @@ import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { Display } from "@/components/display";
 import { useSubscribe } from "@/stores/subscribe";
+import {
+  resolvePriceOptions,
+  toSubmitPriceOptions,
+} from "./price-options-field";
 import SubscribeForm from "./subscribe-form";
 
 export default function SubscribeTable() {
@@ -68,6 +72,20 @@ export default function SubscribeTable() {
   });
 
   const isGroupEnabled = groupConfigData?.enabled || false;
+
+  // The backend rejects subscribe updates without at least one price option.
+  // Rows from the list already carry show&&sell options; legacy rows get one
+  // derived from unit_price/unit_time so quick toggles keep working.
+  const withPriceOptions = (row: API.SubscribeItem) => ({
+    ...row,
+    price_options: toSubmitPriceOptions(
+      resolvePriceOptions({
+        price_options: row.price_options,
+        unit_price: row.unit_price,
+        unit_time: row.unit_time,
+      })
+    ),
+  });
 
   return (
     <ProTable<API.SubscribeItem, { group_id: string; query: string; node_group_id?: string }>
@@ -132,10 +150,29 @@ export default function SubscribeTable() {
                   sell: _sell,
                   updated_at: _updated_at,
                   created_at: _created_at,
+                  price_options: _priceOptions,
                   ...params
                 } = row;
+                // A duplicated subscribe is a brand new record: drop every
+                // id/version/code/timestamp so the backend creates options
+                // instead of treating them as edits (optimistic lock).
+                const priceOptions = toSubmitPriceOptions(
+                  resolvePriceOptions({
+                    price_options: row.price_options,
+                    unit_price: row.unit_price,
+                    unit_time: row.unit_time,
+                  })
+                ).map(
+                  ({
+                    id: _optionId,
+                    version: _version,
+                    code: _code,
+                    ...rest
+                  }) => rest
+                );
                 await createSubscribe({
                   ...params,
+                  price_options: priceOptions,
                   show: false,
                   sell: false,
                 } as API.CreateSubscribeRequest);
@@ -185,7 +222,7 @@ export default function SubscribeTable() {
               defaultChecked={row.getValue("show")}
               onCheckedChange={async (checked) => {
                 await updateSubscribe({
-                  ...row.original,
+                  ...withPriceOptions(row.original),
                   show: checked,
                 } as API.UpdateSubscribeRequest);
                 ref.current?.refresh();
@@ -202,7 +239,7 @@ export default function SubscribeTable() {
               defaultChecked={row.getValue("sell")}
               onCheckedChange={async (checked) => {
                 await updateSubscribe({
-                  ...row.original,
+                  ...withPriceOptions(row.original),
                   sell: checked,
                 } as API.UpdateSubscribeRequest);
                 ref.current?.refresh();

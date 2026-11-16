@@ -137,7 +137,7 @@
   "groupByTraffic": "按流量分组",
   "resetGroups": "重置所有分组",
   "resetGroupsTitle": "重置所有分组",
-  "resetGroupsDescription": "此操作将删除所有节点组和用户组，将所有用户的组ID重置为0，清空所有商品的节点组ID，清空所有节点的节点组ID。此操作无法撤消。",
+  "resetGroupsDescription": "此操作将删除所有节点组，清空所有商品的节点组ID，清空所有节点的节点组ID。此操作无法撤消。",
   "resetSuccess": "所有分组已成功重置",
   "resetFailed": "重置分组失败",
   "saved": "配置保存成功",

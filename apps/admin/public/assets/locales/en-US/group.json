@@ -137,7 +137,7 @@
   "groupByTraffic": "Group by Traffic",
   "resetGroups": "Reset All Groups",
   "resetGroupsTitle": "Reset All Groups",
-  "resetGroupsDescription": "This action will delete all node groups and user groups, reset all users' group ID to 0, clear all products' node group IDs, and clear all nodes' node group IDs. This action cannot be undone.",
+  "resetGroupsDescription": "This action will delete all node groups, clear all products' node group IDs, and clear all nodes' node group IDs. This action cannot be undone.",
   "resetSuccess": "All groups have been reset successfully",
   "resetFailed": "Failed to reset groups",
   "saved": "Configuration saved successfully",

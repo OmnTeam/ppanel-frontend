@@ -1,5 +1,4 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery } from "@tanstack/react-query";
 import { Button } from "@workspace/ui/components/button";
 import {
   Form,
@@ -22,16 +21,13 @@ import {
 import { Switch } from "@workspace/ui/components/switch";
 import { EnhancedInput } from "@workspace/ui/composed/enhanced-input";
 import { Icon } from "@workspace/ui/composed/icon";
-import {
-  getAuthMethodConfig,
-  updateAuthMethodConfig,
-} from "@workspace/ui/services/admin/authMethod";
 import { uid } from "radash";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useAuthMethodConfig } from "../use-auth-method-config";
 
 const deviceSchema = z.object({
   id: z.string(),
@@ -54,14 +50,7 @@ export default function DeviceForm() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { data, refetch } = useQuery({
-    queryKey: ["getAuthMethodConfig", "device"],
-    queryFn: async () => {
-      const { data } = await getAuthMethodConfig({
-        method: "device",
-      });
-      return data.data;
-    },
+  const { data, refetch, save } = useAuthMethodConfig("device", {
     enabled: open,
   });
 
@@ -81,20 +70,32 @@ export default function DeviceForm() {
   });
 
   useEffect(() => {
-    if (data) {
-      form.reset(data);
-    }
+    if (!data) return;
+
+    form.reset({
+      id: data.id,
+      method: data.method || "device",
+      enabled: data.enabled,
+      config: {
+        show_ads: false,
+        only_real_device: false,
+        enable_security: false,
+        security_secret: "",
+        ...data.config,
+      },
+    });
   }, [data, form]);
 
   async function onSubmit(values: DeviceFormData) {
     setLoading(true);
     try {
-      await updateAuthMethodConfig(values as API.UpdateAuthMethodConfigRequest);
+      await save({
+        enabled: values.enabled,
+        config: values.config,
+      });
       toast.success(t("common.saveSuccess", "Saved successfully"));
       refetch();
       setOpen(false);
-    } catch (_error) {
-      toast.error(t("common.saveFailed", "Save failed"));
     } finally {
       setLoading(false);
     }

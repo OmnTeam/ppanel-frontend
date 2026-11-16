@@ -34,6 +34,26 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
+import { mergeConfigPayload } from "@/utils/common";
+
+/**
+ * SubscribeConfig 的完整字段（对应 api/admin/system/v1/system.proto 的 SubscribeConfig）。
+ * 后端 UpdateSubscribeConfig 按反射逐字段写库，缺失字段会被写成零值，
+ * 所以提交体必须包含这里的每一个字段。
+ */
+const SUBSCRIBE_CONFIG_DEFAULTS = {
+  single_model: false,
+  subscribe_path: "",
+  subscribe_domain: "",
+  pan_domain: false,
+  user_agent_limit: false,
+  user_agent_list: "",
+  // 已废弃：单订阅模式总是允许换套餐，仅原样回传，不做界面
+  plan_change_enable: false,
+  surplus_enable: true,
+};
+
+type SubscribeConfigPayload = typeof SUBSCRIBE_CONFIG_DEFAULTS;
 
 const subscribeConfigSchema = z.object({
   single_model: z.boolean().optional(),
@@ -42,6 +62,8 @@ const subscribeConfigSchema = z.object({
   subscribe_domain: z.string().optional(),
   user_agent_limit: z.boolean().optional(),
   user_agent_list: z.string().optional(),
+  plan_change_enable: z.boolean().optional(),
+  surplus_enable: z.boolean().optional(),
 });
 
 type SubscribeConfigFormData = z.infer<typeof subscribeConfigSchema>;
@@ -62,26 +84,30 @@ export default function ConfigForm() {
 
   const form = useForm<SubscribeConfigFormData>({
     resolver: zodResolver(subscribeConfigSchema),
-    defaultValues: {
-      single_model: false,
-      pan_domain: false,
-      subscribe_path: "",
-      subscribe_domain: "",
-      user_agent_limit: false,
-      user_agent_list: "",
-    },
+    defaultValues: SUBSCRIBE_CONFIG_DEFAULTS,
   });
 
   useEffect(() => {
     if (data) {
-      form.reset(data);
+      form.reset(
+        mergeConfigPayload(
+          SUBSCRIBE_CONFIG_DEFAULTS,
+          data as Partial<SubscribeConfigPayload>
+        )
+      );
     }
   }, [data, form]);
 
   async function onSubmit(values: SubscribeConfigFormData) {
     setLoading(true);
     try {
-      await updateSubscribeConfig(values as API.SubscribeConfig);
+      // 合并完整配置对象，避免后端反射写库把表单外的字段（如 surplus_enable）清零
+      const payload = mergeConfigPayload(
+        SUBSCRIBE_CONFIG_DEFAULTS,
+        data as Partial<SubscribeConfigPayload> | undefined,
+        values as Partial<SubscribeConfigPayload>
+      );
+      await updateSubscribeConfig(payload as unknown as API.SubscribeConfig);
       toast.success(t("config.updateSuccess", "Settings updated successfully"));
       refetch();
       setOpen(false);
@@ -297,6 +323,34 @@ export default function ConfigForm() {
                         {
                           userAgent: "User-Agent",
                         }
+                      )}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="surplus_enable"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {t(
+                        "config.surplusEnable",
+                        "Deduct Remaining Value On Plan Change"
+                      )}
+                    </FormLabel>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        className="!mt-0 float-end"
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t(
+                        "config.surplusEnableDescription",
+                        "When enabled, the remaining value of the current subscription is deducted from the new plan price"
                       )}
                     </FormDescription>
                     <FormMessage />

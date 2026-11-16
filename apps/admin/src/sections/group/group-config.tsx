@@ -238,7 +238,7 @@ export default function GroupConfig() {
                   <AlertDialogDescription>
                     {t(
                       "resetGroupsDescription",
-                      "This action will delete all node groups and user groups, reset all users' group ID to 0, clear all products' node group IDs, and clear all nodes' node group IDs. This action cannot be undone."
+                      "This action will delete all node groups, clear all products' node group IDs, and clear all nodes' node group IDs. This action cannot be undone."
                     )}
                   </AlertDialogDescription>
                 </AlertDialogHeader>

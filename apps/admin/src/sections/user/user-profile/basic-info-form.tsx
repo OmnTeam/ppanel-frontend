@@ -42,6 +42,18 @@ const basicInfoSchema = z.object({
 
 type BasicInfoValues = z.infer<typeof basicInfoSchema>;
 
+/**
+ * 用户详情里带有 RBAC 角色信息，但 API.User 类型尚未声明，这里本地补上。
+ */
+type UserWithRole = API.User & {
+  role_id?: number;
+  role?: {
+    id?: number;
+    code?: string;
+    name?: string;
+  };
+};
+
 export function BasicInfoForm({
   user,
   refetch,
@@ -53,6 +65,12 @@ export function BasicInfoForm({
 
   const { common } = useGlobalStore();
   const { currency } = common;
+
+  const userWithRole = user as UserWithRole;
+  // 后端在 role_id <= 0 时会 ClearRoleID()，所以必须原样回传当前角色
+  const currentRoleId = userWithRole.role_id ?? userWithRole.role?.id ?? 0;
+  const currentRoleName =
+    userWithRole.role?.name || userWithRole.role?.code || "";
 
   const form = useForm<BasicInfoValues>({
     resolver: zodResolver(basicInfoSchema),
@@ -71,11 +89,29 @@ export function BasicInfoForm({
   });
 
   async function onSubmit(data: BasicInfoValues) {
-    await updateUserBasicInfo({
+    // 提交 UpdateUserBasicInfoRequest 的全部字段，表单没覆盖的从用户对象原样回传，
+    // 避免把 telegram / role_id 等字段写成零值（role_id 为 0 会清空 RBAC 角色）
+    const payload = {
       user_id: user.id,
-      telegram: user.telegram,
-      ...data,
-    } as API.UpdateUserBasiceInfoRequest);
+      password: data.password ?? "",
+      avatar: data.avatar ?? user.avatar ?? "",
+      balance: data.balance ?? user.balance ?? 0,
+      commission: data.commission ?? user.commission ?? 0,
+      referral_percentage:
+        data.referral_percentage ?? user.referral_percentage ?? 0,
+      only_first_purchase:
+        data.only_first_purchase ?? user.only_first_purchase ?? false,
+      gift_amount: data.gift_amount ?? user.gift_amount ?? 0,
+      telegram: user.telegram ?? 0,
+      refer_code: data.refer_code ?? user.refer_code ?? "",
+      referer_id: Number(data.referer_id || user.referer_id || 0),
+      enable: data.enable ?? user.enable ?? false,
+      is_admin: data.is_admin ?? user.is_admin ?? false,
+      role_id: currentRoleId,
+    };
+    await updateUserBasicInfo(
+      payload as unknown as API.UpdateUserBasiceInfoRequest
+    );
     toast.success(t("updateSuccess", "Updated successfully"));
     refetch();
   }
@@ -122,6 +158,16 @@ export function BasicInfoForm({
                 </FormItem>
               )}
             />
+
+            <div className="flex items-center justify-between space-x-2">
+              <FormLabel>{t("role", "Role")}</FormLabel>
+              <span className="text-muted-foreground text-sm">
+                {currentRoleName ||
+                  (currentRoleId > 0
+                    ? String(currentRoleId)
+                    : t("noRole", "No role"))}
+              </span>
+            </div>
             <div className="grid grid-cols-3 gap-4">
               <FormField
                 control={form.control}

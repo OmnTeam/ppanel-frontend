@@ -23,7 +23,7 @@ export default function Page() {
   const ref = useRef<ProTableActions>(null);
 
   return (
-    <ProTable<API.Announcement, { enable: boolean; search: string }>
+    <ProTable<API.Announcement, { show: boolean; search: string }>
       action={ref}
       actions={{
         render(row) {
@@ -189,11 +189,11 @@ export default function Page() {
       }}
       params={[
         {
-          key: "enable",
-          placeholder: t("enable", "Enable"),
+          key: "show",
+          placeholder: t("show", "Show"),
           options: [
-            { label: t("show", "Show"), value: "false" },
-            { label: t("hide", "Hide"), value: "true" },
+            { label: t("show", "Show"), value: "true" },
+            { label: t("hide", "Hide"), value: "false" },
           ],
         },
         { key: "search" },

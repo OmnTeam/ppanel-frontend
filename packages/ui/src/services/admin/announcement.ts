@@ -62,7 +62,7 @@ export async function getAnnouncement(
   params: API.GetAnnouncementParams,
   options?: { [key: string]: any }
 ) {
-  return request<API.Response & { data?: API.Announcement }>(
+  return request<API.Response & { data?: { announcement: API.Announcement } }>(
     `${import.meta.env.VITE_API_PREFIX || ""}/v1/admin/announcement/detail`,
     {
       method: "GET",

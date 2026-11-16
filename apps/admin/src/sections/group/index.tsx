@@ -2,7 +2,6 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@workspace/ui/components/tabs";
 import { useTranslation } from "react-i18next";
-// import UserGroups from "./user-groups";
 import NodeGroups from "./node-groups";
 import GroupHistory from "./group-history";
 import GroupConfig from "./group-config";
@@ -25,9 +24,6 @@ export default function Group() {
           <TabsTrigger value="config">
             {t("config", "Config")}
           </TabsTrigger>
-          {/* <TabsTrigger value="user">
-            {t("userGroups", "User Groups")}
-          </TabsTrigger> */}
           <TabsTrigger value="node">
             {t("nodeGroups", "Node Groups")}
           </TabsTrigger>
@@ -51,10 +47,6 @@ export default function Group() {
         <TabsContent value="config" className="mt-4">
           <GroupConfig />
         </TabsContent>
-
-        {/* <TabsContent value="user" className="mt-4">
-          <UserGroups />
-        </TabsContent> */}
 
         <TabsContent value="node" className="mt-4">
           <NodeGroups />

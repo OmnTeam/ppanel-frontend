@@ -128,7 +128,14 @@
       "reset": "Reset",
       "start_time": "Start time",
       "traffic_report_threshold": "Traffic Report Threshold",
-      "traffic_report_threshold_desc": "Set the minimum threshold for traffic reporting."
+      "traffic_report_threshold_desc": "Set the minimum threshold for traffic reporting.",
+      "device_admission_enabled": "Device Admission Control",
+      "device_admission_enabled_desc": "When enabled, only admitted devices are allowed to use the nodes.",
+      "device_count_mode": "Device Counting Mode",
+      "device_count_mode_placeholder": "Select device counting mode",
+      "device_count_mode_ip": "Count by IP",
+      "device_count_mode_connection": "Count by connection",
+      "device_count_mode_desc": "How devices are counted for online device limits."
     },
     "saveSuccess": "Saved successfully",
     "tabs": {

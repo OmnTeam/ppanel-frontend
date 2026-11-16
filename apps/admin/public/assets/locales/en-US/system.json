@@ -21,17 +21,91 @@
   },
   "groupSettings": "Group Settings",
   "invite": {
+    "calcMode": {
+      "fixed": "Fixed duration",
+      "purchase": "Equal to the purchased duration",
+      "ratio": "Percentage of it"
+    },
+    "charset": {
+      "alpha": "Letters",
+      "mixed": "Letters and Numbers",
+      "numeric": "Numeric"
+    },
+    "cycleMode": {
+      "every_purchase": "Every purchase",
+      "first_only": "First purchase only",
+      "inherit": "Follow the inviter's plan"
+    },
     "description": "Configure user invitation and referral reward settings",
+    "durationRewardCalcMode": "Reward Calculation",
+    "durationRewardCalcModeDescription": "How the rewarded duration is calculated",
+    "durationRewardCycleMode": "Reward Cycle",
+    "durationRewardCycleModeDescription": "Which purchases of the invited user trigger a reward",
+    "durationRewardEnabled": "Enable Duration Reward",
+    "durationRewardEnabledDescription": "Reward referrers with subscription duration instead of commission. Cash commission is replaced once enabled",
+    "durationRewardExistingMode": "Existing Subscription Handling",
+    "durationRewardExistingModeDescription": "How to grant the duration when the inviter already has an active subscription",
+    "durationRewardExtendMode": "Multiple Subscription Priority",
+    "durationRewardExtendModeDescription": "Which subscription is extended first when several are active",
+    "durationRewardFixedUnit": "Fixed Duration Unit",
+    "durationRewardFixedUnitDescription": "Used when calculation is fixed duration",
+    "durationRewardFixedValue": "Fixed Duration",
+    "durationRewardFixedValueDescription": "Used when calculation is fixed duration",
+    "durationRewardMinAmount": "Minimum Purchase Amount",
+    "durationRewardMinAmountDescription": "Orders paid below this amount do not grant duration rewards. 0 means no limit",
+    "durationRewardNoSubscribePolicy": "No Active Subscription Policy",
+    "durationRewardNoSubscribePolicyDescription": "What to do when the inviter has no active subscription",
+    "durationRewardNotify": "Notify After Reward",
+    "durationRewardNotifyDescription": "Send a notification to the inviter after the duration reward is granted",
+    "durationRewardRatio": "Reward Ratio",
+    "durationRewardRatioDescription": "Used when calculation is percentage, 100 means equal duration",
+    "durationRewardScope": "Applicable Plans",
+    "durationRewardScopeDescription": "JSON scope, e.g. {\"mode\":\"include\",\"plans\":[]}. Empty means all plans",
+    "durationRewardTrafficMode": "Traffic Handling",
+    "durationRewardTrafficModeDescription": "How traffic is granted together with the duration",
+    "existingMode": {
+      "new_subscription": "Create a new subscription",
+      "prorate": "Extend the current one"
+    },
+    "extendMode": {
+      "latest_expire": "Subscription expiring last first",
+      "primary_first": "Primary subscription first"
+    },
     "forcedInvite": "Require Invitation to Register",
     "forcedInviteDescription": "When enabled, users must register through an invitation link",
     "inputPlaceholder": "Please enter",
+    "inviteCodeCharset": "Invitation Code Charset",
+    "inviteCodeCharsetDescription": "Characters used by newly generated invitation codes",
+    "inviteCodeCharsetPlaceholder": "Select charset",
+    "inviteCodeLength": "Invitation Code Length",
+    "inviteCodeLengthDescription": "Length of newly generated invitation codes, 4-20. 0 uses the default of 8",
+    "mergeCommissionToBalance": "Merge Commission Into Balance",
+    "mergeCommissionToBalanceDescription": "When enabled, commission is credited to balance directly instead of the commission wallet",
+    "noSubscribePolicy": {
+      "create": "Create a new subscription",
+      "require_order": "Require an order first",
+      "skip": "Skip the reward"
+    },
     "onlyFirstPurchase": "First Purchase Reward Only",
     "onlyFirstPurchaseDescription": "When enabled, referrers only receive rewards for the first purchase by referred users",
     "referralPercentage": "Referral Reward Percentage",
     "referralPercentageDescription": "Percentage of reward given to referrers",
     "saveFailed": "Save Failed",
     "saveSuccess": "Save Successful",
-    "title": "Invitation Settings"
+    "sections": {
+      "durationReward": "Duration Reward",
+      "inviteCode": "Invitation Code",
+      "withdrawal": "Withdrawal"
+    },
+    "title": "Invitation Settings",
+    "trafficMode": {
+      "full": "Full plan traffic",
+      "prorate": "Traffic proportional to the duration"
+    },
+    "withdrawalMethods": "Withdrawal Methods",
+    "withdrawalMethodsDescription": "JSON array of {\"method\",\"name\",\"label\",\"enabled\"}. Leave empty to enable alipay, wechat and usdt",
+    "withdrawalMinAmount": "Minimum Withdrawal Amount",
+    "withdrawalMinAmountDescription": "0 means no minimum. Commission below this amount cannot be withdrawn"
   },
   "logCleanup": {
     "autoClear": "Enable Auto Cleanup",

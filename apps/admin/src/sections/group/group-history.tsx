@@ -46,6 +46,8 @@ export default function GroupHistory() {
   const [detailLoading, setDetailLoading] = useState(false);
   const [selectedHistory, setSelectedHistory] = useState<API.GroupHistory | null>(null);
   const [details, setDetails] = useState<any[]>([]);
+  // config_snapshot 解析失败时原样展示的文本
+  const [snapshotText, setSnapshotText] = useState<string>("");
   const [nodeGroupMap, setNodeGroupMap] = useState<Map<string, string>>(new Map());
 
   // User list dialog state
@@ -107,6 +109,7 @@ export default function GroupHistory() {
     setSelectedHistory(record);
     setDetailOpen(true);
     setDetailLoading(true);
+    setSnapshotText("");
     try {
       const { data } = await getGroupHistoryDetail({
         id: String(record.id),
@@ -114,10 +117,32 @@ export default function GroupHistory() {
 
       console.log("Group history detail response:", data);
 
-      // 从返回的数据中获取详情列表
-      // data.data.config_snapshot.group_details 包含分组详情
-      if (data.data?.config_snapshot?.group_details) {
-        setDetails(data.data.config_snapshot.group_details);
+      // config_snapshot 后端是 JSON 字符串（proto: string config_snapshot），
+      // 兼容直接返回对象的旧结构；解析失败时原样展示文本
+      const rawSnapshot = (
+        data.data as { config_snapshot?: unknown } | undefined
+      )?.config_snapshot;
+      let snapshot:
+        | { group_details?: unknown[]; [key: string]: unknown }
+        | undefined;
+
+      if (typeof rawSnapshot === "string") {
+        const text = rawSnapshot.trim();
+        if (text) {
+          try {
+            snapshot = JSON.parse(text);
+          } catch (error) {
+            console.error("Failed to parse config snapshot:", error);
+            setSnapshotText(text);
+          }
+        }
+      } else if (rawSnapshot && typeof rawSnapshot === "object") {
+        snapshot = rawSnapshot as { group_details?: unknown[] };
+      }
+
+      // snapshot.group_details 包含分组详情
+      if (Array.isArray(snapshot?.group_details)) {
+        setDetails(snapshot.group_details);
       } else {
         console.warn("No group_details found in response:", data);
         setDetails([]);
@@ -125,6 +150,7 @@ export default function GroupHistory() {
     } catch (error) {
       console.error("Failed to fetch history details:", error);
       setDetails([]);
+      setSnapshotText("");
     } finally {
       setDetailLoading(false);
     }
@@ -447,6 +473,10 @@ export default function GroupHistory() {
                     </table>
                   </div>
                 </>
+              ) : snapshotText ? (
+                <pre className="max-h-[300px] overflow-auto whitespace-pre-wrap break-all rounded-md bg-muted p-3 text-xs">
+                  {snapshotText}
+                </pre>
               ) : (
                 <div className="text-center py-8 text-sm text-muted-foreground">
                   {t("noDetails", "No details available")}

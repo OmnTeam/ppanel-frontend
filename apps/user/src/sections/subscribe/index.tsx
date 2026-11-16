@@ -17,6 +17,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Display } from "@/components/display";
 import { SubscribeDetail } from "./detail";
+import { getDefaultPriceOption } from "./price-option";
 import Purchase from "./purchase";
 
 export default function Subscribe() {
@@ -27,6 +28,7 @@ export default function Subscribe() {
     Minute: t("Minute", "Minute"),
     Month: t("Month", "Month"),
     NoLimit: t("NoLimit", "No Limit"),
+    Week: t("Week", "Week"),
     Year: t("Year", "Year"),
   };
   const locale = i18n.language;
@@ -123,11 +125,17 @@ export default function Subscribe() {
               <Separator />
               <CardFooter className="flex flex-col gap-2">
                 {(() => {
+                  // New pricing model: display the default price tier (already in
+                  // cents, so `Display type="currency"` converts to yuan).
+                  const defaultPriceOption = getDefaultPriceOption(
+                    item.price_options
+                  );
                   const hasDiscount = item.discount && item.discount.length > 0;
                   const shouldShowOriginal = item.show_original_price !== false;
 
-                  const displayPrice =
-                    shouldShowOriginal || !hasDiscount
+                  const displayPrice = defaultPriceOption
+                    ? defaultPriceOption.price
+                    : shouldShowOriginal || !hasDiscount
                       ? item.unit_price
                       : Math.round(
                           item.unit_price *
@@ -135,22 +143,27 @@ export default function Subscribe() {
                             ((item.discount?.[0]?.discount ?? 100) / 100)
                         );
 
-                  const displayQuantity =
-                    shouldShowOriginal || !hasDiscount
+                  const displayQuantity = defaultPriceOption
+                    ? defaultPriceOption.duration_value
+                    : shouldShowOriginal || !hasDiscount
                       ? 1
                       : (item.discount?.[0]?.quantity ?? 1);
 
+                  const displayUnit =
+                    defaultPriceOption?.duration_unit ?? item.unit_time;
                   const unitTime =
-                    unitTimeMap[item.unit_time!] ||
-                    t(item.unit_time || "Month", item.unit_time || "Month");
+                    unitTimeMap[displayUnit!] ||
+                    t(displayUnit || "Month", displayUnit || "Month");
+                  const showQuantity =
+                    displayQuantity !== 1 && displayUnit !== "NoLimit";
 
                   return (
                     <h2 className="pb-8 font-semibold text-2xl sm:text-3xl">
                       <Display type="currency" value={displayPrice} />
                       <span className="font-medium text-base">
-                        {displayQuantity === 1
-                          ? `/${unitTime}`
-                          : `/${displayQuantity} ${unitTime}`}
+                        {showQuantity
+                          ? `/${displayQuantity} ${unitTime}`
+                          : `/${unitTime}`}
                       </span>
                     </h2>
                   );

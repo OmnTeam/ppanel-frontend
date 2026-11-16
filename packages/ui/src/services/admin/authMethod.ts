@@ -8,7 +8,7 @@ export async function getAuthMethodConfig(
   params: API.GetAuthMethodConfigParams,
   options?: { [key: string]: any }
 ) {
-  return request<API.Response & { data?: API.AuthMethodConfig }>(
+  return request<API.Response & { data?: { config: API.AuthMethodConfig } }>(
     `${import.meta.env.VITE_API_PREFIX || ""}/v1/admin/auth-method/config`,
     {
       method: "GET",
@@ -25,7 +25,7 @@ export async function updateAuthMethodConfig(
   body: API.UpdateAuthMethodConfigRequest,
   options?: { [key: string]: any }
 ) {
-  return request<API.Response & { data?: API.AuthMethodConfig }>(
+  return request<API.Response & { data?: { config: API.AuthMethodConfig } }>(
     `${import.meta.env.VITE_API_PREFIX || ""}/v1/admin/auth-method/config`,
     {
       method: "PUT",

@@ -12,11 +12,16 @@ import { prePurchaseOrder, purchase } from "@workspace/ui/services/user/portal";
 import { LoaderCircle } from "lucide-react";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "sonner";
 import { SubscribeBilling } from "@/sections/subscribe/billing";
 import CouponInput from "@/sections/subscribe/coupon-input";
 import { SubscribeDetail } from "@/sections/subscribe/detail";
 import DurationSelector from "@/sections/subscribe/duration-selector";
 import PaymentMethods from "@/sections/subscribe/payment-methods";
+import {
+  getDefaultPriceOption,
+  getPriceOptions,
+} from "@/sections/subscribe/price-option";
 import { useGlobalStore } from "@/stores/global";
 
 export default function Content({
@@ -39,6 +44,7 @@ export default function Content({
     quantity: 1,
     subscribe_id: "",
     payment: "",
+    price_option_id: undefined,
     coupon: "",
     auth_type: "email",
     identifier: "",
@@ -50,13 +56,26 @@ export default function Content({
     message: "",
   });
 
+  const priceOptions = getPriceOptions(subscription?.price_options);
+  const hasPriceOptions = priceOptions.length > 0;
+  const selectedPriceOption = priceOptions.find(
+    (option) => String(option.id) === String(params.price_option_id ?? "")
+  );
+
   const { data: order } = useQuery({
-    enabled: !!subscription?.id && !!params.payment,
+    // The backend rejects an empty `payment` (int64) and silently falls back
+    // to the default tier when `price_option_id` is missing, so wait until
+    // both are known before pre-creating the order.
+    enabled:
+      !!subscription?.id &&
+      !!params.payment &&
+      (!hasPriceOptions || !!params.price_option_id),
     queryKey: [
       "preCreateOrder",
       params.coupon,
       params.quantity,
       params.payment,
+      params.price_option_id,
     ],
     queryFn: async () => {
       const { data } = await prePurchaseOrder({
@@ -69,10 +88,12 @@ export default function Content({
 
   useEffect(() => {
     if (subscription) {
+      const defaultOption = getDefaultPriceOption(subscription.price_options);
       setParams((prev) => ({
         ...prev,
         quantity: 1,
         subscribe_id: subscription?.id,
+        price_option_id: defaultOption?.id,
       }));
     }
   }, [subscription]);
@@ -88,6 +109,14 @@ export default function Content({
   );
 
   const handleSubmit = useCallback(async () => {
+    if (!params.payment) {
+      toast.error(t("selectPaymentMethod", "Please select a payment method"));
+      return;
+    }
+    if (hasPriceOptions && !params.price_option_id) {
+      toast.error(t("selectDuration", "Please select a duration"));
+      return;
+    }
     startTransition(async () => {
       try {
         const { data } = await purchase(params);
@@ -106,7 +135,7 @@ export default function Content({
         console.log(error);
       }
     });
-  }, [params, navigate]);
+  }, [params, navigate, hasPriceOptions, t]);
 
   if (!subscription) {
     return (
@@ -280,7 +309,10 @@ export default function Content({
             <SubscribeBilling
               order={{
                 ...order,
-                quantity: params.quantity,
+                quantity:
+                  selectedPriceOption?.duration_value ?? params.quantity,
+                unit_time:
+                  selectedPriceOption?.duration_unit ?? subscription?.unit_time,
                 unit_price: subscription?.unit_price,
                 show_original_price: subscription?.show_original_price,
               }}
@@ -296,10 +328,15 @@ export default function Content({
               <DurationSelector
                 discounts={subscription?.discount}
                 onChange={(value: number) => handleChange("quantity", value)}
+                onPriceOptionChange={(option) =>
+                  handleChange("price_option_id", option.id)
+                }
+                priceOptions={subscription?.price_options}
                 quantity={params.quantity!}
                 unitTime={
                   unitTimeMap[subscription.unit_time!] || subscription.unit_time
                 }
+                value={params.price_option_id}
               />
               <CouponInput
                 coupon={params.coupon}
@@ -316,7 +353,12 @@ export default function Content({
 
         <Button
           className="w-full"
-          disabled={!isEmailValid.valid || loading}
+          disabled={
+            !isEmailValid.valid ||
+            loading ||
+            !params.payment ||
+            (hasPriceOptions && !params.price_option_id)
+          }
           onClick={handleSubmit}
           size="lg"
         >

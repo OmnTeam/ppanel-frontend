@@ -76,7 +76,7 @@ export async function batchDeleteDocument(
 
 /** Get document detail GET /v1/admin/document/detail */
 export async function getDocumentDetail(options?: { [key: string]: any }) {
-  return request<API.Response & { data?: API.Document }>(
+  return request<API.Response & { data?: { document: API.Document } }>(
     `${import.meta.env.VITE_API_PREFIX || ""}/v1/admin/document/detail`,
     {
       method: "GET",

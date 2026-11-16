@@ -42,10 +42,7 @@ import {
   getUserList,
   updateUserBasicInfo,
 } from "@workspace/ui/services/admin/user";
-import {
-  // getUserGroupList,
-  previewUserNodes,
-} from "@workspace/ui/services/admin/group";
+import { previewUserNodes } from "@workspace/ui/services/admin/group";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
@@ -58,7 +55,6 @@ import { AuthMethodsForm } from "./user-profile/auth-methods-form";
 import { BasicInfoForm } from "./user-profile/basic-info-form";
 import { NotifySettingsForm } from "./user-profile/notify-settings-form";
 import UserSubscription from "./user-subscription";
-// import EditUserGroupDialog from "./edit-user-group-dialog";
 
 export default function User() {
   const { t } = useTranslation("user");
@@ -68,21 +64,12 @@ export default function User() {
 
   const { subscribes } = useSubscribe();
 
-  // const { data: userGroupsData } = useQuery({
-  //   queryKey: ["userGroups"],
-  //   queryFn: async () => {
-  //     const { data } = await getUserGroupList({ page: 1, size: 1000 });
-  //     return data.data?.list || [];
-  //   },
-  // });
-
   const initialFilters = {
     search: sp.search || undefined,
     user_id: sp.user_id || undefined,
     subscribe_id: sp.subscribe_id || undefined,
     user_subscribe_id: sp.user_subscribe_id || undefined,
     short_code: sp.short_code || undefined,
-    // user_group_id: sp.user_group_id || undefined,
   };
 
   return (

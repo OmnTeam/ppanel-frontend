@@ -8,6 +8,8 @@ function handleError(response: {
   data?: { code?: number; message?: string };
   config?: { skipErrorHandler?: boolean };
   message?: string;
+  status?: number;
+  url?: string;
 }) {
   const code = response.data?.code;
   if (code && [40_002, 40_003, 40_004, 40_005].includes(code))
@@ -155,6 +157,26 @@ function handleError(response: {
       "components:error.60007",
       "Insufficient inventory, please try again later or contact the administrator."
     ),
+    60009: t(
+      "components:error.60009",
+      "You already have an active subscription. Please cancel or wait for it to expire before purchasing a new plan, or contact support."
+    ),
+    60010: t(
+      "components:error.60010",
+      "This plan cannot be renewed. Please choose another plan."
+    ),
+    61001: t(
+      "components:error.61001",
+      "The order does not exist or has been removed."
+    ),
+    61002: t(
+      "components:error.61002",
+      "The selected payment method is unavailable, please choose another one."
+    ),
+    61003: t(
+      "components:error.61003",
+      "The order status has changed, please refresh and try again."
+    ),
     70001: t(
       "components:error.70001",
       "Incorrect verification code, please re-enter."
@@ -171,15 +193,45 @@ function handleError(response: {
       "components:error.90015",
       "This account has reached the limit of sending times today, please try again tomorrow."
     ),
+    90016: t(
+      "components:error.90016",
+      "The account format is invalid, please check it and try again."
+    ),
   };
 
+  const hasBusinessCode = typeof code === "number";
+
+  // Known business codes use the localized copy so the UI stays in one language.
+  // Unknown codes keep the backend message, which is always non-empty.
   const message =
+    (hasBusinessCode ? ERROR_MESSAGES[code as number] : undefined) ||
     response.data?.message ||
-    (code ? ERROR_MESSAGES[code] : undefined) ||
     t(
       "components:error.unknown",
       "An error occurred in the system, please try again later."
     );
+
+  if (!hasBusinessCode) {
+    // No business payload at all: the request never reached the API (network error,
+    // HTML error page, wrong base URL, CORS...). Surface the transport details,
+    // otherwise every one of those failures looks like a generic server error.
+    const detail = [
+      response.status ? `HTTP ${response.status}` : null,
+      response.url || null,
+      response.message || null,
+    ]
+      .filter(Boolean)
+      .join(" · ");
+
+    console.error("[request] non-JSON or failed response", {
+      url: response.url,
+      status: response.status,
+      message: response.message,
+    });
+
+    toast.error(detail ? `${message} (${detail})` : message);
+    return;
+  }
 
   toast.error(message);
 }
@@ -213,23 +265,30 @@ request.interceptors.response.use(
             .skipErrorHandler,
         },
         message: response.statusText,
+        status: response.status,
+        url: response.config?.url,
       });
       throw response;
     }
     return response;
   },
   (error: {
-    response?: { data?: unknown; config?: unknown; statusText?: string };
+    response?: { data?: unknown; config?: unknown; statusText?: string; status?: number };
+    config?: { url?: string };
     message?: string;
   }) => {
     handleError({
-      data: error.response?.data as { code?: number },
+      data: error.response?.data as { code?: number; message?: string },
       config: {
         skipErrorHandler: (
           error.response?.config as { skipErrorHandler?: boolean }
         )?.skipErrorHandler,
       },
       message: error.message,
+      status: error.response?.status,
+      url:
+        (error.config as { url?: string } | undefined)?.url ??
+        (error.response?.config as { url?: string } | undefined)?.url,
     });
     return Promise.reject(error);
   }

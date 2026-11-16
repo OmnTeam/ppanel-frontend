@@ -16,8 +16,6 @@ import { formatBytes } from "@workspace/ui/utils/formatting";
 import { useTranslation } from "react-i18next";
 import { Display } from "@/components/display";
 import { formatDate } from "@/utils/common";
-// import EditUserGroupDialog from "./edit-user-group-dialog";
-// import { getUserGroupList } from "@workspace/ui/services/admin/group";
 
 export function UserSubscribeDetail({
   id,
@@ -40,33 +38,11 @@ export function UserSubscribeDetail({
     },
   });
 
-  // Fetch user groups for display
-  // const { data: groupsData } = useQuery({
-  //   enabled: id !== 0 && enabled,
-  //   queryKey: ["getUserGroupList"],
-  //   queryFn: async () => {
-  //     const { data } = await getUserGroupList({
-  //       page: 1,
-  //       size: 100,
-  //     });
-  //     return data.data?.list || [];
-  //   },
-  // });
-
   if (!resolvedId || resolvedId === "0") return "--";
 
   const usedTraffic = data ? data.upload + data.download : 0;
   const totalTraffic = data?.traffic || 0;
   const remainingTraffic = totalTraffic > 0 ? totalTraffic - usedTraffic : 0;
-
-  // Get user group info from data.user
-  // const userGroupId = typeof data?.user?.user_group_id === 'number' ? data?.user?.user_group_id : 0;
-  // const groupLocked = data?.user?.group_locked || false;
-  // const groupIds = userGroupId > 0 ? [userGroupId] : [];
-
-  // const groupNames = userGroupId > 0
-  //   ? groupsData?.find((g: API.UserGroup) => g.id === userGroupId)?.name || "--"
-  //   : "--";
 
   const subscribeContent = (
     <div className="space-y-4">
@@ -124,35 +100,6 @@ export function UserSubscribeDetail({
                 {data?.expire_time ? formatDate(data.expire_time) : "--"}
               </span>
             </li>
-            {/* <li className="flex items-center justify-between">
-              <span className="text-muted-foreground">{t("userGroup")}</span>
-              <div className="flex items-center gap-2">
-                <span>{groupNames || "--"}</span>
-                {data?.id && (
-                  <EditUserGroupDialog
-                    userId={data?.user_id || 0}
-                    userSubscribeId={data?.id}
-                    currentGroupIds={groupIds}
-                    currentLocked={groupLocked}
-                    trigger={
-                      <Button variant="ghost" size="sm" className="h-6 px-2">
-                        {t("edit", "Edit")}
-                      </Button>
-                    }
-                    onSubmit={async () => {
-                      window.location.reload();
-                      return true;
-                    }}
-                  />
-                )}
-              </div>
-            </li>
-            <li className="flex items-center justify-between">
-              <span className="text-muted-foreground">{t("groupLocked")}</span>
-              <span>
-                {groupLocked ? t("yes", "Yes") : t("no", "No")}
-              </span>
-            </li> */}
           </ul>
         </div>
       </div>

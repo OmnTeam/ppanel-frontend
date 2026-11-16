@@ -57,6 +57,13 @@ import { toast } from "sonner";
 import { z } from "zod";
 import { useGlobalStore } from "@/stores/global";
 import { useNode } from "@/stores/node";
+import {
+  type PriceOptionDraft,
+  PriceOptionsField,
+  resolvePriceOptions,
+  toSubmitPriceOptions,
+  validatePriceOptions,
+} from "./price-options-field";
 
 interface SubscribeFormProps<T> {
   onSubmit: (data: T) => Promise<boolean> | boolean;
@@ -86,6 +93,7 @@ const defaultValues = {
   show_original_price: false,
   deduction_mode: "auto",
   traffic_limit: [],
+  price_options: [],
 };
 
 function getFirstValidationMessage(error: unknown): string | undefined {
@@ -124,6 +132,8 @@ export default function SubscribeForm<T extends Record<string, any>>({
 
   const { t } = useTranslation("product");
   const [open, setOpen] = useState(false);
+  const [priceOptionsError, setPriceOptionsError] = useState<string>();
+  const [activeTab, setActiveTab] = useState("basic");
   const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const formSchema = z.object({
@@ -155,6 +165,27 @@ export default function SubscribeForm<T extends Record<string, any>>({
     reset_cycle: z.number().optional(),
     renewal_reset: z.boolean().optional(),
     show_original_price: z.boolean().optional(),
+    price_options: z
+      .array(
+        z.object({
+          uid: z.string().optional(),
+          id: z.string().optional(),
+          version: z.number().optional(),
+          code: z.string().optional(),
+          name: z.string().optional(),
+          duration_unit: z.string(),
+          duration_value: z.number(),
+          price: z.number(),
+          original_price: z.number(),
+          inventory: z.number(),
+          show: z.boolean(),
+          sell: z.boolean(),
+          is_default: z.boolean(),
+          sort: z.number(),
+          type: z.string().optional(),
+        })
+      )
+      .optional(),
     traffic_limit: z
       .array(
         z.object({
@@ -297,7 +328,20 @@ export default function SubscribeForm<T extends Record<string, any>>({
       processedValues.node_group_ids = (initialValues.node_group_ids as any[]).map((id) => String(id));
     }
 
+    // Price options: normalize API rows (keep id/version/code for edits) and
+    // derive a default option for legacy records that predate price tiers.
+    processedValues.price_options = resolvePriceOptions({
+      price_options: initialValues?.price_options,
+      unit_price: initialValues?.unit_price,
+      unit_time: initialValues?.unit_time,
+    });
+    if (!initialValues) {
+      processedValues.price_options = [];
+    }
+
     form?.reset(processedValues);
+    setPriceOptionsError(undefined);
+    setActiveTab("basic");
     const discount = form.getValues("discount") || [];
     if (discount.length > 0) {
       debouncedCalculateDiscount(discount, "discount");
@@ -314,9 +358,24 @@ export default function SubscribeForm<T extends Record<string, any>>({
   );
 
   async function handleSubmit(data: { [x: string]: any }) {
-    // Don't process node_group_id - submit as-is
+    const drafts = (data.price_options ??
+      []) as unknown as PriceOptionDraft[];
+    const validationError = validatePriceOptions(drafts);
+    if (validationError) {
+      const message = t(validationError.key, validationError.fallback);
+      setPriceOptionsError(message);
+      setActiveTab("pricing");
+      toast.error(message);
+      return;
+    }
 
-    const bool = await onSubmit(data as T);
+    setPriceOptionsError(undefined);
+    const payload = {
+      ...data,
+      price_options: toSubmitPriceOptions(drafts),
+    };
+
+    const bool = await onSubmit(payload as unknown as T);
     if (bool) setOpen(false);
   }
 
@@ -400,7 +459,11 @@ export default function SubscribeForm<T extends Record<string, any>>({
         <ScrollArea className="h-[calc(100dvh-48px-36px-36px-env(safe-area-inset-top))] px-6">
           <Form {...form}>
             <form className="pt-4" onSubmit={form.handleSubmit(handleSubmit)}>
-              <Tabs className="w-full" defaultValue="basic">
+              <Tabs
+                className="w-full"
+                onValueChange={setActiveTab}
+                value={activeTab}
+              >
                 <TabsList className="mb-6 grid w-full grid-cols-4">
                   <TabsTrigger
                     className="flex items-center gap-2"
@@ -688,6 +751,25 @@ export default function SubscribeForm<T extends Record<string, any>>({
 
                 <TabsContent className="space-y-4" value="pricing">
                   <div className="grid gap-6">
+                    <FormField
+                      control={form.control}
+                      name="price_options"
+                      render={({ field }) => (
+                        <FormItem>
+                          <PriceOptionsField
+                            defaultPrice={form.watch("unit_price")}
+                            defaultUnit={form.watch("unit_time")}
+                            error={priceOptionsError}
+                            onChange={(next) => {
+                              setPriceOptionsError(undefined);
+                              field.onChange(next);
+                            }}
+                            value={field.value as PriceOptionDraft[]}
+                          />
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
                     <div className="grid grid-cols-4 gap-4">
                       <FormField
                         control={form.control}

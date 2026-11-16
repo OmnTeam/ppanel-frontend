@@ -1,5 +1,4 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery } from "@tanstack/react-query";
 import { Button } from "@workspace/ui/components/button";
 import {
   Form,
@@ -22,15 +21,12 @@ import {
 import { Switch } from "@workspace/ui/components/switch";
 import { EnhancedInput } from "@workspace/ui/composed/enhanced-input";
 import { Icon } from "@workspace/ui/composed/icon";
-import {
-  getAuthMethodConfig,
-  updateAuthMethodConfig,
-} from "@workspace/ui/services/admin/authMethod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useAuthMethodConfig } from "../use-auth-method-config";
 
 const facebookSchema = z.object({
   enabled: z.boolean(),
@@ -45,14 +41,7 @@ export default function FacebookForm() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { data, refetch } = useQuery({
-    queryKey: ["getAuthMethodConfig", "facebook"],
-    queryFn: async () => {
-      const { data } = await getAuthMethodConfig({
-        method: "facebook",
-      });
-      return data.data;
-    },
+  const { data, refetch, save } = useAuthMethodConfig("facebook", {
     enabled: open,
   });
 
@@ -66,32 +55,28 @@ export default function FacebookForm() {
   });
 
   useEffect(() => {
-    if (data) {
-      form.reset({
-        enabled: data.enabled,
-        client_id: data.config?.client_id || "",
-        client_secret: data.config?.client_secret || "",
-      });
-    }
+    if (!data) return;
+
+    form.reset({
+      enabled: data.enabled,
+      client_id: data.config.client_id || "",
+      client_secret: data.config.client_secret || "",
+    });
   }, [data, form]);
 
   async function onSubmit(values: FacebookFormData) {
     setLoading(true);
     try {
-      await updateAuthMethodConfig({
-        ...data,
+      await save({
         enabled: values.enabled,
         config: {
-          ...data?.config,
           client_id: values.client_id,
           client_secret: values.client_secret,
         },
-      } as API.UpdateAuthMethodConfigRequest);
+      });
       toast.success(t("common.saveSuccess", "Saved successfully"));
       refetch();
       setOpen(false);
-    } catch (_error) {
-      toast.error(t("common.saveFailed", "Save failed"));
     } finally {
       setLoading(false);
     }

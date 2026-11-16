@@ -34,16 +34,15 @@ import { EnhancedInput } from "@workspace/ui/composed/enhanced-input";
 import { Icon } from "@workspace/ui/composed/icon";
 import TagInput from "@workspace/ui/composed/tag-input";
 import {
-  getAuthMethodConfig,
   getSmsPlatform,
   testSmsSend,
-  updateAuthMethodConfig,
 } from "@workspace/ui/services/admin/authMethod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useAuthMethodConfig } from "../use-auth-method-config";
 
 const phoneSettingsSchema = z.object({
   id: z.string(),
@@ -80,14 +79,7 @@ export default function PhoneSettingsForm() {
     area_code: "1",
   });
 
-  const { data, refetch, isFetching } = useQuery({
-    queryKey: ["getAuthMethodConfig", "mobile"],
-    queryFn: async () => {
-      const { data } = await getAuthMethodConfig({
-        method: "mobile",
-      });
-      return data.data;
-    },
+  const { data, refetch, isFetching, save } = useAuthMethodConfig("mobile", {
     enabled: open,
   });
 
@@ -130,20 +122,41 @@ export default function PhoneSettingsForm() {
     selectedPlatform ?? {};
 
   useEffect(() => {
-    if (data) {
-      form.reset(data);
-    }
+    if (!data) return;
+
+    form.reset({
+      id: data.id,
+      method: data.method || "mobile",
+      enabled: data.enabled,
+      config: {
+        enable_whitelist: false,
+        whitelist: [],
+        platform: "",
+        ...data.config,
+        platform_config: {
+          access: "",
+          endpoint: "",
+          secret: "",
+          template_code: "code",
+          sign_name: "",
+          phone_number: "",
+          template: "",
+          ...(data.config.platform_config || {}),
+        },
+      },
+    });
   }, [data, form]);
 
   async function onSubmit(values: PhoneSettingsFormData) {
     setLoading(true);
     try {
-      await updateAuthMethodConfig(values as API.UpdateAuthMethodConfigRequest);
+      await save({
+        enabled: values.enabled,
+        config: values.config,
+      });
       toast.success(t("common.saveSuccess", "Saved successfully"));
       refetch();
       setOpen(false);
-    } catch (_error) {
-      toast.error(t("common.saveFailed", "Save failed"));
     } finally {
       setLoading(false);
     }

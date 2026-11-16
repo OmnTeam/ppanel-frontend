@@ -22,8 +22,8 @@
     "0": "Status",
     "1": "Pending",
     "2": "Paid",
-    "3": "Cancelled",
-    "4": "Closed",
+    "3": "Closed",
+    "4": "Activation Failed",
     "5": "Completed"
   },
   "subscribeNow": "Subscribe Now",
@@ -33,7 +33,9 @@
     "1": "New Purchase",
     "2": "Renewal",
     "3": "Reset Traffic",
-    "4": "Recharge"
+    "4": "Recharge",
+    "6": "Change Plan",
+    "7": "Trial Upgrade"
   },
   "viewDocument": "View Document",
   "waitingForPayment": "Waiting for Payment"

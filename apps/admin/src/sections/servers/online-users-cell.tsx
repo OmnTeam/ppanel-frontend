@@ -79,7 +79,12 @@ function UserSubscribeInfo({
     case "expireTime": {
       if (!data.expire_time)
         return <span className="text-muted-foreground">--</span>;
-      const isExpired = data.expire_time < Date.now() / 1000;
+      // 后端 expire_time 为毫秒时间戳，与 Date.now() 同单位
+      const expireTimeMs =
+        data.expire_time < 10_000_000_000
+          ? data.expire_time * 1000
+          : data.expire_time;
+      const isExpired = expireTimeMs < Date.now();
       return (
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
           <span className="text-sm">{formatDate(data.expire_time)}</span>

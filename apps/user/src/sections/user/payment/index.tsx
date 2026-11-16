@@ -62,8 +62,8 @@ export default function Page() {
     queryKey: ["purchaseCheckout", order_no],
     queryFn: async () => {
       const { data } = await purchaseCheckout({
-        orderNo: order_no!,
-        returnUrl: window.location.href,
+        order_no: order_no!,
+        return_url: window.location.href,
       });
       if (data.data?.type === "url" && data.data.checkout_url && !paymentOpened) {
         window.open(data.data.checkout_url, "_blank");
@@ -99,7 +99,7 @@ export default function Page() {
           <div className="grid gap-0.5">
             <CardTitle className="flex flex-col text-lg">
               {t("orderNumber", "Order Number")}
-              <span>{data?.orderNo}</span>
+              <span>{data?.order_no ?? (data as any)?.orderNo}</span>
             </CardTitle>
             <CardDescription>
               {t("createdAt", "Created At")}: {formatDate(data?.created_at)}

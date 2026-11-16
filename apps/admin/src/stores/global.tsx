@@ -120,7 +120,11 @@ export const useGlobalStore = create<GlobalStore>((set, get) => ({
   getUserInfo: async () => {
     try {
       const { data } = await currentUser();
-      set({ user: data.data });
+      // 后端返回 { user: {...} }，保留对旧扁平结构的兜底
+      const payload = data.data as unknown as
+        | (API.User & { user?: API.User })
+        | undefined;
+      set({ user: payload?.user ?? payload });
     } catch (error) {
       console.error("Failed to refresh user:", error);
     }

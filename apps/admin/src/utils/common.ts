@@ -51,6 +51,28 @@ export function formatDate(date?: Date | number, showTime = true) {
   });
 }
 
+/**
+ * 以完整配置对象为基底合并表单提交值。
+ *
+ * 管理端部分 Update*Config 接口在服务端按反射逐字段写库，请求里缺失的字段
+ * 会被写成零值。因此提交体必须以“完整配置默认值 + 后端返回值 + 表单值”的形式
+ * 组装，显式带上 proto message 的每个字段（布尔值 false 也要带上）。
+ */
+export function mergeConfigPayload<T extends object>(
+  defaults: T,
+  remote?: Partial<T> | null,
+  local?: Partial<T> | null
+): T {
+  const defined = (source?: Partial<T> | null) =>
+    Object.fromEntries(
+      Object.entries(source ?? {}).filter(
+        ([, value]) => value !== undefined && value !== null
+      )
+    ) as Partial<T>;
+
+  return { ...defaults, ...defined(remote), ...defined(local) };
+}
+
 export function setAuthorization(token: string): void {
   setCookie("Authorization", token);
 }

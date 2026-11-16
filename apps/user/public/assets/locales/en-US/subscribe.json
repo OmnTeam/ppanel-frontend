@@ -48,6 +48,9 @@
   "resetTraffic": "Reset Traffic",
   "resetTrafficDescription": "Reset traffic to zero, and start a new billing cycle",
   "resetTrafficTitle": "Reset Traffic",
+  "selectDuration": "Please select a duration",
+  "selectPaymentMethod": "Please select a payment method",
+  "soldOut": "Sold out",
   "subscriptionNotFound": "Subscription not found",
   "unsubscribe": {
     "cancel": "Cancel",
@@ -60,5 +63,6 @@
     "unsubscribe": "Unsubscribe",
     "unsubscribeDescription": "Please note: If you unsubscribe now, the remaining value of the subscription will be refunded to your account balance, which can be used for your next subscription purchase or renewal."
   },
+  "Week": "Week",
   "Year": "Year"
 }

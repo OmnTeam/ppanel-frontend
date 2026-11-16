@@ -30,6 +30,8 @@
     "subscriptionPath": "Subscription Path",
     "subscriptionPathDescription": "Custom path for subscription endpoints (better performance after system restart)",
     "subscriptionPathPlaceholder": "Enter subscription path",
+    "surplusEnable": "Deduct Remaining Value On Plan Change",
+    "surplusEnableDescription": "When enabled, the remaining value of the current subscription is deducted from the new plan price",
     "title": "Subscription Configuration",
     "updateError": "Update failed",
     "updateSuccess": "Settings updated successfully",

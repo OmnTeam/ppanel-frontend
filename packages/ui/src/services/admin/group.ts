@@ -2,77 +2,6 @@
 /* eslint-disable */
 import request from "@workspace/ui/lib/request";
 
-/** Get user group list GET /v1/admin/group/user/list */
-export async function getUserGroupList(
-  params: API.GetUserGroupListRequest,
-  options?: { [key: string]: any }
-) {
-  return request<API.Response & { data?: API.GetUserGroupListResponse }>(
-    `${import.meta.env.VITE_API_PREFIX || ""}/v1/admin/group/user/list`,
-    {
-      method: "GET",
-      params: {
-        ...params,
-      },
-      ...(options || {}),
-    }
-  );
-}
-
-/** Create user group POST /v1/admin/group/user */
-export async function createUserGroup(
-  body: API.CreateUserGroupRequest,
-  options?: { [key: string]: any }
-) {
-  return request<API.Response & { data?: any }>(
-    `${import.meta.env.VITE_API_PREFIX || ""}/v1/admin/group/user`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data: body,
-      ...(options || {}),
-    }
-  );
-}
-
-/** Update user group PUT /v1/admin/group/user */
-export async function updateUserGroup(
-  body: API.UpdateUserGroupRequest,
-  options?: { [key: string]: any }
-) {
-  return request<API.Response & { data?: any }>(
-    `${import.meta.env.VITE_API_PREFIX || ""}/v1/admin/group/user`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data: body,
-      ...(options || {}),
-    }
-  );
-}
-
-/** Delete user group DELETE /v1/admin/group/user */
-export async function deleteUserGroup(
-  body: API.DeleteUserGroupRequest,
-  options?: { [key: string]: any }
-) {
-  return request<API.Response & { data?: any }>(
-    `${import.meta.env.VITE_API_PREFIX || ""}/v1/admin/group/user`,
-    {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data: body,
-      ...(options || {}),
-    }
-  );
-}
-
 /** Get node group list GET /v1/admin/group/node/list */
 export async function getNodeGroupList(
   params: API.GetNodeGroupListRequest,
@@ -156,24 +85,6 @@ export async function getSubscribeMapping(
       params: {
         ...params,
       },
-      ...(options || {}),
-    }
-  );
-}
-
-/** Update subscribe mapping PUT /v1/admin/group/subscribe/mapping */
-export async function updateSubscribeMapping(
-  body: API.UpdateSubscribeMappingRequest,
-  options?: { [key: string]: any }
-) {
-  return request<API.Response & { data?: any }>(
-    `${import.meta.env.VITE_API_PREFIX || ""}/v1/admin/group/subscribe/mapping`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data: body,
       ...(options || {}),
     }
   );
@@ -339,24 +250,6 @@ export async function migrateUsersToGroup(
   );
 }
 
-/** Update user user group PUT /v1/admin/user/user_group */
-export async function updateUserUserGroup(
-  body: API.UpdateUserUserGroupRequest,
-  options?: { [key: string]: any }
-) {
-  return request<API.Response & { data?: any }>(
-    `${import.meta.env.VITE_API_PREFIX || ""}/v1/admin/user/user_group`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data: body,
-      ...(options || {}),
-    }
-  );
-}
-
 /** Reset all groups POST /v1/admin/group/reset */
 export async function resetGroups(
   body: API.ResetGroupsRequest,
@@ -364,24 +257,6 @@ export async function resetGroups(
 ) {
   return request<API.Response & { data?: any }>(
     `${import.meta.env.VITE_API_PREFIX || ""}/v1/admin/group/reset`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      data: body,
-      ...(options || {}),
-    }
-  );
-}
-
-/** Bind node group to user groups POST /v1/admin/group/user/bind-node-groups */
-export async function bindNodeGroups(
-  body: API.BindNodeGroupsRequest,
-  options?: { [key: string]: any }
-) {
-  return request<API.Response & { data?: any }>(
-    `${import.meta.env.VITE_API_PREFIX || ""}/v1/admin/group/user/bind-node-groups`,
     {
       method: "POST",
       headers: {

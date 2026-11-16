@@ -29,6 +29,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@workspace/ui/components/sheet";
+import { Switch } from "@workspace/ui/components/switch";
 import {
   Tabs,
   TabsContent,
@@ -51,7 +52,35 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
+import { mergeConfigPayload } from "@/utils/common";
 import { SS_CIPHERS } from "./form-schema";
+
+/**
+ * NodeConfig 的完整字段（对应 api/admin/system/v1/system.proto 的 NodeConfig）。
+ * 后端 UpdateNodeConfig 按反射逐字段写库，缺失字段会被写成零值，
+ * 所以提交体必须包含这里的每一个字段。
+ */
+const NODE_CONFIG_DEFAULTS = {
+  node_secret: "",
+  node_pull_interval: 0,
+  node_push_interval: 0,
+  traffic_report_threshold: 0,
+  ip_strategy: "prefer_ipv4",
+  dns: [] as { proto: string; address: string; domains: string[] }[],
+  block: [] as string[],
+  outbound: [] as {
+    name: string;
+    protocol: string;
+    address: string;
+    port: number;
+    password?: string;
+    rules?: string[];
+  }[],
+  device_admission_enabled: false,
+  device_count_mode: "ip",
+};
+
+type NodeConfigPayload = typeof NODE_CONFIG_DEFAULTS;
 
 const dnsConfigSchema = z.object({
   proto: z.string(), // z.enum(['tcp', 'udp', 'tls', 'https', 'quic']),
@@ -78,6 +107,8 @@ const nodeConfigSchema = z.object({
   dns: z.array(dnsConfigSchema).optional(),
   block: z.array(z.string()).optional(),
   outbound: z.array(outboundConfigSchema).optional(),
+  device_admission_enabled: z.boolean().optional(),
+  device_count_mode: z.enum(["ip", "connection"]).optional(),
 });
 type NodeConfigFormData = z.infer<typeof nodeConfigSchema>;
 
@@ -106,6 +137,8 @@ export default function ServerConfig() {
       dns: [],
       block: [],
       outbound: [],
+      device_admission_enabled: false,
+      device_count_mode: "ip",
     },
   });
 
@@ -124,6 +157,14 @@ export default function ServerConfig() {
         dns: cfgResp.dns || [],
         block: cfgResp.block || [],
         outbound: cfgResp.outbound || [],
+        device_admission_enabled:
+          (cfgResp as Partial<NodeConfigPayload>).device_admission_enabled ??
+          false,
+        device_count_mode:
+          (cfgResp as Partial<NodeConfigPayload>).device_count_mode ===
+          "connection"
+            ? "connection"
+            : "ip",
       });
     }
   }, [cfgResp, form]);
@@ -131,7 +172,13 @@ export default function ServerConfig() {
   async function onSubmit(values: NodeConfigFormData) {
     setSaving(true);
     try {
-      await updateNodeConfig(values as API.NodeConfig);
+      // 合并完整配置对象，避免后端反射写库把表单外的字段清零
+      const payload = mergeConfigPayload(
+        NODE_CONFIG_DEFAULTS,
+        cfgResp as Partial<NodeConfigPayload> | undefined,
+        values as Partial<NodeConfigPayload>
+      );
+      await updateNodeConfig(payload as unknown as API.NodeConfig);
       toast.success(t("server_config.saveSuccess", "Saved successfully"));
       await refetchCfg();
       setOpen(false);
@@ -347,6 +394,86 @@ export default function ServerConfig() {
                           {t(
                             "server_config.fields.traffic_report_threshold_desc",
                             "Set the minimum threshold for traffic reporting."
+                          )}
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="device_admission_enabled"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          {t(
+                            "server_config.fields.device_admission_enabled",
+                            "Device Admission Control"
+                          )}
+                        </FormLabel>
+                        <FormControl>
+                          <Switch
+                            checked={field.value}
+                            className="!mt-0 float-end"
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          {t(
+                            "server_config.fields.device_admission_enabled_desc",
+                            "When enabled, only admitted devices are allowed to use the nodes."
+                          )}
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="device_count_mode"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>
+                          {t(
+                            "server_config.fields.device_count_mode",
+                            "Device Counting Mode"
+                          )}
+                        </FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue
+                                placeholder={t(
+                                  "server_config.fields.device_count_mode_placeholder",
+                                  "Select device counting mode"
+                                )}
+                              />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="ip">
+                              {t(
+                                "server_config.fields.device_count_mode_ip",
+                                "Count by IP"
+                              )}
+                            </SelectItem>
+                            <SelectItem value="connection">
+                              {t(
+                                "server_config.fields.device_count_mode_connection",
+                                "Count by connection"
+                              )}
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormDescription>
+                          {t(
+                            "server_config.fields.device_count_mode_desc",
+                            "How devices are counted for online device limits."
                           )}
                         </FormDescription>
                         <FormMessage />

@@ -440,6 +440,7 @@ declare namespace API {
     reset_cycle: number;
     renewal_reset: boolean;
     show_original_price: boolean;
+    price_options?: SubscribePriceOption[];
   };
 
   type CreateTicketFollowRequest = {
@@ -2106,6 +2107,26 @@ declare namespace API {
     publishable_key: string;
   };
 
+  type SubscribePriceOption = {
+    id?: string;
+    subscribe_id?: string;
+    name?: string;
+    duration_unit: string;
+    duration_value: number;
+    price: number;
+    original_price: number;
+    inventory: number;
+    show: boolean;
+    sell: boolean;
+    is_default: boolean;
+    sort: number;
+    created_at?: number;
+    updated_at?: number;
+    code?: string;
+    type?: string;
+    version?: number;
+  };
+
   type Subscribe = {
     id: string;
     name: string;
@@ -2132,6 +2153,7 @@ declare namespace API {
     reset_cycle: number;
     renewal_reset: boolean;
     show_original_price: boolean;
+    price_options?: SubscribePriceOption[];
     created_at: number;
     updated_at: number;
   };
@@ -2199,6 +2221,7 @@ declare namespace API {
     reset_cycle?: number;
     renewal_reset?: boolean;
     show_original_price?: boolean;
+    price_options?: SubscribePriceOption[];
     created_at?: number;
     updated_at?: number;
     sold: number;
@@ -2459,6 +2482,7 @@ declare namespace API {
     reset_cycle: number;
     renewal_reset: boolean;
     show_original_price: boolean;
+    price_options?: SubscribePriceOption[];
   };
 
   type UpdateTicketStatusRequest = {
@@ -2725,6 +2749,7 @@ declare namespace API {
     show?: boolean;
     sell?: boolean;
     sort: number;
+    price_options?: SubscribePriceOption[];
     created_at: number;
     updated_at: number;
   };

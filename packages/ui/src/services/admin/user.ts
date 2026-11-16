@@ -141,7 +141,8 @@ export async function batchDeleteUser(
 
 /** Current user GET /v1/admin/user/current */
 export async function currentUser(options?: { [key: string]: any }) {
-  return request<API.Response & { data?: API.User }>(
+  // 后端返回 CurrentUserData { user: {...} }
+  return request<API.Response & { data?: { user: API.User } }>(
     `${import.meta.env.VITE_API_PREFIX || ""}/v1/admin/user/current`,
     {
       method: "GET",

@@ -66,8 +66,8 @@ export default function Order() {
     queryKey: ["purchaseCheckout", orderNo],
     queryFn: async () => {
       const { data } = await purchaseCheckout({
-        orderNo: orderNo || "",
-        returnUrl: window.location.href,
+        order_no: orderNo || "",
+        return_url: window.location.href,
       });
       if (data.data?.type === "url" && data.data?.checkout_url) {
         window.open(data.data.checkout_url, "_blank");

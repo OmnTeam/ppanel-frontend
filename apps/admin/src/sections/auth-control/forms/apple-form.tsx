@@ -1,5 +1,4 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useQuery } from "@tanstack/react-query";
 import { Button } from "@workspace/ui/components/button";
 import {
   Form,
@@ -23,15 +22,12 @@ import { Switch } from "@workspace/ui/components/switch";
 import { Textarea } from "@workspace/ui/components/textarea";
 import { EnhancedInput } from "@workspace/ui/composed/enhanced-input";
 import { Icon } from "@workspace/ui/composed/icon";
-import {
-  getAuthMethodConfig,
-  updateAuthMethodConfig,
-} from "@workspace/ui/services/admin/authMethod";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { toast } from "sonner";
 import { z } from "zod";
+import { useAuthMethodConfig } from "../use-auth-method-config";
 
 const appleSchema = z.object({
   enabled: z.boolean(),
@@ -53,15 +49,7 @@ export default function AppleForm() {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { data, refetch } = useQuery({
-    queryKey: ["getAuthMethodConfig", "apple"],
-    queryFn: async () => {
-      const { data } = await getAuthMethodConfig({
-        method: "apple",
-      });
-
-      return data.data;
-    },
+  const { data, refetch, save } = useAuthMethodConfig("apple", {
     enabled: open,
   });
 
@@ -80,36 +68,30 @@ export default function AppleForm() {
   });
 
   useEffect(() => {
-    if (data) {
-      form.reset({
-        enabled: data.enabled,
-        config: {
-          team_id: data.config?.team_id || "",
-          key_id: data.config?.key_id || "",
-          client_id: data.config?.client_id || "",
-          client_secret: data.config?.client_secret || "",
-          redirect_url: data.config?.redirect_url || "",
-        },
-      });
-    }
+    if (!data) return;
+
+    form.reset({
+      enabled: data.enabled,
+      config: {
+        team_id: data.config.team_id || "",
+        key_id: data.config.key_id || "",
+        client_id: data.config.client_id || "",
+        client_secret: data.config.client_secret || "",
+        redirect_url: data.config.redirect_url || "",
+      },
+    });
   }, [data, form]);
 
   async function onSubmit(values: AppleFormData) {
     setLoading(true);
     try {
-      await updateAuthMethodConfig({
-        ...data,
+      await save({
         enabled: values.enabled,
-        config: {
-          ...data?.config,
-          ...values.config,
-        },
-      } as API.UpdateAuthMethodConfigRequest);
+        config: values.config,
+      });
       toast.success(t("common.saveSuccess", "Saved successfully"));
       refetch();
       setOpen(false);
-    } catch (_error) {
-      toast.error(t("common.saveFailed", "Save failed"));
     } finally {
       setLoading(false);
     }

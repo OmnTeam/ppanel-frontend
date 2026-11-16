@@ -25,8 +25,8 @@ export default function Order() {
     0: t("status.0", "Status"),
     1: t("status.1", "Pending"),
     2: t("status.2", "Paid"),
-    3: t("status.3", "Cancelled"),
-    4: t("status.4", "Closed"),
+    3: t("status.3", "Closed"),
+    4: t("status.4", "Activation Failed"),
     5: t("status.5", "Completed"),
   };
   const typeMap: Record<number, string> = {
@@ -35,6 +35,8 @@ export default function Order() {
     2: t("type.2", "Renewal"),
     3: t("type.3", "Reset Traffic"),
     4: t("type.4", "Recharge"),
+    6: t("type.6", "Change Plan"),
+    7: t("type.7", "Trial Upgrade"),
   };
 
   const ref = useRef<ProListActions>(null);
@@ -62,7 +64,7 @@ export default function Order() {
                   <Button
                     key="cancel"
                     onClick={async () => {
-                      await closeOrder({ orderNo: item.order_no });
+                      await closeOrder({ order_no: item.order_no });
                       ref.current?.refresh();
                     }}
                     size="sm"

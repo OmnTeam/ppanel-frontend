@@ -17,6 +17,10 @@ interface SubscribeBillingProps {
 
 export function SubscribeBilling({ order }: Readonly<SubscribeBillingProps>) {
   const { t } = useTranslation("subscribe");
+  // Price options carry the real duration; legacy orders only have quantity +
+  // the subscription unit_time.
+  const durationValue = order?.duration_value || order?.quantity || 1;
+  const durationUnit = order?.duration_unit || order?.unit_time || "Month";
 
   return (
     <>
@@ -30,8 +34,9 @@ export function SubscribeBilling({ order }: Readonly<SubscribeBillingProps>) {
               {t("billing.duration", "Duration")}
             </span>
             <span>
-              {order?.quantity || 1}{" "}
-              {t(order?.unit_time || "Month", order?.unit_time || "Month")}
+              {durationUnit === "NoLimit"
+                ? t("NoLimit", "No Limit")
+                : `${durationValue} ${t(durationUnit, durationUnit)}`}
             </span>
           </li>
         )}{" "}

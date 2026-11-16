@@ -21,17 +21,91 @@
   },
   "groupSettings": "",
   "invite": {
+    "calcMode": {
+      "fixed": "固定时长",
+      "purchase": "等同于购买时长",
+      "ratio": "按比例折算"
+    },
+    "charset": {
+      "alpha": "纯字母",
+      "mixed": "字母和数字",
+      "numeric": "纯数字"
+    },
+    "cycleMode": {
+      "every_purchase": "每次购买",
+      "first_only": "仅首次购买",
+      "inherit": "跟随邀请人的套餐"
+    },
     "description": "配置用户邀请和推荐奖励设置",
+    "durationRewardCalcMode": "奖励计算方式",
+    "durationRewardCalcModeDescription": "奖励时长的计算方式",
+    "durationRewardCycleMode": "奖励周期",
+    "durationRewardCycleModeDescription": "被邀请人的哪些购买行为会触发奖励",
+    "durationRewardEnabled": "开启时长奖励",
+    "durationRewardEnabledDescription": "以订阅时长代替佣金奖励邀请人，开启后将不再发放现金佣金",
+    "durationRewardExistingMode": "已有订阅的处理方式",
+    "durationRewardExistingModeDescription": "邀请人已有有效订阅时如何发放时长",
+    "durationRewardExtendMode": "多订阅续期优先级",
+    "durationRewardExtendModeDescription": "存在多个有效订阅时优先延长哪一个",
+    "durationRewardFixedUnit": "固定时长单位",
+    "durationRewardFixedUnitDescription": "按固定时长发放时使用",
+    "durationRewardFixedValue": "固定时长数值",
+    "durationRewardFixedValueDescription": "按固定时长发放时使用",
+    "durationRewardMinAmount": "最低订单金额",
+    "durationRewardMinAmountDescription": "实付金额低于该值的订单不发放时长奖励，0 表示不限制",
+    "durationRewardNoSubscribePolicy": "邀请人无有效订阅时的策略",
+    "durationRewardNoSubscribePolicyDescription": "邀请人没有有效订阅时的处理方式",
+    "durationRewardNotify": "奖励后通知",
+    "durationRewardNotifyDescription": "发放时长奖励后向邀请人发送通知",
+    "durationRewardRatio": "奖励比例",
+    "durationRewardRatioDescription": "按比例折算时使用，100 表示等同时长",
+    "durationRewardScope": "适用套餐",
+    "durationRewardScopeDescription": "适用套餐的 JSON 范围，例如 {\"mode\":\"include\",\"plans\":[]}。留空表示全部套餐",
+    "durationRewardTrafficMode": "流量发放方式",
+    "durationRewardTrafficModeDescription": "与时长一起发放流量时的处理方式",
+    "existingMode": {
+      "new_subscription": "创建新订阅",
+      "prorate": "延长当前订阅"
+    },
+    "extendMode": {
+      "latest_expire": "优先最晚到期",
+      "primary_first": "优先主订阅"
+    },
     "forcedInvite": "强制邀请注册",
     "forcedInviteDescription": "启用后，用户必须通过邀请链接注册",
     "inputPlaceholder": "请输入",
+    "inviteCodeCharset": "邀请码字符集",
+    "inviteCodeCharsetDescription": "新生成邀请码所使用的字符集",
+    "inviteCodeCharsetPlaceholder": "请选择字符集",
+    "inviteCodeLength": "邀请码长度",
+    "inviteCodeLengthDescription": "新生成邀请码的长度，4-20；0 表示使用默认值 8",
+    "mergeCommissionToBalance": "佣金合并到余额",
+    "mergeCommissionToBalanceDescription": "开启后佣金直接计入余额，不再进入佣金钱包",
+    "noSubscribePolicy": {
+      "create": "创建新订阅",
+      "require_order": "要求先有订单",
+      "skip": "跳过奖励"
+    },
     "onlyFirstPurchase": "仅首次购买奖励",
     "onlyFirstPurchaseDescription": "启用后，推荐人仅在被推荐用户首次购买时获得奖励",
     "referralPercentage": "推荐奖励百分比",
     "referralPercentageDescription": "给予推荐人的奖励百分比",
     "saveFailed": "保存失败",
     "saveSuccess": "保存成功",
-    "title": "邀请设置"
+    "sections": {
+      "durationReward": "时长奖励",
+      "inviteCode": "邀请码",
+      "withdrawal": "提现设置"
+    },
+    "title": "邀请设置",
+    "trafficMode": {
+      "full": "完整套餐流量",
+      "prorate": "按时长比例折算流量"
+    },
+    "withdrawalMethods": "提现方式",
+    "withdrawalMethodsDescription": "提现方式的 JSON 数组，格式 {\"method\",\"name\",\"label\",\"enabled\"}。留空则默认开启支付宝、微信、USDT",
+    "withdrawalMinAmount": "最低提现金额",
+    "withdrawalMinAmountDescription": "0 表示不限制。低于该金额的佣金无法提现"
   },
   "logCleanup": {
     "autoClear": "启用自动清理",

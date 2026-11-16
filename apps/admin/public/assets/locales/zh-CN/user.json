@@ -148,5 +148,7 @@
   "noNodesAvailable": "无可用节点",
   "nodeGroup": "节点组",
   "publicNodes": "公共节点",
-  "subscriptionNodes": "套餐节点"
+  "subscriptionNodes": "套餐节点",
+  "role": "角色",
+  "noRole": "无角色"
 }
