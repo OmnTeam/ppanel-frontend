@@ -236,8 +236,33 @@ function handleError(response: {
   toast.error(message);
 }
 
+declare global {
+  interface Window {
+    __NPANEL_ENV__?: {
+      VITE_API_BASE_URL?: string;
+    };
+  }
+}
+
+/**
+ * 后端地址解析优先级：
+ * 1. dist/env.js（部署后可直接修改，无需重新构建）
+ * 2. 构建时内联的 VITE_API_BASE_URL
+ * 空字符串表示"使用当前站点同源地址"，因此必须用 undefined 判断，不能用 || 兜底。
+ */
+function resolveApiBaseUrl(): string {
+  const runtimeValue =
+    typeof window === "undefined"
+      ? undefined
+      : window.__NPANEL_ENV__?.VITE_API_BASE_URL;
+
+  if (runtimeValue !== undefined) return runtimeValue.trim();
+
+  return import.meta.env.VITE_API_BASE_URL ?? "";
+}
+
 const request = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL,
+  baseURL: resolveApiBaseUrl(),
 });
 
 request.interceptors.request.use(

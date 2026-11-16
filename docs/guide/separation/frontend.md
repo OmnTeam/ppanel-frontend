@@ -85,44 +85,37 @@ pnpm install
 
 #### 4. Configure Environment Variables
 
-Create environment configuration files in application directories.
-
-**Admin Web Config** (`apps/admin/.env.production`):
+All three frontends (admin / user / payment-portal) share a single `.env` file at the **repository root**. Per-application `.env` files are no longer needed.
 
 ```bash
-# Backend API address (required)
-VITE_API_BASE_URL=https://api.your-domain.com
-
-# CDN address (optional, for accelerating static resources)
-VITE_CDN_URL=https://cdn.jsdmirror.com
-
-# Enable tutorial documentation (optional)
-VITE_TUTORIAL_DOCUMENT=true
-
-# Show landing page (optional, set to false to redirect to login directly)
-VITE_SHOW_LANDING_PAGE=true
-
-# Development default credentials (leave empty in production)
-VITE_USER_EMAIL=
-VITE_USER_PASSWORD=
+cp env.example .env
 ```
 
-**User Web Config** (`apps/user/.env.production`):
+Edit `.env` and fill in at least the backend address:
 
 ```bash
-# Backend API address (required)
+# Backend API address (required, no trailing slash)
 VITE_API_BASE_URL=https://api.your-domain.com
 
-# CDN address (optional)
-VITE_CDN_URL=https://cdn.jsdmirror.com
-
-# Enable tutorial documentation (optional)
-VITE_TUTORIAL_DOCUMENT=true
-
-# Development default credentials (leave empty in production)
-VITE_USER_EMAIL=
-VITE_USER_PASSWORD=
+# Other variables (CDN, tutorial entry, landing page, payment portal amounts, ...)
+# are documented inline in env.example.
 ```
+
+> Every `VITE_` variable is inlined into the JS bundle at **build time**; rebuild after changing them.
+
+#### 4.1 Change the backend address after deployment (no rebuild)
+
+The build emits `env.js` at the root of the output directory and loads it first from `index.html`:
+
+```js
+window.__NPANEL_ENV__ = {
+  "VITE_API_BASE_URL": "https://api.your-domain.com"
+};
+```
+
+After uploading the static files, edit `VITE_API_BASE_URL` in that file and refresh the browser to switch backends. Leave it empty to use the current origin (your web server must then proxy `/v1` to the backend).
+
+Other variables (CDN, preset recharge amounts, ...) still require a rebuild.
 
 #### 5. Build Applications
 

@@ -85,44 +85,36 @@ pnpm install
 
 #### 4. 配置环境变量
 
-在应用目录下创建环境配置文件。
-
-**管理端配置** (`apps/admin/.env.production`)：
+三端（admin / user / payment-portal）共用**仓库根目录**的 `.env`，不再需要为每个应用单独创建配置文件。
 
 ```bash
-# 后端 API 地址（必需）
-VITE_API_BASE_URL=https://api.your-domain.com
-
-# CDN 地址（可选，用于加速静态资源）
-VITE_CDN_URL=https://cdn.jsdmirror.com
-
-# 启用教程文档（可选）
-VITE_TUTORIAL_DOCUMENT=true
-
-# 开发环境默认登录凭证（生产环境请留空）
-VITE_USER_EMAIL=
-VITE_USER_PASSWORD=
+cp env.example .env
 ```
 
-**用户端配置** (`apps/user/.env.production`)：
+编辑 `.env`，至少填写后端地址：
 
 ```bash
-# 后端 API 地址（必需）
+# 后端 API 地址（必需，不要以 / 结尾）
 VITE_API_BASE_URL=https://api.your-domain.com
 
-# CDN 地址（可选）
-VITE_CDN_URL=https://cdn.jsdmirror.com
-
-# 启用教程文档（可选）
-VITE_TUTORIAL_DOCUMENT=true
-
-# 显示落地页（可选，设为 false 则直接跳转登录页）
-VITE_SHOW_LANDING_PAGE=true
-
-# 开发环境默认登录凭证（生产环境请留空）
-VITE_USER_EMAIL=
-VITE_USER_PASSWORD=
+# 其余变量（CDN、教程入口、落地页、支付门户预设金额等）见 env.example 中的中文注释
 ```
+
+> 所有以 `VITE_` 开头的变量都在**构建时**内联进 JS，修改后必须重新构建。
+
+#### 4.1 部署后修改后端地址（无需重新构建）
+
+构建产物根目录会生成 `env.js`，并在 `index.html` 中最先加载：
+
+```js
+window.__NPANEL_ENV__ = {
+  "VITE_API_BASE_URL": "https://api.your-domain.com"
+};
+```
+
+把静态文件放到服务器后，直接编辑该文件里的 `VITE_API_BASE_URL` 并刷新浏览器即可切换后端地址；留空表示"使用当前站点同源地址"（需要 Web 服务器把 `/v1` 反代到后端）。
+
+其它变量（CDN、充值预设金额等）仍然需要重新构建才能生效。
 
 #### 5. 构建应用
 

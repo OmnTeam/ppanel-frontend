@@ -4,6 +4,7 @@ import { fileURLToPath, URL } from "node:url";
 import tailwindcss from "@tailwindcss/vite";
 import viteReact from "@vitejs/plugin-react";
 import { defineConfig, loadEnv, type Plugin } from "vite";
+import { repoRoot, runtimeEnvPlugin } from "../../vite-env-runtime";
 
 function copyAssetsDirectory(): Plugin {
   const assetsRoot = fileURLToPath(new URL("./assets", import.meta.url));
@@ -49,11 +50,17 @@ function copyAssetsDirectory(): Plugin {
 }
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), "");
+  const env = loadEnv(mode, repoRoot, "");
 
   return {
     base: "./",
-    plugins: [viteReact(), tailwindcss(), copyAssetsDirectory()],
+    envDir: repoRoot,
+    plugins: [
+      viteReact(),
+      tailwindcss(),
+      copyAssetsDirectory(),
+      runtimeEnvPlugin(env),
+    ],
     resolve: {
       alias: {
         "@": fileURLToPath(new URL("./src", import.meta.url)),
